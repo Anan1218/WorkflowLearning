@@ -71,8 +71,8 @@ export function IntegrationMap({
   const activeFor = (s: SourceConfig) => (tier ? s.tiers.includes(tier) : true);
 
   return (
-    <div className="border border-pale bg-white p-4 shadow-[0_30px_70px_-45px_rgba(30,58,92,0.5)]">
-      <svg viewBox={`0 0 ${W} ${H}`} className="h-auto w-full" role="img" aria-label="Integration map: data sources flowing into the submission intelligence pipeline and out to the data plane">
+    <div className="flex h-full items-center border border-pale bg-white p-3 shadow-[0_30px_70px_-45px_rgba(30,58,92,0.5)]">
+      <svg viewBox={`0 0 ${W} ${H}`} className="h-full w-full" role="img" aria-label="Integration map: data sources flowing into the submission intelligence pipeline and out to the data plane">
         {/* connectors: sources -> pipeline */}
         {ROWS.map(({ source, y }) => {
           const active = activeFor(source);
