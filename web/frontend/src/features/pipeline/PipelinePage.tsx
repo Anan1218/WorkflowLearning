@@ -32,7 +32,7 @@ const STAGES = [
 
 export function PipelinePage() {
   return (
-    <div className="rise mx-auto max-w-5xl">
+    <div className="mx-auto max-w-5xl">
       <PageHeader
         eyebrow="Architecture"
         title="A pipeline you can read on a whiteboard."
@@ -41,42 +41,66 @@ export function PipelinePage() {
 
       <ol className="flex flex-col gap-3">
         {STAGES.map(({ icon: Icon, title, body }, i) => (
-          <li key={title} className="flex items-stretch gap-4">
+          <li
+            key={title}
+            className="rise flex items-stretch gap-4"
+            style={{ animationDelay: `${320 + i * 90}ms` }}
+          >
             <div className="flex flex-col items-center pt-6">
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-cobalt/10 text-cobalt">
+              <span className="flex h-9 w-9 items-center justify-center border border-cobalt/30 bg-cobalt/10 text-cobalt">
                 <Icon size={16} aria-hidden />
               </span>
-              {i < STAGES.length - 1 && <span className="mt-2 w-px flex-1 bg-hairline" aria-hidden />}
+              {i < STAGES.length - 1 && <span className="mt-2 w-px flex-1 bg-pale" aria-hidden />}
             </div>
             <Card className="mb-1 flex-1">
-              <div className="mb-1 flex items-center gap-2">
-                <span className="font-fragment text-[10px] text-bodyslate">0{i + 1}</span>
+              <div className="mb-1 flex items-center gap-2.5">
+                <span className="font-fragment text-[10px] tracking-[0.12em] text-body/60">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
                 <h2 className="font-schibsted text-[16px] font-semibold text-ink">{title}</h2>
               </div>
-              <p className="max-w-2xl text-[14.5px] leading-[1.6] text-bodyslate">{body}</p>
+              <p className="max-w-2xl text-[14.5px] leading-[1.6] text-body">{body}</p>
             </Card>
           </li>
         ))}
       </ol>
 
-      <div className="mt-10 rounded-2xl bg-navy px-8 py-9 text-white">
-        <div className="font-fragment text-[10px] uppercase tracking-[0.08em] text-slateblue">
-          The model-agnostic seam
+      <div
+        className="rise mt-10 shadow-[0_34px_70px_-40px_rgba(30,58,92,0.8)]"
+        style={{ animationDelay: "800ms" }}
+      >
+        {/* stepped color strip */}
+        <div className="flex h-2" aria-hidden>
+          <div className="w-1/3 bg-slate" />
+          <div className="w-1/4 bg-cobalt" />
+          <div className="w-1/6 bg-[#4a7fe0]" />
+          <div className="flex-1 bg-navy-deep" />
         </div>
-        <p className="mt-3 max-w-3xl font-newsreader text-2xl leading-snug tracking-[-0.01em]">
-          Swapping models is a one-string configuration change — not a rewrite.
-        </p>
-        <div className="mt-5 flex flex-wrap items-center gap-3 font-fragment text-[12px] text-slateblue">
-          <code className="rounded bg-white/10 px-3 py-1.5">openrouter/deepseek-chat-v3.1</code>
-          <ArrowRight size={14} aria-hidden />
-          <code className="rounded bg-white/10 px-3 py-1.5">anthropic/claude-sonnet-5</code>
-          <ArrowRight size={14} aria-hidden />
-          <code className="rounded bg-white/10 px-3 py-1.5">bedrock / azure-foundry / vertex</code>
+        <div className="dot-grid bg-navy px-8 py-9 text-white">
+          <div className="font-fragment text-[10px] uppercase tracking-[0.2em] text-slate">
+            The model-agnostic seam
+          </div>
+          <p className="mt-3 max-w-3xl font-newsreader text-[2rem] font-normal leading-snug tracking-[-0.01em]">
+            Swapping models is a one-string configuration change — not a rewrite.
+          </p>
+          <div className="mt-5 flex flex-wrap items-center gap-3 font-fragment text-[12px] text-slate">
+            <code className="border border-white/15 bg-white/10 px-3 py-1.5 backdrop-blur-sm">
+              openrouter/deepseek-chat-v3.1
+            </code>
+            <ArrowRight size={14} aria-hidden />
+            <code className="border border-white/15 bg-white/10 px-3 py-1.5 backdrop-blur-sm">
+              anthropic/claude-sonnet-5
+            </code>
+            <ArrowRight size={14} aria-hidden />
+            <code className="border border-white/15 bg-white/10 px-3 py-1.5 backdrop-blur-sm">
+              bedrock / azure-foundry / vertex
+            </code>
+          </div>
+          <p className="mt-5 max-w-3xl text-[14px] leading-[1.6] text-[#d6e2f5]">
+            Develop and benchmark on inexpensive models; deploy on whatever endpoint your compliance team
+            approves, inside your own cloud. The pipeline, schema, evals, and traces do not change.
+          </p>
         </div>
-        <p className="mt-5 max-w-3xl text-[14px] leading-[1.6] text-slateblue">
-          Develop and benchmark on inexpensive models; deploy on whatever endpoint your compliance team
-          approves, inside your own cloud. The pipeline, schema, evals, and traces do not change.
-        </p>
       </div>
     </div>
   );

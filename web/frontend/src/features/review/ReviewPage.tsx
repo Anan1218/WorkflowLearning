@@ -13,22 +13,24 @@ export function ReviewPage() {
   });
 
   return (
-    <div className="rise mx-auto max-w-4xl">
+    <div className="mx-auto max-w-4xl">
       <PageHeader
         eyebrow="Human in the loop"
         title="Review queue"
         sub="Extractions with any field below the 0.75 confidence threshold land here. Every approve or override is recorded — the same decisions become the audit trail and new labeled training data."
       />
 
-      <div className="mb-5 flex gap-1" role="tablist" aria-label="Queue filter">
+      <div className="rise mb-5 flex gap-1" style={{ animationDelay: "320ms" }} role="tablist" aria-label="Queue filter">
         {(["pending", "resolved"] as const).map((t) => (
           <button
             key={t}
             role="tab"
             aria-selected={tab === t}
             onClick={() => setTab(t)}
-            className={`rounded-md px-4 py-2 font-schibsted text-[14px] capitalize transition-colors focus-visible:outline-2 focus-visible:outline-cobalt ${
-              tab === t ? "bg-cloud font-semibold text-ink" : "text-bodyslate hover:text-ink"
+            className={`px-4 py-2 font-schibsted text-[14px] capitalize transition-colors focus-visible:outline-2 focus-visible:outline-cobalt ${
+              tab === t
+                ? "bg-white font-medium text-ink shadow-[0_14px_30px_-22px_rgba(30,58,92,0.5)] ring-1 ring-pale"
+                : "text-body hover:text-ink"
             }`}
           >
             {t}
@@ -41,34 +43,36 @@ export function ReviewPage() {
           <Spinner />
         </div>
       ) : !data?.length ? (
-        <EmptyState
-          title={tab === "pending" ? "Queue is clear" : "No resolved items yet"}
-          hint={
-            tab === "pending"
-              ? "Run an extraction on the Extract page — low-confidence fields route here automatically."
-              : "Approve or override flagged fields on a pending item and it will move here."
-          }
-        />
+        <div className="rise" style={{ animationDelay: "400ms" }}>
+          <EmptyState
+            title={tab === "pending" ? "Queue is clear" : "No resolved items yet"}
+            hint={
+              tab === "pending"
+                ? "Run an extraction on the Extract page — low-confidence fields route here automatically."
+                : "Approve or override flagged fields on a pending item and it will move here."
+            }
+          />
+        </div>
       ) : (
-        <ul className="flex flex-col gap-2.5">
-          {data.map((item) => (
-            <li key={item.id}>
+        <ul className="flex flex-col gap-3">
+          {data.map((item, i) => (
+            <li key={item.id} className="rise" style={{ animationDelay: `${400 + i * 80}ms` }}>
               <Link
                 to={`/review/${item.id}`}
-                className="block rounded-2xl border border-hairline bg-white p-5 transition-colors hover:border-cobalt/40 focus-visible:outline-2 focus-visible:outline-cobalt"
+                className="group block border border-pale border-t-4 border-t-cobalt bg-white p-5 shadow-[0_14px_34px_-28px_rgba(5,28,44,0.5)] transition-colors hover:bg-wash focus-visible:outline-2 focus-visible:outline-cobalt"
               >
                 <div className="mb-1.5 flex items-center gap-3">
-                  <span className="font-schibsted text-[15px] font-semibold text-ink">
+                  <span className="font-newsreader text-[1.1rem] leading-none text-ink">
                     {item.principal ?? "Unknown principal"}
                   </span>
-                  <Badge tone={item.status === "pending" ? "flag" : "pass"}>{item.status}</Badge>
+                  <Badge tone={item.status === "pending" ? "flag" : "ok"}>{item.status}</Badge>
                   <Badge tone="neutral">{item.model_id}</Badge>
-                  <span className="ml-auto font-fragment text-[10px] text-bodyslate">
+                  <span className="ml-auto font-fragment text-[10px] uppercase tracking-[0.12em] text-body/60">
                     {item.n_decided}/{item.n_flagged} decided ·{" "}
                     {new Date(item.created_at * 1000).toLocaleTimeString()}
                   </span>
                 </div>
-                <p className="line-clamp-2 font-fragment text-[11px] leading-relaxed text-bodyslate">
+                <p className="line-clamp-2 font-fragment text-[11px] leading-relaxed text-body">
                   {item.doc_preview}
                 </p>
               </Link>

@@ -10,10 +10,15 @@ const STAGES = [
 
 export function JobProgress({ elapsed }: { elapsed: number }) {
   return (
-    <div className="rise rounded-2xl border border-hairline bg-cloud/40 px-8 py-10">
+    <div className="pop-in dot-grid-light relative overflow-hidden border border-pale bg-wash px-8 py-10 shadow-[0_14px_34px_-28px_rgba(5,28,44,0.5)]">
+      {/* scanning highlight */}
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-1/4" aria-hidden>
+        <div className="scan-bar h-full w-full bg-gradient-to-r from-transparent via-cobalt/[0.06] to-transparent" />
+      </div>
+
       <div className="mb-6 flex items-center justify-between">
         <div className="eyebrow">Pipeline running</div>
-        <span className="font-fragment text-[11px] text-bodyslate">{elapsed.toFixed(0)}s</span>
+        <span className="font-fragment text-[11px] text-body">{elapsed.toFixed(0)}s</span>
       </div>
       <ol className="flex items-center gap-0" aria-label="Pipeline stages">
         {STAGES.map((s, i) => {
@@ -23,27 +28,35 @@ export function JobProgress({ elapsed }: { elapsed: number }) {
             <li key={s.label} className="flex flex-1 items-center last:flex-none">
               <div className="flex flex-col items-center gap-2">
                 <span
-                  className={`h-2.5 w-2.5 rounded-full transition-colors ${
-                    isCurrent ? "animate-pulse bg-cobalt" : active ? "bg-cobalt" : "bg-hairline"
+                  className={`flex h-6 w-6 items-center justify-center border font-fragment text-[9px] transition-all ${
+                    isCurrent
+                      ? "node-glow border-cobalt bg-white text-cobalt"
+                      : active
+                        ? "border-cobalt bg-cobalt text-white"
+                        : "border-line bg-white text-body/50"
                   }`}
                   aria-hidden
-                />
+                >
+                  {String(i + 1).padStart(2, "0")}
+                </span>
                 <span
                   className={`whitespace-nowrap font-schibsted text-[12px] ${
-                    active ? "font-medium text-ink" : "text-bodyslate/60"
+                    active ? "font-medium text-ink" : "text-body/60"
                   }`}
                 >
                   {s.label}
                 </span>
               </div>
               {i < STAGES.length - 1 && (
-                <div className={`mx-3 mb-6 h-px flex-1 ${elapsed >= STAGES[i + 1].at ? "bg-cobalt/50" : "bg-hairline"}`} />
+                <div
+                  className={`mx-3 mb-6 h-px flex-1 ${elapsed >= STAGES[i + 1].at ? "bg-cobalt/50" : "bg-line"}`}
+                />
               )}
             </li>
           );
         })}
       </ol>
-      <p className="mt-6 text-center text-[13px] text-bodyslate">
+      <p className="mt-6 text-center text-[13px] text-body">
         The model is reading the document and filling the typed schema — validation re-asks automatically if
         the output doesn't conform. Free models can take up to a minute.
       </p>

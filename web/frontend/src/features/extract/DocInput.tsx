@@ -36,18 +36,18 @@ export function DocInput({
   });
 
   return (
-    <div className="flex flex-col rounded-2xl border border-hairline bg-white">
-      <div className="flex gap-1 border-b border-hairline px-3 pt-3" role="tablist" aria-label="Document source">
+    <div className="flex flex-col border border-pale bg-white shadow-[0_14px_34px_-28px_rgba(5,28,44,0.5)]">
+      <div className="flex gap-1 border-b border-line bg-wash px-3 pt-2.5" role="tablist" aria-label="Document source">
         {(["paste", "upload", "sample"] as Tab[]).map((t) => (
           <button
             key={t}
             role="tab"
             aria-selected={tab === t}
             onClick={() => setTab(t)}
-            className={`rounded-t-md px-4 py-2 font-schibsted text-[14px] transition-colors focus-visible:outline-2 focus-visible:outline-cobalt ${
+            className={`px-4 py-2 font-schibsted text-[14px] transition-colors focus-visible:outline-2 focus-visible:outline-cobalt ${
               tab === t
-                ? "border-b-2 border-cobalt font-semibold text-cobalt"
-                : "text-bodyslate hover:text-ink"
+                ? "border-b-2 border-cobalt font-medium text-cobalt"
+                : "text-body hover:text-ink"
             }`}
           >
             {t === "paste" ? "Paste text" : t === "upload" ? "Upload file" : "Sample documents"}
@@ -63,15 +63,15 @@ export function DocInput({
             disabled={disabled}
             placeholder="Paste a broker submission email, WIP schedule, financial summary…"
             rows={13}
-            className="w-full resize-y rounded-md border border-hairline bg-cloud/30 p-3.5 font-fragment text-[12.5px] leading-relaxed text-ink placeholder:text-bodyslate/60 focus:border-cobalt focus:outline-none"
+            className="w-full resize-y border border-line bg-wash p-3.5 font-fragment text-[12.5px] leading-relaxed text-ink placeholder:text-body/50 focus:border-cobalt focus:outline-none"
             aria-label="Document text"
           />
         )}
 
         {tab === "upload" && (
-          <div className="flex flex-col items-center justify-center gap-3 rounded-md border border-dashed border-hairline bg-cloud/30 px-6 py-16">
-            <FileUp className="text-bodyslate" size={22} aria-hidden />
-            <p className="text-[14px] text-bodyslate">
+          <div className="flex flex-col items-center justify-center gap-3 border border-dashed border-pale bg-wash px-6 py-16">
+            <FileUp className="text-body" size={22} aria-hidden />
+            <p className="text-[14px] text-body">
               .txt or text-layer .pdf — scanned documents are a roadmap item
             </p>
             <input
@@ -90,7 +90,7 @@ export function DocInput({
             </button>
             {upload.isError && <ErrorBanner message={(upload.error as Error).message} />}
             {upload.isSuccess && (
-              <p className="text-[13px] text-pass">
+              <p className="text-[13px] text-ok">
                 Loaded “{upload.data.filename}” — text shown under Paste tab.
               </p>
             )}
@@ -98,24 +98,27 @@ export function DocInput({
         )}
 
         {tab === "sample" && (
-          <ul className="grid max-h-[340px] grid-cols-1 gap-2 overflow-y-auto pr-1 md:grid-cols-2" aria-label="Sample documents">
+          <ul
+            className="thin-scroll grid max-h-[340px] grid-cols-1 gap-px overflow-y-auto border border-pale bg-pale md:grid-cols-2"
+            aria-label="Sample documents"
+          >
             {(samples ?? []).map((s) => (
-              <li key={s.id}>
+              <li key={s.id} className="min-w-0">
                 <button
                   onClick={() => pickSample.mutate(s.id)}
                   disabled={disabled}
                   aria-pressed={sampleId === s.id}
-                  className={`w-full rounded-md border p-3 text-left transition-colors focus-visible:outline-2 focus-visible:outline-cobalt ${
+                  className={`group h-full w-full border-t-4 p-4 text-left transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-cobalt ${
                     sampleId === s.id
-                      ? "border-cobalt bg-cobalt/5"
-                      : "border-hairline hover:border-cobalt/40"
+                      ? "border-t-cobalt bg-wash"
+                      : "border-t-transparent bg-white hover:border-t-cobalt hover:bg-wash"
                   }`}
                 >
                   <div className="mb-1 flex items-center justify-between gap-2">
                     <span className="truncate font-schibsted text-[13px] font-medium text-ink">{s.title}</span>
                     {s.has_ground_truth && <Badge tone="cobalt">labeled</Badge>}
                   </div>
-                  <p className="line-clamp-2 font-fragment text-[10.5px] leading-relaxed text-bodyslate">
+                  <p className="line-clamp-2 font-fragment text-[10.5px] leading-relaxed text-body">
                     {s.preview}
                   </p>
                 </button>
@@ -126,8 +129,8 @@ export function DocInput({
       </div>
 
       {sampleId && (
-        <div className="border-t border-hairline px-4 py-2.5">
-          <p className="text-[13px] text-bodyslate">
+        <div className="border-t border-line bg-wash px-4 py-2.5">
+          <p className="text-[13px] text-body">
             Sample <span className="font-fragment text-[11px]">{sampleId}</span> selected — result will be
             scored against its ground truth.
           </p>

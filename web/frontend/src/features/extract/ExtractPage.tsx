@@ -41,7 +41,7 @@ export function ExtractPage() {
   const canRun = !!effectiveModel && (sampleId !== null || text.trim().length > 40) && !running;
 
   return (
-    <div className="rise mx-auto max-w-5xl">
+    <div className="mx-auto max-w-5xl">
       <PageHeader
         eyebrow="Live demo"
         title="Read a messy submission into structured, scored data."
@@ -49,22 +49,24 @@ export function ExtractPage() {
       />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_260px]">
-        <DocInput
-          text={text}
-          sampleId={sampleId}
-          onText={(t) => {
-            setText(t);
-            setSampleId(null);
-          }}
-          onSample={(id, sampleText) => {
-            setSampleId(id);
-            setText(sampleText);
-          }}
-          disabled={running}
-        />
-        <div className="flex flex-col gap-4">
+        <div className="rise" style={{ animationDelay: "320ms" }}>
+          <DocInput
+            text={text}
+            sampleId={sampleId}
+            onText={(t) => {
+              setText(t);
+              setSampleId(null);
+            }}
+            onSample={(id, sampleText) => {
+              setSampleId(id);
+              setText(sampleText);
+            }}
+            disabled={running}
+          />
+        </div>
+        <div className="rise flex flex-col gap-4" style={{ animationDelay: "480ms" }}>
           <ModelPicker models={models ?? []} value={effectiveModel} onChange={setModelId} disabled={running} />
-          <Button onClick={() => start.mutate()} disabled={!canRun}>
+          <Button onClick={() => start.mutate()} disabled={!canRun} withArrow>
             {running ? "Extracting…" : "Run extraction"}
           </Button>
           {start.isError && <ErrorBanner message={(start.error as Error).message} />}

@@ -13,17 +13,23 @@ export function ModelPicker({
   disabled: boolean;
 }) {
   return (
-    <fieldset className="rounded-2xl border border-hairline bg-white p-4" disabled={disabled}>
+    <fieldset
+      className="border border-pale bg-white p-4 shadow-[0_14px_34px_-28px_rgba(5,28,44,0.5)]"
+      disabled={disabled}
+    >
       <legend className="sr-only">Model</legend>
-      <div className="eyebrow mb-2.5">Model</div>
+      <div className="eyebrow mb-3">Model</div>
       <div className="flex flex-col gap-1.5" role="radiogroup" aria-label="Extraction model">
         {models.map((m) => (
           <label
             key={m.id}
-            className={`flex cursor-pointer items-center justify-between rounded-md border px-3 py-2 transition-colors ${
-              value === m.id ? "border-cobalt bg-cobalt/5" : "border-hairline hover:border-cobalt/40"
+            className={`relative flex cursor-pointer items-center justify-between px-3 py-2.5 transition-colors ${
+              value === m.id
+                ? "bg-white shadow-[0_14px_30px_-22px_rgba(30,58,92,0.5)] ring-1 ring-pale"
+                : "hover:bg-wash"
             }`}
           >
+            {value === m.id && <span className="absolute inset-y-0 left-0 w-[3px] bg-cobalt" aria-hidden />}
             <span className="flex items-center gap-2.5">
               <input
                 type="radio"
@@ -34,11 +40,13 @@ export function ModelPicker({
               />
               <span className="font-schibsted text-[13.5px] text-ink">{m.label}</span>
             </span>
-            <span className="font-fragment text-[10px] text-bodyslate">{m.cost}</span>
+            <span className="font-fragment text-[10px] uppercase tracking-[0.12em] text-body/60">
+              {m.cost}
+            </span>
           </label>
         ))}
       </div>
-      <p className="mt-3 text-[12px] leading-relaxed text-bodyslate">
+      <p className="mt-3 text-[12px] leading-relaxed text-body">
         Same pipeline, same schema — swapping models is a one-string config change.
       </p>
     </fieldset>

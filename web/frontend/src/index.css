@@ -1,52 +1,149 @@
 @import "tailwindcss";
 
-/* Stello brand tokens — mirrors /Users/menganwang/Stello/DESIGN.md */
+/* Stello-Demos design language — tokens mirrored from Stello-Demos/app/globals.css */
 @theme {
   --color-cobalt: #2251ff;
-  --color-cobalt-press: #1a3cd0;
-  --color-navy: #041330;
+  --color-cobalt-hover: #1a3cd0;
   --color-ink: #051c2c;
-  --color-cloud: #eef3fb;
-  --color-hairline: #e2e8f0;
-  --color-slateblue: #a9c4e8;
-  --color-bodyslate: #48566b;
+  --color-body: #48566b;
+  --color-line: #e2e8f0;
+  --color-navy: #1e3a5c;
+  --color-navy-deep: #041330;
+  --color-slate: #a9c4e8;
+  --color-canvas: #f3f6fb;
+  --color-mist: #eef5fa;
+  --color-pale: #cdd9f5;
+  --color-wash: #f8fbff;
+  --color-ok: #1c7d4d;
+  --color-warn: #f5b544;
+  --color-flag: #c0392b;
 
-  /* functional states — muted, never competing with cobalt */
-  --color-pass: #2f7d4f;
-  --color-flag: #b4452f;
-  --color-flag-bg: #fdf3f0;
-
-  --font-newsreader: "Newsreader", serif;
+  --font-newsreader: "Newsreader", ui-serif, Georgia, serif;
   --font-sans: "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
   --font-schibsted: "Schibsted Grotesk", ui-sans-serif, system-ui, sans-serif;
   --font-fragment: "Fragment Mono", ui-monospace, monospace;
 
-  --ease-settle: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-stello: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  @apply bg-white text-ink font-sans antialiased;
+  @apply bg-canvas text-body font-sans antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button,
+a,
+select {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .eyebrow {
-  @apply font-fragment text-[10px] uppercase tracking-[0.08em] text-bodyslate;
+  @apply font-fragment text-[11px] font-normal uppercase tracking-[0.2em] text-cobalt;
 }
 
-.rise {
-  animation: rise 0.5s var(--ease-settle) both;
-}
+/* --- keyframes --- */
 @keyframes rise {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(18px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes scan {
+  from {
+    transform: translateX(-110%);
+  }
+  to {
+    transform: translateX(410%);
+  }
+}
+@keyframes glowPulse {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* --- animation utilities --- */
+.rise {
+  animation: rise 0.9s var(--ease-stello) both;
+}
+.pop-in {
+  animation: popIn 0.5s var(--ease-pop) both;
+}
+.fade-in {
+  animation: fadeIn 0.8s ease both;
+}
+.scan-bar {
+  animation: scan 1.6s ease-in-out infinite;
+}
+
+/* --- texture / effect utilities --- */
+.node-glow {
+  box-shadow:
+    0 0 0 1px rgba(34, 81, 255, 0.55),
+    0 18px 40px -18px rgba(34, 81, 255, 0.55),
+    0 0 26px -6px rgba(34, 81, 255, 0.4);
+}
+.dot-grid {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.09) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+.dot-grid-light {
+  background-image: radial-gradient(rgba(5, 28, 44, 0.07) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.thin-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.thin-scroll::-webkit-scrollbar-thumb {
+  background: #d4ddf0;
+  border-radius: 99px;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .rise {
-    animation: none;
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
   }
 }

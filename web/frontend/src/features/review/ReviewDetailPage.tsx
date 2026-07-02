@@ -35,29 +35,29 @@ export function ReviewDetailPage() {
   if (!item) return <EmptyState title="Review item not found" />;
 
   return (
-    <div className="rise mx-auto max-w-6xl">
+    <div className="pop-in mx-auto max-w-6xl">
       <Link
         to="/review"
-        className="mb-5 inline-flex items-center gap-1.5 font-schibsted text-[14px] text-bodyslate hover:text-ink"
+        className="mb-5 inline-flex items-center gap-1.5 font-schibsted text-[14px] text-body hover:text-ink"
       >
         <ArrowLeft size={15} aria-hidden /> Back to queue
       </Link>
 
       <div className="mb-6 flex flex-wrap items-center gap-3">
-        <h1 className="font-newsreader text-3xl leading-[0.98] tracking-[-0.02em]">
+        <h1 className="font-newsreader text-[2rem] font-normal leading-[1.04] tracking-[-0.01em] text-ink">
           {item.submission.principal?.name ?? "Unknown principal"}
         </h1>
-        <Badge tone={item.status === "pending" ? "flag" : "pass"}>{item.status}</Badge>
+        <Badge tone={item.status === "pending" ? "flag" : "ok"}>{item.status}</Badge>
         <Badge tone="neutral">{item.model_id}</Badge>
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <Card className="max-h-[620px] overflow-y-auto bg-cloud/30">
+        <div className="thin-scroll max-h-[620px] overflow-y-auto border border-pale bg-wash p-6">
           <div className="eyebrow mb-3">Source document</div>
-          <pre className="whitespace-pre-wrap font-fragment text-[12px] leading-relaxed text-bodyslate">
+          <pre className="whitespace-pre-wrap font-fragment text-[12px] leading-relaxed text-body">
             {item.document_text}
           </pre>
-        </Card>
+        </div>
 
         <div className="flex flex-col gap-3.5">
           <div className="eyebrow">Flagged fields · {item.flagged_fields.length}</div>
@@ -66,7 +66,7 @@ export function ReviewDetailPage() {
             return (
               <Card key={f.path} className="!p-4">
                 <div className="mb-2 flex items-center justify-between gap-3">
-                  <span className="font-fragment text-[11px] text-bodyslate">{f.path}</span>
+                  <span className="font-fragment text-[11px] text-body">{f.path}</span>
                   <ConfidenceBar value={f.confidence} />
                 </div>
                 <div className="mb-3 font-schibsted text-[15px] font-medium text-ink">
@@ -74,7 +74,7 @@ export function ReviewDetailPage() {
                 </div>
 
                 {decision ? (
-                  <p className="flex items-center gap-1.5 text-[13px] text-pass">
+                  <p className="flex items-center gap-1.5 text-[13px] text-ok">
                     <Check size={14} aria-hidden />
                     {decision.action === "approve"
                       ? "Approved as extracted"
@@ -95,7 +95,7 @@ export function ReviewDetailPage() {
                       onChange={(e) => setOverrides({ ...overrides, [f.path]: e.target.value })}
                       placeholder="Corrected value"
                       aria-label={`Override value for ${f.path}`}
-                      className="min-w-0 flex-1 rounded-md border border-hairline px-3 py-1.5 text-[13px] focus:border-cobalt focus:outline-none"
+                      className="min-w-0 flex-1 border border-line bg-wash px-3 py-1.5 text-[13px] focus:border-cobalt focus:outline-none"
                     />
                     <Button
                       variant="ghost"
@@ -118,7 +118,7 @@ export function ReviewDetailPage() {
           })}
 
           {item.status === "resolved" && (
-            <p className="rounded-md bg-pass/10 px-4 py-3 text-[13.5px] text-pass">
+            <p className="border border-ok/25 bg-ok/5 px-4 py-3 text-[13.5px] text-ok">
               All flagged fields decided. In production this decision record is the audit-trail entry — and
               the corrected values become a new labeled training pair.
             </p>
