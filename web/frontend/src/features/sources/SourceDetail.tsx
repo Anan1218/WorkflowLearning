@@ -13,7 +13,7 @@ const PII_LABEL: Record<SourceConfig["piiClass"], { label: string; tone: "neutra
 export function SourceDetail({ source, extraMins }: { source: SourceConfig; extraMins: number }) {
   const pii = PII_LABEL[source.piiClass];
   return (
-    <Card tier="stage" className="pop-in !p-5">
+    <Card tier="stage" className="pop-in min-h-full !p-5">
       <div className="mb-1 flex items-center justify-between gap-2">
         <h3 className="font-newsreader text-[1.2rem] leading-tight text-ink">{source.name}</h3>
         {source.direction === "read-write" ? (

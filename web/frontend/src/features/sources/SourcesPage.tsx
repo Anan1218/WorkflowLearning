@@ -91,12 +91,14 @@ export function SourcesPage() {
             </span>
           </div>
 
-          {/* map + detail, fills remaining height, no page scroll */}
-          <div className="grid min-h-0 flex-1 grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
-            <IntegrationMap selectedId={selectedId} onSelect={setSelectedId} tier={tier} />
-            <div className="thin-scroll min-h-0 overflow-y-auto">
-              {selected && <SourceDetail source={selected} extraMins={extraMins} />}
+          {/* map + detail, fills remaining height exactly - detail scrolls internally */}
+          <div className="flex min-h-0 flex-1 flex-col gap-5 pb-1 lg:flex-row lg:overflow-hidden">
+            <div className="min-h-[420px] lg:min-h-0 lg:min-w-0 lg:flex-1">
+              <IntegrationMap selectedId={selectedId} onSelect={setSelectedId} tier={tier} />
             </div>
+            <aside className="thin-scroll min-h-0 lg:w-[340px] lg:shrink-0 lg:overflow-y-auto">
+              {selected && <SourceDetail source={selected} extraMins={extraMins} />}
+            </aside>
           </div>
         </div>
       )}
