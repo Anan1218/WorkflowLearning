@@ -4,7 +4,7 @@ A reference architecture (and hands-on learning project) for **AI submission ing
 
 Built to be the thing you point at and say: *this is how we build.* Schema-first, model-agnostic, observable, self-hostable. Runs entirely on **synthetic data** so there's ground truth to measure against.
 
-> Domain context, the business case, and the full research writeup live in [`docs/`](docs/).
+> Domain context, the business case, and the full research writeup live in [`docs/`](docs/). Plain-language notes on every tooling decision (and the alternatives considered) live in [`LESSONS.md`](LESSONS.md). Execution tracker: [`TODO.md`](TODO.md).
 
 ## The stack (and why)
 
@@ -46,6 +46,52 @@ evals/cases/       committed hand-labeled examples
 experiments/       phase-2 DSPy offline optimizer (optional)
 docs/              RLI prep brief + submission-ingestion research
 ```
+
+## Enterprise readiness checklist (SOC 2 / regulated-carrier grade)
+
+The pipeline above is maybe 20% of an enterprise deployment - the rest is the wrapper around it: access, secrets, audit, data lifecycle, vendor management, and an org-level compliance program. This is the honest gap analysis. Checked items are covered by the current design; unchecked items are what a real deployment for an insurance carrier (GLBA NPI, NAIC model-governance expectations, SOC 2 Type II) still needs.
+
+### Already in the bones
+- [x] Self-hostable - deploys in the customer's cloud, no mandatory SaaS dependency
+- [x] Observability via OTel -> Langfuse, with self-host as an env flip
+- [x] Secrets gitignored and env-injected (dev-grade)
+- [x] Synthetic data only in dev - no real PII in this repo
+- [x] Eval harness as processing-integrity evidence
+- [x] Design assumes confidence thresholds + human-in-the-loop review
+
+### 1. Data protection
+- [ ] TLS everywhere in transit; encryption at rest (DB + object storage) with keys in a KMS
+- [ ] Secrets in a secrets manager (Vault / AWS Secrets Manager / Doppler) in prod - not `.env`; rotation + short-lived credentials
+- [ ] Data residency (US-only), dev/stage/prod separation, masked/synthetic data in non-prod
+
+### 2. PII / NPI handling (GLBA)
+- [ ] Data classification + PII detection & redaction *before* content hits the LLM, logs, or traces - or self-host Langfuse so nothing leaves (traces capture document content otherwise)
+- [ ] Retention schedules, secure deletion, right-to-delete
+
+### 3. AI / model governance (NAIC Model Bulletin, NYDFS-style)
+- [ ] Model terms in writing: zero data retention, no training on customer data (enterprise agreement or VPC/self-hosted model)
+- [ ] Prompt-injection defense - extracted document text is untrusted input, treated as data, never as instructions
+- [ ] Model risk management docs: model/prompt versioning + pinning, accuracy validation, bias/fairness testing, adverse-action explainability (the eval harness is the evidence engine)
+- [ ] Human-in-the-loop gate on consequential decisions - never auto-decline without a person (designed, not yet enforced in code)
+
+### 4. Auditability / decision lineage
+- [ ] Immutable, tamper-evident audit trail: who/what/when, plus per-extraction model version, prompt version, inputs, output, confidence, and any human override. Observability != audit log - both are required.
+
+### 5. Reliability & processing integrity
+- [ ] Jobs/worker queue with retries, idempotency, timeouts, graceful degradation, rate-limit handling
+- [ ] Backups + *tested* restore, DR plan, health checks, monitoring/alerting (SIEM/log aggregation)
+- [ ] CI/CD with the eval suite as a merge gate, PR review, no direct prod edits (change management)
+
+### 6. Infra / app security
+- [ ] VPC + private networking, no public data endpoints, least-privilege IAM, WAF
+- [ ] Dependency scanning (SCA), SAST, container image scanning in CI; pinned dependencies
+- [ ] SSO/SAML + RBAC + MFA for all human access
+
+### 7. Org-level program (SOC 2 is an attestation, not a feature)
+- [ ] Written policies: infosec, access control, incident response, change management, vendor management, BCP/DR
+- [ ] Security-awareness training, background checks, annual risk assessment, annual pen test
+- [ ] Continuous evidence collection (Vanta / Drata / Secureframe) + auditor; target **Type II** (effectiveness over 6-12 months) - that's what enterprises actually ask for
+- [ ] Subprocessor management: DPA + SOC 2 report from every third party touching data (model provider, Langfuse/Supabase if hosted). Self-hosting Langfuse + Postgres shrinks this surface.
 
 ## Roadmap (production IDP, research-flagged)
 

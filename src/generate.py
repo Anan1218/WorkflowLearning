@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from pathlib import Path
 
 import instructor
@@ -24,7 +25,7 @@ from src.trace import flush, setup_tracing, span
 
 # Swap this one string to change model/provider (Instructor routes it).
 # Cheaper for high volume: "anthropic/claude-sonnet-5" or "anthropic/claude-haiku-4-5".
-MODEL = "anthropic/claude-opus-4-8"
+MODEL = os.getenv("MODEL", "openrouter/deepseek/deepseek-chat-v3.1")
 
 DATA = Path(__file__).resolve().parent.parent / "data" / "synthetic"
 

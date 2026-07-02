@@ -12,6 +12,7 @@ Run:  python -m src.extract data/synthetic/val/000.txt
 
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
 
@@ -21,8 +22,9 @@ from src.schemas import SuretySubmission
 from src.trace import flush, setup_tracing, span
 
 # One string = the model swap (Instructor routes via LiteLLM-style provider prefixes).
-# Try "openai/gpt-5.1" or "anthropic/claude-haiku-4-5" and re-run evals to compare.
-MODEL = "anthropic/claude-opus-4-8"
+# Override per run without editing code: MODEL="anthropic/claude-sonnet-5" python -m evals.harness
+# Default is deliberately cheap (~$0.3/M input); frontier models are the override, not the default.
+MODEL = os.getenv("MODEL", "openrouter/deepseek/deepseek-chat-v3.1")
 
 SYSTEM = """You extract structured data from surety-bond submissions for underwriting.
 Extract only what is present in the document. Do not invent values - if a field is
