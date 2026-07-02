@@ -54,6 +54,11 @@ Demo dashboard shipped 2026-07-02 (`web/`: FastAPI + React monorepo, vertical sl
 - [x] **Approval / review dashboard** (demo-grade) - low-confidence fields auto-queue; doc + fields side by side; approve/override per field recorded with timestamps (the audit-trail seed)
 - [x] **Ops/quality view** (demo-grade) - per-field accuracy chart + case matrix from `evals/results/*.json`
 - [ ] **Data plane UI** - needs the Phase 5 Postgres data plane first: browse all submissions with status filters (received / extracted / needs review / approved)
+- [ ] **Data sources & sync view** (the "we thought far ahead" artifact) - a dashboard section mapping every system the pipeline would connect to and how data flows:
+      - *Source inventory*: submission email inbox, agency management systems (Applied Epic / Vertafore AMS360), carrier policy admin (clearance/dedup lookups), document management, and external enrichment (D&B / business-credit, OSHA incidents, court records & liens for surety)
+      - *Per source*: connection type (webhook / API poll / SFTP drop / manual upload), pull cadence (real-time vs 15-min vs nightly), last-sync + health status, direction (read-only vs write-back), and what PII classification flows through it (ties to checklist #2 and the subprocessor list #7)
+      - *Design-only first*: build the view with mocked source configs before any real connector exists - it's a pitch artifact showing integration thinking; real connectors arrive one at a time in engagements
+      - Data lineage hook: every extracted field should eventually cite its source system + document (feeds the audit trail, #4)
 - [ ] Overrides become labeled data - wire review decisions into new (doc, ground_truth) pairs feeding the eval set
 - [ ] Production-grade versions of all of the above once the Phase 5 data plane exists (real DB, auth, multi-user)
 
