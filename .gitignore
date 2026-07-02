@@ -15,3 +15,8 @@ data/synthetic/
 
 # OS
 .DS_Store
+
+# dashboard
+web/frontend/node_modules/
+web/frontend/dist/
+data/app_state/

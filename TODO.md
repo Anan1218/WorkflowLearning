@@ -49,12 +49,13 @@ These are exercises in the enterprise wrapper, in rough order of learning value:
 
 ## Phase 6 - Product surface (the UIs we'd actually use)
 
-If we were really building this up, the pipeline needs faces. Build them as if for ourselves - dogfood-grade, not mockups. Needs the Phase 5 data plane (Postgres/Supabase) underneath.
+Demo dashboard shipped 2026-07-02 (`web/`: FastAPI + React monorepo, vertical slices, Docker; Stello DESIGN.md styling): live extract demo (paste/upload/PDF/samples + model picker), pipeline visualization, evals viewer, HITL review queue with per-field approve/override persisted to `data/app_state/`.
 
-- [ ] **Data plane UI** - browse submissions: list view with status (received / extracted / needs review / approved), detail view showing the raw document next to the extracted `SuretySubmission`, per-field confidence visible. Filter by bond type, status, date.
-- [ ] **Approval / review dashboard** - the human-in-the-loop queue: submissions below the confidence threshold land here; reviewer sees doc + extraction side by side, low-confidence fields highlighted, can accept or override per field. Every decision writes to the audit trail (checklist item #4) - approve/override *is* the audit event.
-- [ ] Overrides become labeled data - each human correction is a new (doc, ground_truth) pair that feeds the eval set and (Phase 4) the optimizer. Close the loop.
-- [ ] **Ops/quality dashboard** (lighter priority) - eval accuracy over time, per-field error rates, throughput, cost per doc. Langfuse covers traces; this is the business-metrics layer on top.
+- [x] **Approval / review dashboard** (demo-grade) - low-confidence fields auto-queue; doc + fields side by side; approve/override per field recorded with timestamps (the audit-trail seed)
+- [x] **Ops/quality view** (demo-grade) - per-field accuracy chart + case matrix from `evals/results/*.json`
+- [ ] **Data plane UI** - needs the Phase 5 Postgres data plane first: browse all submissions with status filters (received / extracted / needs review / approved)
+- [ ] Overrides become labeled data - wire review decisions into new (doc, ground_truth) pairs feeding the eval set
+- [ ] Production-grade versions of all of the above once the Phase 5 data plane exists (real DB, auth, multi-user)
 
 ## Accounts / external setup (running list)
 

@@ -1,0 +1,83 @@
+import { ArrowRight, FileText, ScanSearch, ShieldCheck, SlidersHorizontal, UserCheck } from "lucide-react";
+
+import { Card, PageHeader } from "../../components/ui";
+
+const STAGES = [
+  {
+    icon: FileText,
+    title: "Intake",
+    body: "Broker emails, ACORD forms, WIP schedules, financial statements — messy text in. PDF text-layer today; OCR + image hybrid is the production path for scans.",
+  },
+  {
+    icon: ScanSearch,
+    title: "Extract",
+    body: "Instructor + Pydantic force the model's output into a typed SuretySubmission. Invalid output is automatically re-asked — the schema is the contract.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Validate",
+    body: "Business rules run as plain code: bond amounts positive, FEIN shapes, WIP arithmetic. Deterministic, testable, no model involved.",
+  },
+  {
+    icon: SlidersHorizontal,
+    title: "Confidence gate",
+    body: "The model scores its own certainty per field. Anything below 0.75 — or unreported — cannot proceed unattended.",
+  },
+  {
+    icon: UserCheck,
+    title: "Human review",
+    body: "Flagged fields queue for an underwriter. Approve or override per field; every decision is an audit-trail entry and a new labeled training pair.",
+  },
+];
+
+export function PipelinePage() {
+  return (
+    <div className="rise mx-auto max-w-5xl">
+      <PageHeader
+        eyebrow="Architecture"
+        title="A pipeline you can read on a whiteboard."
+        sub="Deterministic steps with LLMs inside some of them — plain typed Python, no framework. The parts that matter for a carrier: every step is testable, every decision is audited, and no consequential action happens without a person."
+      />
+
+      <ol className="flex flex-col gap-3">
+        {STAGES.map(({ icon: Icon, title, body }, i) => (
+          <li key={title} className="flex items-stretch gap-4">
+            <div className="flex flex-col items-center pt-6">
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-cobalt/10 text-cobalt">
+                <Icon size={16} aria-hidden />
+              </span>
+              {i < STAGES.length - 1 && <span className="mt-2 w-px flex-1 bg-hairline" aria-hidden />}
+            </div>
+            <Card className="mb-1 flex-1">
+              <div className="mb-1 flex items-center gap-2">
+                <span className="font-fragment text-[10px] text-bodyslate">0{i + 1}</span>
+                <h2 className="font-schibsted text-[16px] font-semibold text-ink">{title}</h2>
+              </div>
+              <p className="max-w-2xl text-[14.5px] leading-[1.6] text-bodyslate">{body}</p>
+            </Card>
+          </li>
+        ))}
+      </ol>
+
+      <div className="mt-10 rounded-2xl bg-navy px-8 py-9 text-white">
+        <div className="font-fragment text-[10px] uppercase tracking-[0.08em] text-slateblue">
+          The model-agnostic seam
+        </div>
+        <p className="mt-3 max-w-3xl font-newsreader text-2xl leading-snug tracking-[-0.01em]">
+          Swapping models is a one-string configuration change — not a rewrite.
+        </p>
+        <div className="mt-5 flex flex-wrap items-center gap-3 font-fragment text-[12px] text-slateblue">
+          <code className="rounded bg-white/10 px-3 py-1.5">openrouter/deepseek-chat-v3.1</code>
+          <ArrowRight size={14} aria-hidden />
+          <code className="rounded bg-white/10 px-3 py-1.5">anthropic/claude-sonnet-5</code>
+          <ArrowRight size={14} aria-hidden />
+          <code className="rounded bg-white/10 px-3 py-1.5">bedrock / azure-foundry / vertex</code>
+        </div>
+        <p className="mt-5 max-w-3xl text-[14px] leading-[1.6] text-slateblue">
+          Develop and benchmark on inexpensive models; deploy on whatever endpoint your compliance team
+          approves, inside your own cloud. The pipeline, schema, evals, and traces do not change.
+        </p>
+      </div>
+    </div>
+  );
+}

@@ -33,6 +33,23 @@ python -m evals.harness                        # score per-field accuracy vs gro
 
 Swap models by changing the `MODEL` string in `src/extract.py` (e.g. `"openai/gpt-5.1"`) and re-running `evals.harness` - the pipeline doesn't change.
 
+## Run the demo dashboard
+
+A monorepo web app (FastAPI + React, vertical-slice architecture in `web/`) that puts a face on the pipeline: paste/upload a document (or pick a labeled sample), pick a model, watch the extraction run, see per-field confidence, and work the human-review queue. Follows the Stello DESIGN.md.
+
+```bash
+docker compose up --build        # -> http://localhost:8000  (reads .env for keys)
+```
+
+Dev loop (hot reload):
+
+```bash
+.venv/bin/uvicorn web.api.main:app --reload --port 8000   # API
+cd web/frontend && npm install && npm run dev              # UI on :5173, /api proxied
+```
+
+Notes: extraction jobs run in the background and the UI polls; low-confidence fields (< 0.75) auto-route to the Review queue (state in `data/app_state/`, survives restarts); the Evals page reads committed `evals/results/*.json` (produce more with `python -m evals.harness --save`); the model dropdown is allowlisted in `web/api/config.py` - the model-agnostic one-string swap, live.
+
 ## Layout
 
 ```

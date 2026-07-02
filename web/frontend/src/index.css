@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+/* Stello brand tokens — mirrors /Users/menganwang/Stello/DESIGN.md */
+@theme {
+  --color-cobalt: #2251ff;
+  --color-cobalt-press: #1a3cd0;
+  --color-navy: #041330;
+  --color-ink: #051c2c;
+  --color-cloud: #eef3fb;
+  --color-hairline: #e2e8f0;
+  --color-slateblue: #a9c4e8;
+  --color-bodyslate: #48566b;
+
+  /* functional states — muted, never competing with cobalt */
+  --color-pass: #2f7d4f;
+  --color-flag: #b4452f;
+  --color-flag-bg: #fdf3f0;
+
+  --font-newsreader: "Newsreader", serif;
+  --font-sans: "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-schibsted: "Schibsted Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-fragment: "Fragment Mono", ui-monospace, monospace;
+
+  --ease-settle: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+body {
+  @apply bg-white text-ink font-sans antialiased;
+}
+
+.eyebrow {
+  @apply font-fragment text-[10px] uppercase tracking-[0.08em] text-bodyslate;
+}
+
+.rise {
+  animation: rise 0.5s var(--ease-settle) both;
+}
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rise {
+    animation: none;
+  }
+}

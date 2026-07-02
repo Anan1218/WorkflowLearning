@@ -1,0 +1,19 @@
+{
+  "run_id": "2026-07-02_nemotron-3-super-120b-a12b-free",
+  "model": "openrouter/nvidia/nemotron-3-super-120b-a12b:free",
+  "timestamp": "2026-07-02T22:30:00+00:00",
+  "n_cases": 8,
+  "note": "Initial baseline, hand-transcribed. 8/9 cases scored (val/002 failed on max_tokens - reasoning model exhausted budget). Per-case field detail not captured on this run; re-run `python -m evals.harness --save` for full detail.",
+  "per_field": {
+    "principal.name": 1.0,
+    "principal.fein": 1.0,
+    "obligee.name": 1.0,
+    "bond_type": 0.875,
+    "bond_amount": 1.0,
+    "working_capital": 0.75,
+    "net_worth": 1.0,
+    "wip_total_contract_value": 1.0,
+    "OVERALL": 0.953125
+  },
+  "per_case": []
+}

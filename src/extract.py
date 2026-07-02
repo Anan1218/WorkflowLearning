@@ -33,10 +33,15 @@ field_confidences: 1.0 when the value is stated plainly, lower when you inferred
 guessed. Sum WIP contract amounts accurately. Flag anything ambiguous in `notes`."""
 
 
-def extract(document_text: str, client: instructor.Instructor | None = None) -> SuretySubmission:
+def extract(
+    document_text: str,
+    client: instructor.Instructor | None = None,
+    model: str | None = None,
+) -> SuretySubmission:
     """Document text -> validated SuretySubmission."""
-    client = client or instructor.from_provider(MODEL)
-    with span("extract.submission", model=MODEL, doc_chars=len(document_text)):
+    model = model or MODEL
+    client = client or instructor.from_provider(model)
+    with span("extract.submission", model=model, doc_chars=len(document_text)):
         return client.chat.completions.create(
             response_model=SuretySubmission,
             max_tokens=4096,
