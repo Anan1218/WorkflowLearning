@@ -93,6 +93,11 @@ select {
     opacity: 1;
   }
 }
+@keyframes flowDash {
+  to {
+    stroke-dashoffset: -24;
+  }
+}
 
 /* --- animation utilities --- */
 .rise {
@@ -106,6 +111,18 @@ select {
 }
 .scan-bar {
   animation: scan 1.6s ease-in-out infinite;
+}
+
+.flow-line {
+  stroke-dasharray: 6 6;
+  animation: flowDash 1.4s linear infinite;
+}
+.flow-line-slow {
+  stroke-dasharray: 4 8;
+  animation: flowDash 2.8s linear infinite reverse;
+}
+.pulse-dot {
+  animation: glowPulse 2s ease-in-out infinite;
 }
 
 /* --- texture / effect utilities --- */

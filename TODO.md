@@ -54,11 +54,9 @@ Demo dashboard shipped 2026-07-02 (`web/`: FastAPI + React monorepo, vertical sl
 - [x] **Approval / review dashboard** (demo-grade) - low-confidence fields auto-queue; doc + fields side by side; approve/override per field recorded with timestamps (the audit-trail seed)
 - [x] **Ops/quality view** (demo-grade) - per-field accuracy chart + case matrix from `evals/results/*.json`
 - [ ] **Data plane UI** - needs the Phase 5 Postgres data plane first: browse all submissions with status filters (received / extracted / needs review / approved)
-- [ ] **Data sources & sync view** (the "we thought far ahead" artifact) - a dashboard section mapping every system the pipeline would connect to and how data flows:
-      - *Source inventory*: submission email inbox, agency management systems (Applied Epic / Vertafore AMS360), carrier policy admin (clearance/dedup lookups), document management, and external enrichment (D&B / business-credit, OSHA incidents, court records & liens for surety)
-      - *Per source*: connection type (webhook / API poll / SFTP drop / manual upload), pull cadence (real-time vs 15-min vs nightly), last-sync + health status, direction (read-only vs write-back), and what PII classification flows through it (ties to checklist #2 and the subprocessor list #7)
-      - *Design-only first*: build the view with mocked source configs before any real connector exists - it's a pitch artifact showing integration thinking; real connectors arrive one at a time in engagements
-      - Data lineage hook: every extracted field should eventually cite its source system + document (feeds the audit trail, #4)
+- [x] **Data sources & sync view** (built 2026-07-02, demo-grade): `/sources` - animated integration map (14 sources → pipeline → data plane, flowing connectors), research-grounded inventory with honest provenance tags (confirmed RLI surfaces: My Contract Bond App / RLink / MyBondApp / Agent Portal; industry-standard enrichment: D&B, personal credit w/ FCRA notes, LexisNexis w/ its FCRA caveat, SoS UCC, PACER, SBA 994F, SAM.gov), RLI program filter (FirstStep / Next Step / Standard / SBA Capacity), per-source cadence/health/direction/PII class, detail panel with cadence rationale + subprocessor compliance notes, sync activity feed. Research: `docs/RLI-data-sources-research.md` (3 Codex deep-research passes, all cited)
+- [ ] Real connectors - built one at a time per engagement (email intake first; it's the Standard-tier reality)
+- [ ] Data lineage hook: every extracted field cites its source system + document (feeds the audit trail, #4)
 - [ ] Overrides become labeled data - wire review decisions into new (doc, ground_truth) pairs feeding the eval set
 - [ ] Production-grade versions of all of the above once the Phase 5 data plane exists (real DB, auth, multi-user)
 

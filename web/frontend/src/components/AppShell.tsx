@@ -1,4 +1,4 @@
-import { BarChart3, FileSearch, GitBranch, Inbox } from "lucide-react";
+import { BarChart3, Database, FileSearch, GitBranch, Inbox } from "lucide-react";
 import type { ReactNode } from "react";
 import { NavLink } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -8,6 +8,7 @@ import { api } from "../lib/api";
 const NAV = [
   { to: "/extract", label: "Extract", icon: FileSearch },
   { to: "/pipeline", label: "Pipeline", icon: GitBranch },
+  { to: "/sources", label: "Sources", icon: Database },
   { to: "/evals", label: "Evals", icon: BarChart3 },
   { to: "/review", label: "Review", icon: Inbox },
 ];
