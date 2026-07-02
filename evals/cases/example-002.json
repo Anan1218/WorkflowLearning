@@ -1,0 +1,25 @@
+{
+  "principal": {
+    "name": "Summit Mechanical Contractors Inc.",
+    "address": null,
+    "fein": "860994217"
+  },
+  "obligee": {
+    "name": "Arizona Registrar of Contractors",
+    "address": null,
+    "fein": null
+  },
+  "bond_type": "license_permit",
+  "bond_amount": 50000,
+  "working_capital": null,
+  "net_worth": null,
+  "wip_schedule": [],
+  "field_confidences": {
+    "principal.name": 1.0,
+    "principal.fein": 1.0,
+    "obligee.name": 1.0,
+    "bond_type": 1.0,
+    "bond_amount": 1.0
+  },
+  "notes": "Commercial surety (license bond); no WIP or financials provided."
+}

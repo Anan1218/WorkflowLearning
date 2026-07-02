@@ -1,0 +1,46 @@
+{
+  "principal": {
+    "name": "Riverbend Grading & Paving LLC",
+    "address": "1420 Delaware St, Cedar Falls IA",
+    "fein": "471183920"
+  },
+  "obligee": {
+    "name": "City of Cedar Falls",
+    "address": null,
+    "fein": null
+  },
+  "bond_type": "performance",
+  "bond_amount": 2400000,
+  "working_capital": 850000,
+  "net_worth": 3200000,
+  "wip_schedule": [
+    {
+      "project_name": "Cedar Falls St. Reconstruction Ph 2",
+      "contract_amount": 2400000,
+      "total_estimated_cost": 2010000,
+      "cost_to_date": null,
+      "percent_complete": 15,
+      "billings_to_date": 300000,
+      "over_under_billing": null
+    },
+    {
+      "project_name": "Blackhawk County Culvert Repairs",
+      "contract_amount": 680000,
+      "total_estimated_cost": 540000,
+      "cost_to_date": null,
+      "percent_complete": 60,
+      "billings_to_date": 455000,
+      "over_under_billing": null
+    }
+  ],
+  "field_confidences": {
+    "principal.name": 1.0,
+    "principal.fein": 1.0,
+    "obligee.name": 1.0,
+    "bond_type": 0.9,
+    "bond_amount": 1.0,
+    "working_capital": 0.8,
+    "net_worth": 0.8
+  },
+  "notes": "Working capital and net worth stated as approximate ('about', '~')."
+}

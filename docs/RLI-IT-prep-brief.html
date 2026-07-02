@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Stello x RLI Corp - Prep Brief</title>
+<style>
+  :root{
+    --ink:#14181f;
+    --muted:#5b6472;
+    --line:#dfe3ea;
+    --accent:#0f5fae;
+    --accent-soft:#eaf1fb;
+    --bg-soft:#f6f8fb;
+  }
+  *{box-sizing:border-box;}
+  @page{ size:Letter; margin:0.5in 0.55in; }
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
+    color:var(--ink);
+    font-size:10.2px;
+    line-height:1.38;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
+  .page{ padding:0; }
+  .page-break{ page-break-before:always; }
+
+  /* Masthead */
+  .masthead{
+    display:flex; justify-content:space-between; align-items:flex-end;
+    border-bottom:2.5px solid var(--accent);
+    padding-bottom:7px; margin-bottom:11px;
+  }
+  .brand{ font-size:20px; font-weight:800; letter-spacing:-0.4px; }
+  .brand .x{ color:var(--accent); font-weight:800; }
+  .masthead .sub{ font-size:9px; color:var(--muted); margin-top:2px; }
+  .masthead .meta{ text-align:right; font-size:8.6px; color:var(--muted); line-height:1.45; }
+  .masthead .meta b{ color:var(--ink); }
+
+  h2.section{
+    font-size:11.5px; font-weight:800; letter-spacing:0.2px;
+    margin:13px 0 6px; padding-bottom:3px;
+    border-bottom:1px solid var(--line); text-transform:uppercase;
+  }
+  h2.section .tag{ color:var(--accent); }
+  .lead{ margin:0 0 4px; }
+  .lead b{ color:var(--ink); }
+
+  .cols{ column-count:2; column-gap:16px; }
+  ul{ margin:3px 0 6px; padding-left:15px; }
+  li{ margin:0 0 3.5px; }
+  li b{ color:var(--ink); }
+  p{ margin:0 0 6px; }
+  .muted{ color:var(--muted); }
+
+  /* Callout row of cards */
+  .cards{ display:flex; gap:8px; margin:4px 0 2px; }
+  .card{
+    flex:1; background:var(--bg-soft); border:1px solid var(--line);
+    border-radius:6px; padding:7px 8px;
+  }
+  .card h4{ margin:0 0 3px; font-size:9.4px; text-transform:uppercase; letter-spacing:0.3px; color:var(--accent); }
+  .card p{ margin:0; font-size:9.3px; }
+
+  .talk{
+    background:var(--accent-soft); border:1px solid #cfe0f6; border-radius:7px;
+    padding:8px 11px; margin:4px 0 2px;
+  }
+  .talk ul{ margin:2px 0 0; }
+
+  /* Glossary */
+  .gloss{ column-count:2; column-gap:18px; font-size:9.3px; }
+  .gloss div{ margin-bottom:3px; break-inside:avoid; }
+  .gloss b{ color:var(--accent); }
+
+  /* Architecture flow */
+  .flow{ font-size:9.3px; }
+  .flow div{ margin-bottom:3px; padding-left:16px; text-indent:-16px; }
+  .flow .n{ display:inline-block; width:14px; color:var(--accent); font-weight:800; }
+
+  .kv{ font-size:9.4px; }
+  .kv b{ color:var(--ink); }
+
+  a{ color:var(--accent); text-decoration:none; }
+  .res{ font-size:9.2px; }
+  .res li{ margin-bottom:3px; }
+  .res .u{ color:var(--muted); word-break:break-all; }
+
+  .footnote{
+    margin-top:12px; padding-top:6px; border-top:1px solid var(--line);
+    font-size:8.2px; color:var(--muted);
+  }
+  .pill{ display:inline-block; background:var(--accent); color:#fff; font-size:8px; font-weight:700;
+    padding:1.5px 6px; border-radius:20px; vertical-align:middle; letter-spacing:0.3px; }
+</style>
+</head>
+<body>
+
+<!-- ============ PAGE 1 ============ -->
+<div class="page">
+  <div class="masthead">
+    <div>
+      <div class="brand">Stello <span class="x">x</span> RLI Corp</div>
+      <div class="sub">AI Submission Ingestion &amp; Triage &middot; Prep brief for IT-leadership conversation</div>
+    </div>
+    <div class="meta">
+      <div><b>Prepared for:</b> RLI IT leadership intro</div>
+      <div><b>Lines in scope:</b> Surety, transportation, specialty P&amp;C</div>
+      <div><b>Status:</b> Early exploration, no commitments</div>
+    </div>
+  </div>
+
+  <h2 class="section">The opportunity <span class="tag">in one line</span></h2>
+  <p class="lead"><b>What RLI wants:</b> get submissions and policies in the door, read them, structure the data, decide which to work first, route to the right underwriter, and auto-adjudicate the simple ones. This is a named, well-mapped pattern in commercial underwriting: <b>submission ingestion and triage</b>, inside the broader submit-to-quote workflow.</p>
+  <div class="cards">
+    <div class="card"><h4>Why build in-house</h4><p>Generic platforms work "okay" then need heavy modification for surety and specialty lines. Owning the system fits RLI's unique book better than any catch-all.</p></div>
+    <div class="card"><h4>Why now</h4><p>Agentic tooling has lowered the build barrier dramatically. The calculus has shifted from "buy a vendor" toward "build our own, with the right partner."</p></div>
+    <div class="card"><h4>Where Stello fits</h4><p>An embedded, AI-native build team: US engineers who deploy custom systems on RLI's stack, not a consulting firm learning AI on the job.</p></div>
+  </div>
+
+  <h2 class="section">Talk track <span class="tag">&middot; discovery questions to ask their IT team</span></h2>
+  <div class="talk">
+    <ul>
+      <li><b>Intake:</b> Is submission intake still email-first today, or do brokers use portals / APIs / SFTP? What volume per month, per line?</li>
+      <li><b>Systems of record:</b> Where does submission and policy data live now, and how many separate systems does an underwriter touch to clear one risk?</li>
+      <li><b>Legacy surface:</b> Which cores are green-screen / mainframe (you referenced "WINS"), and which of them expose an API versus needing screen-level automation?</li>
+      <li><b>Surety data:</b> Where do Work-in-Progress schedules and contractor financials land today, and how are they keyed in and reconciled?</li>
+      <li><b>Current automation:</b> What is your straight-through / auto-adjudication rate now, and what have you already automated that we should build around, not replace?</li>
+      <li><b>Guardrails:</b> What are your data-residency, security, and model-governance requirements for anything AI-driven in underwriting?</li>
+    </ul>
+  </div>
+
+  <h2 class="section">How we position <span class="tag">&middot; the four differentiators</span></h2>
+  <div class="cols">
+    <ul>
+      <li><b>The data plane is the moat.</b> Point solutions are easy; the hard, durable value is unifying siloed systems-of-record into one queryable model. Once that layer exists, every future initiative (multi-department, cross-line) builds on top of it far faster.</li>
+      <li><b>US-based engineering, two dedicated per deployment.</b> Bay-Area engineers who have shipped in production environments, embedded weekly with your team. Not offshore-arbitraged talent, and not a big-firm bench.</li>
+      <li><b>You own everything.</b> Data, prompts, decision logic, and knowledge bases stay in-house and belong to RLI. Nothing is routed to a foundation-model vendor to train on. Built to your security bar.</li>
+      <li><b>Custom for surety and specialty.</b> The schema and rules are built for how RLI actually underwrites, which is exactly where a one-size platform underperforms.</li>
+    </ul>
+  </div>
+
+  <h2 class="section">Vocabulary <span class="tag">&middot; so it reads native to underwriters</span></h2>
+  <div class="gloss">
+    <div><b>Submission</b> broker request to quote a risk (email + attachments).</div>
+    <div><b>Clearance / dedup</b> is this new, a duplicate, or tied to an existing deal; plus broker-authority check.</div>
+    <div><b>ACORD forms</b> the standard commercial application forms and data standard.</div>
+    <div><b>Loss runs</b> the insured's historical claims report.</div>
+    <div><b>SOV</b> Statement of Values: schedule of insured assets and values.</div>
+    <div><b>Appetite</b> the set of risks the carrier wants; triage scores fit against it.</div>
+    <div><b>Declination</b> a decline-to-quote (modern systems auto-decline out-of-appetite).</div>
+    <div><b>Bind</b> agreeing to provide coverage; the deal closes.</div>
+    <div><b>STP</b> straight-through processing: full automation, no human touch.</div>
+    <div><b>Underwriting workbench</b> the underwriter's cockpit that consolidates submissions for clearance and workflow.</div>
+    <div><b>Submit-to-quote</b> the end-to-end flow, split into submit-to-triage and triage-to-quote.</div>
+  </div>
+
+  <div class="footnote">
+    Prep brief, page 1 of 2. Positioning language above is client-safe. Grounded in verified research (see page 2).
+  </div>
+</div>
+
+<!-- ============ PAGE 2 ============ -->
+<div class="page page-break">
+  <div class="masthead">
+    <div>
+      <div class="brand">Reference <span class="x">&middot;</span> the technical backbone</div>
+      <div class="sub">What to be ready to whiteboard if their IT team goes deep</div>
+    </div>
+    <div class="meta">
+      <div><span class="pill">VERIFIED</span></div>
+      <div style="margin-top:3px;">25 sources &middot; 24/25 claims<br>adversarially confirmed</div>
+    </div>
+  </div>
+
+  <h2 class="section">Reference architecture <span class="tag">&middot; eight swappable layers</span></h2>
+  <div class="flow">
+    <div><span class="n">1.</span><b>Intake.</b> Multi-channel by design: monitored mailbox (email is dominant) plus SFTP, API, upload UI. Attachments burst to object storage and a queue.</div>
+    <div><span class="n">2.</span><b>Classification.</b> Label each attachment (ACORD 125 vs loss run vs SOV vs financials vs WIP) using few-shot LLM prompting.</div>
+    <div><span class="n">3.</span><b>IDP / OCR.</b> Read pixels/PDF into text, tables, key-value pairs, handwriting (e.g. AWS Textract). Clean digital PDFs can go straight to a multimodal LLM.</div>
+    <div><span class="n">4.</span><b>LLM extraction.</b> Map read text into a typed JSON schema via tool-use / structured output, with per-field confidence.</div>
+    <div><span class="n">5.</span><b>Normalization / data plane (the moat).</b> Collapse heterogeneous inputs into one canonical "golden schema" per line. This is the layer a generic vendor cannot tailor to surety for you.</div>
+    <div><span class="n">6.</span><b>Clearance / dedup.</b> Entity resolution against the existing book (named insured, FEIN, address, broker) to decide new vs duplicate vs renewal.</div>
+    <div><span class="n">7.</span><b>Appetite / scoring.</b> Encode RLI guidelines as rules + a model. Phased rollout: capture 5-7 key fields to filter at intake, expand to 10-20 with enrichment, then full risk profiling.</div>
+    <div><span class="n">8.</span><b>Routing, HITL, STP, write-back.</b> Auto-decline clear misses, STP the clean simple risks, route the rest to a confidence-ranked queue, then write structured output back to legacy cores (API where possible, RPA / 3270 screen automation where not).</div>
+  </div>
+
+  <h2 class="section">Surety &amp; specialty <span class="tag">&middot; why in-house is justified</span></h2>
+  <div class="cols">
+    <ul>
+      <li><b>Three-party structure:</b> the surety guarantees the obligee that the principal will perform. Two categories: contract and commercial. Principal, obligee, bond type, and bond amount are first-class entities that do not exist in a P&amp;C schema.</li>
+      <li><b>The WIP schedule is the crown jewel.</b> The Work-in-Progress schedule (per-project contract amounts, estimated costs, progress-to-date, under- and over-billings) is the surety equivalent of loss runs. Dynamic and project-level, not a static balance sheet. Often messy contractor Excel/PDF, a high-value extraction target.</li>
+      <li><b>Bonding capacity</b> (single and aggregate) is computed from the WIP plus financials. Triage must calculate remaining capacity, not just classify.</li>
+      <li><b>Trucking / transportation</b> needs a live FMCSA CSA/SMS data feed. 92% of commercial trucking underwriters use it in pricing, a different enrichment source than property or casualty.</li>
+    </ul>
+  </div>
+
+  <h2 class="section">Accuracy &amp; compliance <span class="tag">&middot; table stakes for a public carrier</span></h2>
+  <div class="kv">
+    <ul>
+      <li><b>Extraction is non-deterministic.</b> Never treat LLM output as exact. Wrap every extraction in schema validation, type/range checks, per-field confidence, and retries.</li>
+      <li><b>Confidence-thresholded human-in-the-loop.</b> Auto-process only above a confidence bar (higher for surety financials than for a name field); route the rest to an underwriter.</li>
+      <li><b>Audit trails.</b> Log inputs, prompt, model version, extracted fields, confidence, and any human override, enough to reconstruct any AI-influenced decision. Chain-of-thought reasoning kept for explainability.</li>
+      <li><b>NAIC model bulletin</b> on "Use of AI Systems by Insurers" is adopted in 24 states and is effectively the national standard. Governance, testing, documentation, and bias controls belong in the design from day one.</li>
+    </ul>
+  </div>
+
+  <h2 class="section">Suggested first build <span class="tag">&middot; "we're not starting from zero"</span></h2>
+  <p style="margin:2px 0 6px;">A <b>surety WIP + financials extractor</b>: monitored mailbox &rarr; document classifier &rarr; Textract / multimodal read &rarr; structured extraction to a typed surety schema (principal, obligee, bond type/amount, per-project WIP rows, working capital) &rarr; validation + confidence &rarr; a bonding-capacity appetite check &rarr; a ranked triage queue, fully instrumented with confidence scores and an audit log. It maps one-to-one to how the market leaders describe their own systems, while the surety focus signals what a generic vendor cannot do.</p>
+
+  <h2 class="section">Key resources <span class="tag">&middot; to study first</span></h2>
+  <ul class="res">
+    <li><b>AWS ML Blog</b> - IDP with Textract + Bedrock + LangChain (closest cloud reference). <span class="u">aws.amazon.com/blogs/machine-learning/intelligent-document-processing-with-amazon-textract-amazon-bedrock-and-langchain/</span></li>
+    <li><b>Unstract</b> - open-source IDP to JSON platform, read as a blueprint. <span class="u">github.com/Zipstack/unstract</span></li>
+    <li><b>Google Cloud x Cytora</b> - most detailed public architecture (golden schema, chain-of-thought). <span class="u">cloud.google.com/blog/topics/financial-services/cytora-uses-generative-ai-to-assess-underwriting-risk</span></li>
+    <li><b>SortSpoke / ResourcePro</b> - vendor-neutral domain and terminology grounding. <span class="u">sortspoke.com/blog/underwriting-submission-triage-explained</span></li>
+    <li><b>SFAA + IRMI</b> - surety fundamentals and how underwriters read the WIP. <span class="u">surety.org/surety-fidelity/what-is-surety/</span> &middot; <span class="u">irmi.com</span></li>
+  </ul>
+
+  <div class="footnote">
+    Method: 5 search angles &rarr; 25 sources fetched &rarr; 116 candidate claims &rarr; 25 load-bearing claims each verified by 3 independent adversarial reviewers (killed on 2 of 3 refutes). 24 confirmed, 1 refuted (the "deterministic extraction" claim, corrected above). Full cited report: RLI-submission-ingestion-research.md.
+  </div>
+</div>
+
+</body>
+</html>
