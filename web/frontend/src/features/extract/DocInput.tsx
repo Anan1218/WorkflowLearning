@@ -55,21 +55,20 @@ export function DocInput({
         ))}
       </div>
 
-      <div className="p-4">
+      <div className="h-[360px] p-4">
         {tab === "paste" && (
           <textarea
             value={text}
             onChange={(e) => onText(e.target.value)}
             disabled={disabled}
             placeholder="Paste a broker submission email, WIP schedule, financial summary…"
-            rows={13}
-            className="w-full resize-y border border-line bg-wash p-3.5 font-fragment text-[12.5px] leading-relaxed text-ink placeholder:text-body/50 focus:border-cobalt focus:outline-none"
+            className="h-full w-full resize-none border border-line bg-wash p-3.5 font-fragment text-[12.5px] leading-relaxed text-ink placeholder:text-body/50 focus:border-cobalt focus:outline-none"
             aria-label="Document text"
           />
         )}
 
         {tab === "upload" && (
-          <div className="flex flex-col items-center justify-center gap-3 border border-dashed border-pale bg-wash px-6 py-16">
+          <div className="flex h-full flex-col items-center justify-center gap-3 border border-dashed border-pale bg-wash px-6">
             <FileUp className="text-body" size={22} aria-hidden />
             <p className="text-[14px] text-body">
               .txt or text-layer .pdf — scanned documents are a roadmap item
@@ -99,7 +98,7 @@ export function DocInput({
 
         {tab === "sample" && (
           <ul
-            className="thin-scroll grid max-h-[340px] grid-cols-1 gap-px overflow-y-auto border border-pale bg-pale md:grid-cols-2"
+            className="thin-scroll grid h-full grid-cols-1 content-start gap-px overflow-y-auto border border-pale bg-pale md:grid-cols-2"
             aria-label="Sample documents"
           >
             {(samples ?? []).map((s) => (
@@ -128,14 +127,20 @@ export function DocInput({
         )}
       </div>
 
-      {sampleId && (
-        <div className="border-t border-line bg-wash px-4 py-2.5">
-          <p className="text-[13px] text-body">
-            Sample <span className="font-fragment text-[11px]">{sampleId}</span> selected — result will be
-            scored against its ground truth.
-          </p>
-        </div>
-      )}
+      <div className="border-t border-line bg-wash px-4 py-2.5">
+        <p className="truncate text-[13px] text-body">
+          {sampleId ? (
+            <>
+              Sample <span className="font-fragment text-[11px]">{sampleId}</span> selected — result will be
+              scored against its ground truth.
+            </>
+          ) : (
+            <span className="text-body/60">
+              Paste, upload, or pick a labeled sample — samples score against ground truth.
+            </span>
+          )}
+        </p>
+      </div>
     </div>
   );
 }
