@@ -32,7 +32,7 @@ const STAGES = [
 
 export function PipelinePage() {
   return (
-    <div className="mx-auto max-w-5xl">
+    <div className="mx-auto w-full max-w-5xl">
       <PageHeader
         eyebrow="Architecture"
         title="A pipeline you can read on a whiteboard."

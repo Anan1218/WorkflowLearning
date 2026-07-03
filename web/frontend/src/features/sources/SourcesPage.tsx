@@ -134,7 +134,7 @@ export function SourcesPage() {
 
       {view === "activity" && (
         <div className="fade-in thin-scroll min-h-0 flex-1 overflow-y-auto">
-          <div className="mx-auto max-w-3xl">
+          <div className="mx-auto w-full max-w-3xl">
             <ul className="border border-pale bg-white shadow-[0_14px_34px_-28px_rgba(5,28,44,0.5)]">
               {RECENT_ACTIVITY.map((a, i) => (
                 <li

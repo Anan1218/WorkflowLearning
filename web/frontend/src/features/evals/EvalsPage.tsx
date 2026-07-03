@@ -27,7 +27,7 @@ export function EvalsPage() {
     : [];
 
   return (
-    <div className="mx-auto max-w-5xl">
+    <div className="mx-auto w-full max-w-5xl">
       <PageHeader
         eyebrow="Processing integrity"
         title="Evaluation results"

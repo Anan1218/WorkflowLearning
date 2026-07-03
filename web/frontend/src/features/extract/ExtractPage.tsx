@@ -41,7 +41,7 @@ export function ExtractPage() {
   const canRun = !!effectiveModel && (sampleId !== null || text.trim().length > 40) && !running;
 
   return (
-    <div className="mx-auto max-w-5xl">
+    <div className="mx-auto w-full max-w-5xl">
       <PageHeader
         eyebrow="Live demo"
         title="Read a messy submission into structured, scored data."

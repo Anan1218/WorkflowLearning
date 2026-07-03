@@ -35,7 +35,7 @@ export function ReviewDetailPage() {
   if (!item) return <EmptyState title="Review item not found" />;
 
   return (
-    <div className="pop-in mx-auto max-w-6xl">
+    <div className="pop-in mx-auto w-full max-w-6xl">
       <Link
         to="/review"
         className="mb-5 inline-flex items-center gap-1.5 font-schibsted text-[14px] text-body hover:text-ink"
