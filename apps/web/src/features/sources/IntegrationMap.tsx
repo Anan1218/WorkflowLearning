@@ -20,7 +20,7 @@ const RIGHT_NODE_W = 190;
 const SOR_1_X = 600;
 const SOR_1_Y = 283;
 const LANGFUSE_X = 600;
-const LANGFUSE_Y = 505;
+const LANGFUSE_Y = 96;
 const SOR_2_X = 70;
 const SOR_2_Y = 283;
 const WORKFLOW_X = 340;
@@ -453,14 +453,14 @@ export function IntegrationMap({
             opacity={0.35}
           />
           <path
-            d={edge(CENTER_X + CENTER_W / 2, CENTER_Y + CENTER_H, LANGFUSE_X, LANGFUSE_Y + OUTPUT_NODE_H / 2)}
+            d={edge(CENTER_X + CENTER_W / 2, CENTER_Y, LANGFUSE_X, LANGFUSE_Y + OUTPUT_NODE_H / 2)}
             fill="none"
             className="flow-line"
             stroke="#2251ff"
             strokeWidth={1.1}
             opacity={0.45}
           />
-          <MonoLabel x={(CENTER_X + CENTER_W / 2 + LANGFUSE_X) / 2} y={(CENTER_Y + CENTER_H + LANGFUSE_Y + OUTPUT_NODE_H / 2) / 2 + 14}>
+          <MonoLabel x={(CENTER_X + CENTER_W / 2 + LANGFUSE_X) / 2} y={(CENTER_Y + LANGFUSE_Y + OUTPUT_NODE_H / 2) / 2 - 8}>
             TRACES
           </MonoLabel>
 
@@ -518,18 +518,6 @@ export function IntegrationMap({
           />
           <MonoLabel x={(WORKFLOW_X + WORKFLOW_W + OUTPUT_X) / 2} y={306}>
             ROUTES
-          </MonoLabel>
-
-          <path
-            d="M 450 365 C 450 490, 260 490, 165 340"
-            fill="none"
-            className="flow-line"
-            stroke="#2251ff"
-            strokeWidth={1.2}
-            opacity={0.5}
-          />
-          <MonoLabel x={330} y={470}>
-            APPEND DECISIONS
           </MonoLabel>
 
           <SystemOfRecordNode x={SOR_2_X} y={SOR_2_Y} note="submissions + audit trail" />
