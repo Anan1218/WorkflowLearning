@@ -11,10 +11,10 @@ Built to be the thing you point at and say: *this is how we build.* Schema-first
 | Layer | Choice | Why |
 |---|---|---|
 | Extraction backbone | **Instructor + Pydantic** | Typed extraction, validates output against the schema and re-asks on failure. Plain Python, model-agnostic, maintainable by a small team. |
-| Data contract | **Pydantic v2** (`src/schemas.py`) | One source of truth for what a submission *is*. Surety modeled first-class (principal/obligee/bond/WIP). |
+| Data contract | **Pydantic v2** (`packages/core/src/core/schemas.py`) | One source of truth for what a submission *is*. Surety modeled first-class (principal/obligee/bond/WIP). |
 | Model access | **Instructor `from_provider`** | Swap Claude / GPT / Gemini by changing one string. Not locked to a provider. |
 | Observability | **OpenTelemetry → Langfuse** | Every call traced (prompt, tokens, cost, latency, output). Cloud for dev; self-host is a one-line env flip for real PII. |
-| Evals | **pytest + `evals/scorers.py`** | Per-field accuracy vs ground truth. Run it before every change. It's also the metric the optimizer maximizes. |
+| Evals | **pytest + `evals/scorers.py` (packages/evals)** | Per-field accuracy vs ground truth. Run it before every change. It's also the metric the optimizer maximizes. |
 | Optimization (phase 2) | **DSPy, offline only** | Discovers better prompts/few-shots against labeled data; you hand-port the learnings. Kept *out* of the runtime on purpose (see below). |
 
 **Why DSPy is not the backbone:** research found DSPy's optimizers deliver real gains, but DSPy-optimized prompts are coupled to its runtime and don't port out cleanly, and it ships breaking changes - too much lock-in/maintenance risk to standardize a whole pipeline on for a 2-person team. So DSPy is scoped to an offline optimization *experiment*, and a stable schema-first layer is the backbone.
@@ -27,11 +27,11 @@ pip install -r requirements.txt   # installs the three editable packages (core, 
 cp .env.example .env              # fill in OPENROUTER_API_KEY (+ Langfuse keys for traces)
 
 python -m core.generate --n 12    # stage 0: synthetic (doc, ground_truth) pairs
-python -m core.extract packages/evals/evals/cases/example-001.txt   # stage 1: one doc -> typed JSON
+python -m core.extract packages/evals/src/evals/cases/example-001.txt   # stage 1: one doc -> typed JSON
 python -m evals.harness --save    # score per-field accuracy vs ground truth, publish results
 ```
 
-Swap models by changing the `MODEL` env var or the default in `packages/core/core/extract.py` and re-running `evals.harness` - the pipeline doesn't change.
+Swap models by changing the `MODEL` env var or the default in `packages/core/src/core/extract.py` and re-running `evals.harness` - the pipeline doesn't change.
 
 ## Run the demo dashboard
 
@@ -48,7 +48,7 @@ Dev loop (hot reload):
 cd apps/web && npm install && npm run dev              # UI on :5173, /api proxied
 ```
 
-Notes: extraction jobs run in the background and the UI polls; low-confidence fields (< 0.75) auto-route to the Review queue (state in `data/app_state/`, survives restarts); the Evals page reads committed `packages/evals/evals/results/*.json` (produce more with `python -m evals.harness --save`); the model dropdown is allowlisted in `apps/api/api/config.py` - the model-agnostic one-string swap, live.
+Notes: extraction jobs run in the background and the UI polls; low-confidence fields (< 0.75) auto-route to the Review queue (state in `data/app_state/`, survives restarts); the Evals page reads committed `packages/evals/src/evals/results/*.json` (produce more with `python -m evals.harness --save`); the model dropdown is allowlisted in `apps/api/src/api/config.py` - the model-agnostic one-string swap, live.
 
 ### Deploy
 
@@ -65,15 +65,15 @@ fly secrets set K=V       # rotate keys (stored on Fly, never in the image)
 Monorepo: `packages/` are the durable assets (the pattern library), `apps/` are delivery surfaces. Dependency rule: `apps → packages`, never backward.
 
 ```
-packages/core/core/        stello-idp-core: schemas.py (the data contract),
-                           extract.py (Instructor backbone), generate.py, trace.py
-packages/evals/evals/      harness + per-field scorers + committed cases/ + results/
-apps/api/api/              FastAPI dashboard API (vertical slices: extract,
-                           documents, samples, review, evals)
-apps/web/                  React dashboard (Vite, Stello design language)
-data/                      synthetic dataset + demo app state (gitignored)
-experiments/               phase-2 DSPy offline optimizer (optional)
-docs/                      RLI prep brief, research, data-sources citations
+packages/core/src/core/     stello-idp-core: schemas.py (the data contract),
+                            extract.py (Instructor backbone), generate.py, trace.py
+packages/evals/src/evals/   harness + per-field scorers + committed cases/ + results/
+apps/api/src/api/           FastAPI dashboard API (vertical slices: extract,
+                            documents, samples, review, evals)
+apps/web/                   React dashboard (Vite, Stello design language)
+data/                       synthetic dataset + demo app state (gitignored)
+experiments/                phase-2 DSPy offline optimizer (optional)
+docs/                       RLI prep brief, research, data-sources citations
 ```
 
 ## Enterprise readiness checklist (SOC 2 / regulated-carrier grade)

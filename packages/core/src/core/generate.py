@@ -27,7 +27,7 @@ from core.trace import flush, setup_tracing, span
 # Cheaper for high volume: "anthropic/claude-sonnet-5" or "anthropic/claude-haiku-4-5".
 MODEL = os.getenv("MODEL", "openrouter/deepseek/deepseek-chat-v3.1")
 
-DATA = Path(__file__).resolve().parents[3] / "data" / "synthetic"
+DATA = Path(__file__).resolve().parents[4] / "data" / "synthetic"
 
 
 class GeneratedCase(BaseModel):

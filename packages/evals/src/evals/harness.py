@@ -25,7 +25,7 @@ from evals.scorers import aggregate, score_case
 
 # Committed hand-labeled examples ship with the repo; generated val augments them.
 CASES = Path(__file__).resolve().parent / "cases"
-VAL = Path(__file__).resolve().parents[3] / "data" / "synthetic" / "val"
+VAL = Path(__file__).resolve().parents[4] / "data" / "synthetic" / "val"
 RESULTS = Path(__file__).resolve().parent / "results"
 
 

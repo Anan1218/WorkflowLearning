@@ -9,13 +9,13 @@ from __future__ import annotations
 
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[3]  # apps/api/api/config.py -> repo root
+REPO_ROOT = Path(__file__).resolve().parents[4]  # apps/api/src/api/config.py -> repo root
 
 # Confidence below this routes a field to the human review queue.
 REVIEW_THRESHOLD = 0.75
 
 APP_STATE_DIR = REPO_ROOT / "data" / "app_state"
-EVAL_RESULTS_DIR = REPO_ROOT / "packages" / "evals" / "evals" / "results"
+EVAL_RESULTS_DIR = REPO_ROOT / "packages" / "evals" / "src" / "evals" / "results"
 FRONTEND_DIST = REPO_ROOT / "apps" / "web" / "dist"
 
 DEFAULT_MODEL_ID = "nemotron-free"  # free while the OpenRouter account has $0 credits

@@ -8,7 +8,7 @@ from pathlib import Path
 from core.schemas import SuretySubmission
 from api.config import REPO_ROOT
 
-CASES = REPO_ROOT / "packages" / "evals" / "evals" / "cases"
+CASES = REPO_ROOT / "packages" / "evals" / "src" / "evals" / "cases"
 VAL = REPO_ROOT / "data" / "synthetic" / "val"
 
 
