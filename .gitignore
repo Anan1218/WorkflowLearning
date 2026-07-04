@@ -17,7 +17,7 @@ data/synthetic/
 .DS_Store
 
 # dashboard
-web/frontend/node_modules/
-web/frontend/dist/
+node_modules/
+dist/
 data/app_state/
 apps/web/dist/
