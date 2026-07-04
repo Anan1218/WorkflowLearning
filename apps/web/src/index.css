@@ -124,6 +124,17 @@ select {
 .pulse-dot {
   animation: glowPulse 2s ease-in-out infinite;
 }
+.evidence-pulse {
+  animation: evidencePulse 1.2s ease;
+}
+@keyframes evidencePulse {
+  0% {
+    background-color: rgba(34, 81, 255, 0.35);
+  }
+  100% {
+    background-color: rgba(34, 81, 255, 0.10);
+  }
+}
 
 /* --- texture / effect utilities --- */
 .node-glow {

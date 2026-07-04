@@ -1,11 +1,62 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, Check } from "lucide-react";
-import { useState } from "react";
+import type { ReactNode } from "react";
+import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
 import { api } from "../../lib/api";
 import { Badge, Button, Card, ConfidenceBar, EmptyState, Spinner, fmtValue } from "../../components/ui";
 import { GlossaryText } from "../../components/Term";
+import { findEvidence, snippet, type Evidence } from "../../lib/evidence";
+import { fieldLabel } from "../../lib/fieldLabels";
+
+function EvidenceDocument({
+  doc,
+  evidenceByPath,
+}: {
+  doc: string;
+  evidenceByPath: Record<string, Evidence | null>;
+}) {
+  const ranges = Object.entries(evidenceByPath)
+    .filter((entry): entry is [string, Evidence] => entry[1] !== null)
+    .map(([path, evidence]) => ({ path, evidence }))
+    .sort((a, b) => a.evidence.start - b.evidence.start);
+
+  const segments: ReactNode[] = [];
+  let cursor = 0;
+
+  for (const { path, evidence } of ranges) {
+    if (evidence.start < cursor) continue;
+    if (cursor < evidence.start) {
+      segments.push(doc.slice(cursor, evidence.start));
+    }
+    segments.push(
+      <mark
+        key={path}
+        id={`evidence-${path}`}
+        className="bg-cobalt/10 border-b-2 border-cobalt text-inherit"
+      >
+        {doc.slice(evidence.start, evidence.end)}
+      </mark>,
+    );
+    cursor = evidence.end;
+  }
+
+  if (cursor < doc.length) segments.push(doc.slice(cursor));
+
+  return <>{segments}</>;
+}
+
+function scrollToEvidence(path: string) {
+  const element = document.getElementById(`evidence-${path}`);
+  if (!element) return;
+
+  element.scrollIntoView({ behavior: "smooth", block: "center" });
+  element.classList.remove("evidence-pulse");
+  void element.offsetWidth;
+  element.classList.add("evidence-pulse");
+  window.setTimeout(() => element.classList.remove("evidence-pulse"), 1200);
+}
 
 export function ReviewDetailPage() {
   const { itemId } = useParams<{ itemId: string }>();
@@ -26,6 +77,17 @@ export function ReviewDetailPage() {
       qc.invalidateQueries({ queryKey: ["review"] });
     },
   });
+
+  const evidenceByPath = useMemo<Record<string, Evidence | null>>(() => {
+    if (!item) return {};
+
+    return Object.fromEntries(
+      item.flagged_fields.map((field) => [
+        field.path,
+        findEvidence(field.value, item.document_text),
+      ]),
+    );
+  }, [item]);
 
   if (isLoading)
     return (
@@ -60,7 +122,7 @@ export function ReviewDetailPage() {
         <div className="thin-scroll max-h-[620px] overflow-y-auto border border-pale bg-wash p-6">
           <div className="eyebrow mb-3">Source document</div>
           <pre className="whitespace-pre-wrap font-fragment text-[12px] leading-relaxed text-body">
-            {item.document_text}
+            <EvidenceDocument doc={item.document_text} evidenceByPath={evidenceByPath} />
           </pre>
         </div>
 
@@ -103,10 +165,17 @@ export function ReviewDetailPage() {
           {item.flagged_fields.map((f) => {
             const decision = item.decisions[f.path];
             const guidelineIds = guidelineIdsForPath(f.path);
+            const evidence = evidenceByPath[f.path] ?? null;
+            const sourceSnippet = evidence ? snippet(item.document_text, evidence) : null;
             return (
               <Card key={f.path} className="!p-4">
                 <div className="mb-2 flex items-center justify-between gap-3">
-                  <span className="font-fragment text-[11px] text-body">{f.path}</span>
+                  <div className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-1">
+                    <span className="font-schibsted text-[14px] font-medium text-ink">
+                      {fieldLabel(f.path)}
+                    </span>
+                    <span className="font-fragment text-[9.5px] text-body/50">{f.path}</span>
+                  </div>
                   <div className="flex flex-wrap items-center justify-end gap-1.5">
                     {guidelineIds.map((guidelineId) => (
                       <span
@@ -121,6 +190,32 @@ export function ReviewDetailPage() {
                 </div>
                 <div className="mb-3 font-schibsted text-[15px] font-medium text-ink">
                   {fmtValue(f.value)}
+                </div>
+
+                <div className="mb-3">
+                  {sourceSnippet ? (
+                    <div className="border-l-2 border-cobalt/40 pl-3">
+                      <div className="mb-1 font-fragment text-[8.5px] uppercase tracking-[0.14em] text-body/50">
+                        Source
+                      </div>
+                      <div className="line-clamp-2 font-fragment text-[11px] leading-relaxed text-body">
+                        &ldquo;{sourceSnippet.before}
+                        <span className="bg-cobalt/10 text-ink">{sourceSnippet.match}</span>
+                        {sourceSnippet.after}&rdquo;
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => scrollToEvidence(f.path)}
+                        className="mt-1 font-schibsted text-[12px] text-cobalt underline decoration-dotted underline-offset-2 hover:text-cobalt-hover"
+                      >
+                        View in document
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="font-fragment text-[10px] text-flag">
+                      Not found verbatim in the document
+                    </div>
+                  )}
                 </div>
 
                 {decision ? (

@@ -5,6 +5,7 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from 
 
 import { api } from "../../lib/api";
 import { Badge, Card, EmptyState, PageHeader, Spinner } from "../../components/ui";
+import { fieldLabel } from "../../lib/fieldLabels";
 
 export function EvalsPage() {
   const { data: runs, isLoading } = useQuery({ queryKey: ["eval-runs"], queryFn: api.evalRuns });
@@ -21,7 +22,7 @@ export function EvalsPage() {
     ? Object.entries(run.per_field)
         .filter(([k]) => k !== "OVERALL")
         .map(([field, acc]) => ({
-          field: field.replace("wip_total_contract_value", "wip_total"),
+          field: fieldLabel(field.replace("wip_total_contract_value", "wip_total")),
           acc: Math.round(acc * 1000) / 10,
         }))
     : [];
@@ -134,7 +135,7 @@ export function EvalsPage() {
                               key={f}
                               className="px-3 py-2 text-left font-fragment text-[9.5px] font-normal uppercase tracking-[0.12em] text-body"
                             >
-                              {f.split(".").slice(-1)[0].replace("wip_total_contract_value", "wip")}
+                              {fieldLabel(f)}
                             </th>
                           ))}
                         </tr>
