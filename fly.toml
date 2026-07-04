@@ -2,7 +2,7 @@
 # Auto-stop keeps idle cost near zero; the UI's 1.5s job polling keeps the
 # machine awake while an extraction is running.
 
-app = "workflowlearning-demo"
+app = "rli-demo"
 primary_region = "sjc"
 
 [build]

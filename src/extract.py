@@ -39,10 +39,27 @@ def extract(
     model: str | None = None,
 ) -> SuretySubmission:
     """Document text -> validated SuretySubmission."""
+    submission, _meta = extract_with_meta(document_text, client=client, model=model)
+    return submission
+
+
+def extract_with_meta(
+    document_text: str,
+    client: instructor.Instructor | None = None,
+    model: str | None = None,
+) -> tuple[SuretySubmission, dict]:
+    """Like extract(), but also returns {"input_tokens", "output_tokens", "latency_s"}.
+
+    Cost-per-query is a first-class metric (it's what buyers ask about), so the
+    seam that talks to the model is where usage gets captured.
+    """
+    import time
+
     model = model or MODEL
     client = client or instructor.from_provider(model)
     with span("extract.submission", model=model, doc_chars=len(document_text)):
-        return client.chat.completions.create(
+        start = time.monotonic()
+        submission, completion = client.chat.completions.create_with_completion(
             response_model=SuretySubmission,
             max_tokens=4096,
             max_retries=2,
@@ -51,6 +68,15 @@ def extract(
                 {"role": "user", "content": document_text},
             ],
         )
+        latency = time.monotonic() - start
+
+    usage = getattr(completion, "usage", None)
+    meta = {
+        "input_tokens": getattr(usage, "prompt_tokens", None) or getattr(usage, "input_tokens", None),
+        "output_tokens": getattr(usage, "completion_tokens", None) or getattr(usage, "output_tokens", None),
+        "latency_s": round(latency, 2),
+    }
+    return submission, meta
 
 
 def main() -> None:

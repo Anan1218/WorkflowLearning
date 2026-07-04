@@ -131,6 +131,23 @@ Not custom-built each time - same pattern as orchestration: small reusable code 
 
 Before building RAG at all, check two cheaper paths: (1) long-context - a guideline manual that fits in the window beats a retrieval pipeline; (2) **agentic search** - let the model iteratively query SQL/full-text like an analyst; often simpler *and* better over structured corpora like prior submissions. No LlamaIndex-style framework - components behind seams, as always.
 
+## FDE playbook alignment (audit / evals / deployment)
+
+Audited against the Varick FDE guide; the architecture already follows it. The rules, written down:
+
+**Automate-vs-not (the audit rules), mapped to our stages:**
+- Rules distillable but inputs vary (email / PDF / scanned WIP) + tool calls involved → **agent**: that's classify + extract.
+- Rules AND inputs predictable → **plain code**: that's validate, clearance/dedup, the state machine.
+- Judgment + domain expertise → **manual**: that's the confidence-gated underwriter review. Never auto-decline.
+- One LLM call as the orchestrating layer, everything else deterministic tool calls - too much AI = token cost + worse output.
+- Volume test: automation needs enough runs to matter (submission intake passes; a five-times-a-month workflow doesn't).
+
+**Overlay, not migration (the data-layer rule):** never propose ripping out their PAS/DMS/ERP - customers just spent years and millions on those. Build APIs over the existing data layer; our Postgres is a **system of work** (extractions, status, audit trail) layered beside their systems of record, with every field citing its source document/system via lineage. Nothing migrates; originals stay where they live.
+
+**Autonomy ladder:** v1 reads and proposes only - the confidence gate means a human makes every consequential call. Write-backs (DMS filing, status updates, clearance actions) arrive one capability at a time, each unlocked only after evals prove the previous level. Smallest unit of autonomy first.
+
+**Eval dimensions:** correctness (per-field scorers vs golden dataset), format (enforced structurally by Pydantic - can't be wrong), and now **cost + latency per query** (tokens and seconds captured at the extraction seam, shown in the UI and in eval results). Cost-per-query is what the buyer asks about.
+
 ## Go-to-market note (forward-deployed motion)
 
 The pipeline is ~20% of enterprise-grade; the wrapper (access, secrets, audit, lifecycle, vendor mgmt, org program) is the rest - see README's enterprise-readiness checklist. As an external consultant pitching a carrier, the forward-deployed motion fits: embedded, time-boxed paid pilot, deployed in *their* cloud, eval metrics as acceptance criteria, IP split (they own the deployment, we keep the generic architecture). Lead with the compliance story, not the demo. OpenRouter/dev tools stay backstage; Bedrock/Vertex goes on the slide.

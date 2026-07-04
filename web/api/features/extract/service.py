@@ -9,7 +9,7 @@ Wraps src.extract.extract() in a background job, then post-processes:
 from __future__ import annotations
 
 from evals.scorers import score_case
-from src.extract import extract
+from src.extract import extract_with_meta
 from src.schemas import SCORED_FIELDS, SuretySubmission
 from web.api.config import MODEL_ALLOWLIST, REVIEW_THRESHOLD
 from web.api.features.review import store as review_store
@@ -50,11 +50,21 @@ def _low_confidence_fields(sub: SuretySubmission) -> list[dict]:
 
 
 def submit_extraction(text: str, model_id: str, sample_id: str | None = None):
-    provider_string = MODEL_ALLOWLIST[model_id]["provider_string"]
+    model_cfg = MODEL_ALLOWLIST[model_id]
+    provider_string = model_cfg["provider_string"]
 
     def _work() -> dict:
-        sub = extract(text, model=provider_string)
+        sub, meta = extract_with_meta(text, model=provider_string)
         flagged = _low_confidence_fields(sub)
+
+        est_cost = None
+        if meta.get("input_tokens") is not None and meta.get("output_tokens") is not None:
+            est_cost = round(
+                meta["input_tokens"] / 1e6 * model_cfg["usd_per_m_in"]
+                + meta["output_tokens"] / 1e6 * model_cfg["usd_per_m_out"],
+                6,
+            )
+        usage = {**meta, "est_cost_usd": est_cost}
 
         review_item_id = None
         if flagged:
@@ -77,6 +87,7 @@ def submit_extraction(text: str, model_id: str, sample_id: str | None = None):
             "low_confidence_fields": flagged,
             "review_item_id": review_item_id,
             "score": score,
+            "usage": usage,
         }
 
     return jobs.submit(_work, model_id=model_id)

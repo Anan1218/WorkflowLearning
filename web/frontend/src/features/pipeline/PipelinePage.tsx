@@ -26,7 +26,7 @@ const STAGES = [
   {
     icon: UserCheck,
     title: "Human review",
-    body: "Flagged fields queue for an underwriter. Approve or override per field; every decision is an audit-trail entry and a new labeled training pair.",
+    body: "Flagged fields queue for an underwriter. Approve or override per field; every decision is an audit-trail entry and a new labeled training pair. Autonomy is earned in steps: today the system only reads and proposes — write-backs arrive one capability at a time, after evals prove each one.",
   },
 ];
 

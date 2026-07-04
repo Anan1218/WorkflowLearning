@@ -15,7 +15,7 @@ const CENTER_H = 120;
 const RIGHT_X = W - 226;
 
 const OUTPUTS = [
-  { id: "postgres", label: "Data plane · Postgres", note: "submissions + audit trail", y: 140 },
+  { id: "postgres", label: "System of record · Postgres", note: "submissions + audit trail", y: 140 },
   { id: "langfuse", label: "Langfuse · OTel traces", note: "every call, every cost", y: 280 },
   { id: "review", label: "Human review queue", note: "confidence-gated", y: 420 },
 ];

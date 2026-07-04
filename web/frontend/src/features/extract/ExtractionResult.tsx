@@ -52,6 +52,17 @@ export function ExtractionResult({
         </h2>
         <Badge tone="neutral">{modelLabel}</Badge>
         <Badge tone="neutral">{elapsed.toFixed(1)}s</Badge>
+        {result.usage?.input_tokens != null && (
+          <Badge tone="neutral">
+            {result.usage.input_tokens.toLocaleString()} in · {result.usage.output_tokens?.toLocaleString()}{" "}
+            out
+          </Badge>
+        )}
+        {result.usage?.est_cost_usd != null && (
+          <Badge tone={result.usage.est_cost_usd === 0 ? "ok" : "cobalt"}>
+            {result.usage.est_cost_usd === 0 ? "$0.00" : `est $${result.usage.est_cost_usd.toFixed(4)}`}
+          </Badge>
+        )}
         {result.score && (
           <Badge tone={result.score.accuracy >= 0.99 ? "ok" : "cobalt"}>
             {Math.round(result.score.accuracy * 100)}% vs ground truth

@@ -19,7 +19,7 @@ import re
 from datetime import datetime, timezone
 from pathlib import Path
 
-from src.extract import MODEL, extract
+from src.extract import MODEL, extract_with_meta
 from src.schemas import SuretySubmission
 from evals.scorers import aggregate, score_case
 
@@ -59,12 +59,17 @@ def run(save: bool = False, model: str | None = None) -> dict[str, float]:
 
     per_case: list[dict[str, bool]] = []
     case_rows: list[dict] = []
+    tot_in = tot_out = 0
+    latencies: list[float] = []
     for case_id, doc, truth in cases:
-        pred = extract(doc, model=model)
+        pred, meta = extract_with_meta(doc, model=model)
         scores = score_case(pred, truth)
         per_case.append(scores)
-        case_rows.append({"case": case_id, "fields": scores})
-        print(f"  {case_id}: {sum(scores.values())}/{len(scores)} fields")
+        case_rows.append({"case": case_id, "fields": scores, "latency_s": meta["latency_s"], "tokens": meta})
+        tot_in += meta.get("input_tokens") or 0
+        tot_out += meta.get("output_tokens") or 0
+        latencies.append(meta["latency_s"])
+        print(f"  {case_id}: {sum(scores.values())}/{len(scores)} fields  ({meta['latency_s']}s)")
 
     acc = aggregate(per_case)
     print(f"\nPer-field accuracy over {len(cases)} val cases ({model}):")
@@ -86,6 +91,11 @@ def run(save: bool = False, model: str | None = None) -> dict[str, float]:
                     "n_cases": len(cases),
                     "per_field": acc,
                     "per_case": case_rows,
+                    "totals": {
+                        "input_tokens": tot_in,
+                        "output_tokens": tot_out,
+                        "mean_latency_s": round(sum(latencies) / len(latencies), 2) if latencies else None,
+                    },
                 },
                 indent=2,
             )

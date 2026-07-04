@@ -9,6 +9,7 @@ Run:  uvicorn web.api.main:app --reload --port 8000
 from __future__ import annotations
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -22,6 +23,15 @@ from web.api.features.review.router import router as review_router
 from web.api.features.samples.router import router as samples_router
 
 app = FastAPI(title="WorkflowLearning Demo Dashboard")
+
+# The frontend may be served from Vercel (rli-demo.stelloagents.com) while the
+# API lives on Fly - allow those origins. Same-origin serving still works too.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origin_regex=r"https://([a-z0-9-]+\.)?(stelloagents\.com|vercel\.app)|http://localhost:\d+",
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.on_event("startup")

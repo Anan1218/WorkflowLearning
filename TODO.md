@@ -44,6 +44,7 @@ These are exercises in the enterprise wrapper, in rough order of learning value:
 - [ ] Jobs/worker queue with retries + idempotency - checklist item #5
 - [ ] FastAPI intake + Postgres data plane, Docker packaging
 - [ ] Self-hosted Langfuse (prove the "one env flip" claim actually holds)
+- [x] Cost-per-query tracking (FDE-guide alignment, 2026-07-03): tokens + latency captured at the extraction seam, est. cost in the UI, totals in eval results
 - [ ] Durability spike: wrap the pipeline steps in DBOS Transact (Postgres-only durable execution) - checkpointed retries + workflow versioning without Temporal-style ops
 - [ ] (optional, literacy) Time-boxed LangGraph spike: rebuild the same flow, compare LoC/debuggability/eval-ability, write down why plain Python won (or didn't) - see LESSONS.md
 

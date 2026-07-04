@@ -33,6 +33,12 @@ export type JobResult = {
   low_confidence_fields: FlaggedField[];
   review_item_id: string | null;
   score: { fields: Record<string, boolean>; accuracy: number } | null;
+  usage?: {
+    input_tokens: number | null;
+    output_tokens: number | null;
+    latency_s: number;
+    est_cost_usd: number | null;
+  };
 };
 
 export type Job = {
@@ -79,11 +85,15 @@ export type EvalRunMeta = {
 export type EvalRun = EvalRunMeta & {
   note?: string;
   per_field: Record<string, number>;
-  per_case: { case: string; fields: Record<string, boolean> }[];
+  per_case: { case: string; fields: Record<string, boolean>; latency_s?: number }[];
+  totals?: { input_tokens: number; output_tokens: number; mean_latency_s: number | null };
 };
 
+/** API origin. Empty = same origin (Fly/compose). Vercel builds set VITE_API_BASE. */
+const API_BASE: string = import.meta.env.VITE_API_BASE ?? "";
+
 async function req<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(path, init);
+  const res = await fetch(`${API_BASE}${path}`, init);
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
     throw new Error(body.detail ?? `${res.status} ${res.statusText}`);

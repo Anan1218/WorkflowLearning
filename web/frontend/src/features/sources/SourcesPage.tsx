@@ -38,7 +38,7 @@ export function SourcesPage() {
       {/* compact header row: title + sub-nav */}
       <div className="mb-4 flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-line pb-3">
         <div className="flex items-center gap-3">
-          <Chip>Data plane</Chip>
+          <Chip>Unified Data Layer</Chip>
           <h1 className="font-newsreader text-[1.5rem] font-normal leading-none tracking-[-0.01em] text-ink">
             Sources
           </h1>
