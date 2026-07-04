@@ -19,13 +19,13 @@ const SOR_X = 580;
 const SOR_Y = H / 2 - OUTPUT_NODE_H / 2;
 const LANGFUSE_X = 580;
 const LANGFUSE_Y = 505;
-const HUB2_X = 830;
+const HUB2_X = 825;
 const HUB2_Y = H / 2 - 43;
-const HUB2_W = 160;
+const HUB2_W = 170;
 const HUB2_H = 86;
 const CONSUMER_X = 1042;
-const REVIEW_Y = 170;
-const DRAFT_Y = 396;
+const REVIEW_Y = 190;
+const DRAFT_Y = 380;
 
 type Layout = { source: SourceConfig; y: number };
 
@@ -146,7 +146,7 @@ export function IntegrationMap({
           className="fill-[#48566b]"
           style={{ font: "8px 'Fragment Mono', monospace", letterSpacing: "0.14em" }}
         >
-          ON NEW ROW
+          TRIGGER
         </text>
         <path
           d={edge(HUB2_X + HUB2_W, H / 2, CONSUMER_X, REVIEW_Y + OUTPUT_NODE_H / 2)}
