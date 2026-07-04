@@ -14,10 +14,12 @@ const CENTER_W = 210;
 const CENTER_H = 120;
 const RIGHT_X = W - 226;
 
+// The data flow is a chain: every pipeline write lands in the system of record,
+// and the review queue consumes from Postgres. Traces are telemetry, not data flow.
 const OUTPUTS = [
-  { id: "postgres", label: "System of record · Postgres", note: "submissions + audit trail", y: 140 },
-  { id: "langfuse", label: "Langfuse · OTel traces", note: "every call, every cost", y: 280 },
-  { id: "review", label: "Human review queue", note: "confidence-gated", y: 420 },
+  { id: "langfuse", label: "Langfuse · OTel traces", note: "observability side channel", y: 80, kind: "telemetry" as const },
+  { id: "postgres", label: "System of record · Postgres", note: "submissions + audit trail", y: 240, kind: "primary" as const },
+  { id: "review", label: "Human review queue", note: "confidence-gated · reads postgres", y: 420, kind: "downstream" as const },
 ];
 
 type Layout = { source: SourceConfig; y: number };
@@ -103,19 +105,45 @@ export function IntegrationMap({
           );
         })}
 
-        {/* connectors: pipeline -> outputs */}
-        {OUTPUTS.map((o) => (
+        {/* connectors: pipeline -> system of record (writes), pipeline -> traces (telemetry) */}
+        {OUTPUTS.filter((o) => o.kind !== "downstream").map((o) => (
           <g key={`op-${o.id}`}>
             <path
               d={outPathFor(o.y)}
               fill="none"
               className="flow-line"
               stroke="#2251ff"
-              strokeWidth={1.6}
-              opacity={selectedId ? 0.25 : 0.55}
+              strokeWidth={o.kind === "telemetry" ? 1 : 1.8}
+              opacity={(selectedId ? 0.25 : 0.55) * (o.kind === "telemetry" ? 0.55 : 1)}
             />
           </g>
         ))}
+        <text
+          x={(CENTER_X + CENTER_W + RIGHT_X) / 2 - 14}
+          y={H / 2 + (240 + 27 - H / 2) / 2 + 2}
+          className="fill-[#48566b]"
+          style={{ font: "8px 'Fragment Mono', monospace", letterSpacing: "0.14em" }}
+        >
+          WRITES
+        </text>
+
+        {/* connector: system of record -> human review queue (reads) */}
+        <path
+          d={`M ${RIGHT_X + NODE_W / 2} ${240 + 54} C ${RIGHT_X + NODE_W / 2} ${240 + 54 + 45}, ${RIGHT_X + NODE_W / 2} ${420 - 45}, ${RIGHT_X + NODE_W / 2} ${420}`}
+          fill="none"
+          className="flow-line"
+          stroke="#2251ff"
+          strokeWidth={1.6}
+          opacity={selectedId ? 0.25 : 0.55}
+        />
+        <text
+          x={RIGHT_X + NODE_W / 2 + 8}
+          y={(240 + 54 + 420) / 2 + 3}
+          className="fill-[#48566b]"
+          style={{ font: "8px 'Fragment Mono', monospace", letterSpacing: "0.14em" }}
+        >
+          READS
+        </text>
 
         {/* category headers */}
         {HEADERS.map((h) => (
