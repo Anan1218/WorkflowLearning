@@ -35,6 +35,17 @@ const STAGES = [
   },
 ];
 
+const WORKFLOW_STEPS = [
+  { label: "Submission", sublabel: "stage 01 · intake", kind: "covered" },
+  { label: "Intake", sublabel: "stage 01", kind: "covered" },
+  { label: "Appetite review", sublabel: "UW-04 · program fit", kind: "covered" },
+  { label: "Risk classification", sublabel: "classify model step", kind: "covered" },
+  { label: "Completeness review", sublabel: "UW-06", kind: "covered" },
+  { label: "Underwriting review", sublabel: "human review queue · the handoff", kind: "handoff" },
+  { label: "Quote", sublabel: "stays with the underwriter", kind: "untouched" },
+  { label: "Bind and issue", sublabel: "stays with the underwriter", kind: "untouched" },
+] as const;
+
 export function PipelinePage() {
   const location = useLocation();
   const { data: guidelines, isLoading: guidelinesLoading } = useQuery({
@@ -62,6 +73,48 @@ export function PipelinePage() {
         title="A pipeline you can read on a whiteboard."
         sub="Deterministic steps with LLMs inside some of them: plain typed Python, no framework. The parts that matter for a carrier: every step is testable, every decision is audited, and no consequential action happens without a person. The goal: automate the administrative work around underwriting while preserving every underwriting decision."
       />
+
+      <section className="rise mb-8" style={{ animationDelay: "240ms" }}>
+        <div className="mb-3 font-fragment text-[10px] uppercase tracking-[0.18em] text-cobalt">
+          Where this sits in the underwriting workflow
+        </div>
+        <div className="flex flex-wrap gap-y-2">
+          {WORKFLOW_STEPS.map((step, i) => (
+            <div key={step.label} className="flex min-w-0">
+              {i > 0 && <ArrowRight size={11} className="mx-1 self-center text-body/40" aria-hidden />}
+              <div
+                className={`relative min-w-0 border border-pale bg-white px-3 py-2 ${
+                  step.kind === "untouched" ? "border-dashed opacity-55" : ""
+                }`}
+              >
+                <div
+                  className={`absolute inset-x-0 top-0 h-[3px] ${
+                    step.kind === "covered"
+                      ? "bg-cobalt"
+                      : step.kind === "handoff"
+                        ? "bg-navy"
+                        : "bg-pale"
+                  }`}
+                  aria-hidden
+                />
+                <div className="whitespace-nowrap font-schibsted text-[12.5px] font-medium text-ink">
+                  {step.label}
+                </div>
+                <div
+                  className={`whitespace-nowrap font-fragment text-[8px] uppercase tracking-[0.1em] ${
+                    step.kind === "handoff" ? "text-cobalt" : "text-body/50"
+                  }`}
+                >
+                  {step.sublabel}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <p className="mt-2.5 max-w-3xl text-[13px] leading-[1.55] text-body">
+          <GlossaryText text="The system automates the administrative half and stops at the handoff. Quoting and binding never move; the underwriter owns every decision." />
+        </p>
+      </section>
 
       <ol className="flex flex-col gap-3">
         {STAGES.map(({ icon: Icon, title, body }, i) => (
