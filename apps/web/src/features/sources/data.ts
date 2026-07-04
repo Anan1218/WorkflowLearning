@@ -285,13 +285,13 @@ export const CATEGORY_LABELS: Record<SourceConfig["category"], string> = {
   enrichment: "External enrichment",
 };
 
-export const RECENT_ACTIVITY: { minsAgo: number; source: string; event: string }[] = [
-  { minsAgo: 2, source: "Agent inbox", event: "3 attachments queued — CPA package, Riverbend Grading" },
-  { minsAgo: 6, source: "RLink", event: "2 referrals routed to underwriting review" },
-  { minsAgo: 11, source: "My Contract Bond App", event: "eGIA executed — 3 indemnitors KBA-verified" },
-  { minsAgo: 18, source: "D&B monitor", event: "2 new liens flagged on active principals" },
-  { minsAgo: 33, source: "Personal credit", event: "soft pull complete — FirstStep applicant" },
-  { minsAgo: 41, source: "AMS feed", event: "1,184 agency records reconciled" },
-  { minsAgo: 75, source: "SoS UCC", event: "4 secured filings found — Pine Ridge Sitework" },
-  { minsAgo: 26 * 60, source: "Broker SFTP", event: "⚠ expected drop missed — broker ops notified" },
+export const RECENT_ACTIVITY: { minsAgo: number; source: string; sourceId: string; event: string }[] = [
+  { minsAgo: 2, source: "Agent inbox", sourceId: "email-inbox", event: "3 attachments queued — CPA package, Riverbend Grading" },
+  { minsAgo: 6, source: "RLink", sourceId: "rlink", event: "2 referrals routed to underwriting review" },
+  { minsAgo: 11, source: "My Contract Bond App", sourceId: "contract-bond-app", event: "eGIA executed — 3 indemnitors KBA-verified" },
+  { minsAgo: 18, source: "D&B monitor", sourceId: "dnb", event: "2 new liens flagged on active principals" },
+  { minsAgo: 33, source: "Personal credit", sourceId: "personal-credit", event: "soft pull complete — FirstStep applicant" },
+  { minsAgo: 41, source: "AMS feed", sourceId: "ams-feeds", event: "1,184 agency records reconciled" },
+  { minsAgo: 75, source: "SoS UCC", sourceId: "sos-ucc", event: "4 secured filings found — Pine Ridge Sitework" },
+  { minsAgo: 26 * 60, source: "Broker SFTP", sourceId: "broker-sftp", event: "⚠ expected drop missed — broker ops notified" },
 ];

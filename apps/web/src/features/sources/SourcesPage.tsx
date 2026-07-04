@@ -66,49 +66,46 @@ export function SourcesPage() {
         </span>
       </div>
 
+      {/* RLI program filter - applies to every view */}
+      <div className="mb-3 flex flex-wrap items-center gap-1.5">
+        <span className="mr-1 font-fragment text-[9px] uppercase tracking-[0.2em] text-body/60">
+          RLI program
+        </span>
+        {[null, ...TIERS].map((t) => (
+          <button
+            key={t ?? "all"}
+            onClick={() => {
+              const next = t as Tier | null;
+              setTier(next);
+              // keep the detail panel relevant: jump to a source in this program
+              if (next) {
+                const current = SOURCES.find((s) => s.id === selectedId);
+                if (!current || !current.tiers.includes(next)) {
+                  const first = SOURCES.find((s) => s.tiers.includes(next));
+                  if (first) setSelectedId(first.id);
+                }
+              }
+            }}
+            aria-pressed={tier === t}
+            className={`px-3 py-1.5 font-fragment text-[10px] uppercase tracking-[0.14em] transition-colors focus-visible:outline-2 focus-visible:outline-cobalt ${
+              tier === t
+                ? "bg-cobalt text-white"
+                : "bg-white text-body ring-1 ring-line hover:text-ink"
+            }`}
+          >
+            {t ? (
+              <Term k={t.toLowerCase()} focusable={false}>
+                {t}
+              </Term>
+            ) : (
+              "All"
+            )}
+          </button>
+        ))}
+      </div>
+
       {view === "overview" && (
         <div className="fade-in flex min-h-0 flex-1 flex-col">
-          {/* tier filter + slim note */}
-          <div className="mb-3 flex flex-wrap items-center gap-1.5">
-            <span className="mr-1 font-fragment text-[9px] uppercase tracking-[0.2em] text-body/60">
-              RLI program
-            </span>
-            {[null, ...TIERS].map((t) => (
-              <button
-                key={t ?? "all"}
-                onClick={() => {
-                  const next = t as Tier | null;
-                  setTier(next);
-                  // keep the detail panel relevant: jump to a source in this program
-                  if (next) {
-                    const current = SOURCES.find((s) => s.id === selectedId);
-                    if (!current || !current.tiers.includes(next)) {
-                      const first = SOURCES.find((s) => s.tiers.includes(next));
-                      if (first) setSelectedId(first.id);
-                    }
-                  }
-                }}
-                aria-pressed={tier === t}
-                className={`px-3 py-1.5 font-fragment text-[10px] uppercase tracking-[0.14em] transition-colors focus-visible:outline-2 focus-visible:outline-cobalt ${
-                  tier === t
-                    ? "bg-cobalt text-white"
-                    : "bg-white text-body ring-1 ring-line hover:text-ink"
-                }`}
-              >
-                {t ? (
-                  <Term k={t.toLowerCase()} focusable={false}>
-                    {t}
-                  </Term>
-                ) : (
-                  "All"
-                )}
-              </button>
-            ))}
-            <span className="ml-auto hidden font-fragment text-[9px] uppercase tracking-[0.1em] text-body/50 md:block">
-              hover dotted terms for definitions · design-partner view · cited in docs/RLI-data-sources-research.md
-            </span>
-          </div>
-
           {/* map + detail, fills remaining height exactly - detail scrolls internally */}
           <div className="flex min-h-0 flex-1 flex-col gap-5 pb-1 lg:flex-row lg:overflow-hidden">
             <div className="min-h-[420px] lg:min-h-0 lg:min-w-0 lg:flex-1">
@@ -154,7 +151,9 @@ export function SourcesPage() {
         <div className="fade-in thin-scroll min-h-0 flex-1 overflow-y-auto">
           <div className="mx-auto w-full max-w-3xl">
             <ul className="border border-pale bg-white shadow-[0_14px_34px_-28px_rgba(5,28,44,0.5)]">
-              {RECENT_ACTIVITY.map((a, i) => (
+              {RECENT_ACTIVITY.filter(
+              (a) => !tier || SOURCES.find((s) => s.id === a.sourceId)?.tiers.includes(tier),
+            ).map((a, i) => (
                 <li
                   key={`${a.source}-${i}`}
                   className="fade-in flex gap-3 border-b border-line/70 px-4 py-3 last:border-0"
