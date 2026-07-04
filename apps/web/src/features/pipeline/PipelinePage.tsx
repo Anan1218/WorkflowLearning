@@ -36,14 +36,13 @@ const STAGES = [
 ];
 
 const WORKFLOW_STEPS = [
-  { label: "Submission", sublabel: "stage 01 · intake", kind: "covered" },
-  { label: "Intake", sublabel: "stage 01", kind: "covered" },
-  { label: "Appetite review", sublabel: "UW-04 · program fit", kind: "covered" },
-  { label: "Risk classification", sublabel: "classify model step", kind: "covered" },
-  { label: "Completeness review", sublabel: "UW-06", kind: "covered" },
-  { label: "Underwriting review", sublabel: "human review queue · the handoff", kind: "handoff" },
-  { label: "Quote", sublabel: "stays with the underwriter", kind: "untouched" },
-  { label: "Bind and issue", sublabel: "stays with the underwriter", kind: "untouched" },
+  { label: "Submission intake", sublabel: "STEPS 01-02", kind: "covered" },
+  { label: "Appetite review", sublabel: "STEP 03", kind: "covered" },
+  { label: "Risk classification", sublabel: "RUNS IN STEP 01", kind: "covered" },
+  { label: "Completeness review", sublabel: "STEP 04", kind: "covered" },
+  { label: "Underwriting review", sublabel: "STEP 05", kind: "last-covered" },
+  { label: "Quote", sublabel: "NOT IN SCOPE", kind: "untouched" },
+  { label: "Bind and issue", sublabel: "NOT IN SCOPE", kind: "untouched" },
 ] as const;
 
 export function PipelinePage() {
@@ -78,41 +77,57 @@ export function PipelinePage() {
         <div className="mb-3 font-fragment text-[10px] uppercase tracking-[0.18em] text-cobalt">
           Where this sits in the underwriting workflow
         </div>
-        <div className="flex flex-wrap gap-y-2">
+        <div className="flex">
           {WORKFLOW_STEPS.map((step, i) => (
-            <div key={step.label} className="flex min-w-0">
-              {i > 0 && <ArrowRight size={11} className="mx-1 self-center text-body/40" aria-hidden />}
+            <div
+              key={step.label}
+              className={`relative flex-1 min-w-0 border border-pale px-2.5 py-2.5 ${
+                i > 0 ? "-ml-px" : ""
+              } ${step.kind === "last-covered" ? "bg-cobalt/10" : "bg-white"} ${
+                step.kind === "untouched" ? "border-dashed opacity-60" : ""
+              }`}
+            >
+              {i === 5 && (
+                <>
+                  <div
+                    className="absolute bottom-0 left-0 top-0 z-10 border-l-2 border-dashed border-cobalt"
+                    aria-hidden
+                  />
+                  <div className="absolute left-0 top-0 z-20 -translate-x-1/2 -translate-y-1/2 bg-white border border-cobalt/45 px-1.5 font-fragment text-[8px] font-semibold uppercase tracking-[0.14em] text-cobalt">
+                    HANDOFF
+                  </div>
+                </>
+              )}
+              <div className="truncate font-schibsted text-[12.5px] font-medium tracking-[-0.01em] text-ink">
+                {step.label}
+              </div>
               <div
-                className={`relative min-w-0 border border-pale bg-white px-3 py-2 ${
-                  step.kind === "untouched" ? "border-dashed opacity-55" : ""
+                className={`truncate font-fragment text-[9.5px] uppercase tracking-[0.06em] ${
+                  step.kind === "untouched" ? "text-body/80" : "text-body/55"
                 }`}
               >
-                <div
-                  className={`absolute inset-x-0 top-0 h-[3px] ${
-                    step.kind === "covered"
-                      ? "bg-cobalt"
-                      : step.kind === "handoff"
-                        ? "bg-navy"
-                        : "bg-pale"
-                  }`}
-                  aria-hidden
-                />
-                <div className="whitespace-nowrap font-schibsted text-[12.5px] font-medium text-ink">
-                  {step.label}
-                </div>
-                <div
-                  className={`whitespace-nowrap font-fragment text-[8px] uppercase tracking-[0.1em] ${
-                    step.kind === "handoff" ? "text-cobalt" : "text-body/50"
-                  }`}
-                >
-                  {step.sublabel}
-                </div>
+                {step.sublabel}
               </div>
             </div>
           ))}
         </div>
-        <p className="mt-2.5 max-w-3xl text-[13px] leading-[1.55] text-body">
-          <GlossaryText text="The system automates the administrative half and stops at the handoff. Quoting and binding never move; the underwriter owns every decision." />
+        <div className="mt-2 flex gap-2">
+          <div className="min-w-0 basis-0 border-t border-cobalt pt-1" style={{ flexGrow: 5 }}>
+            <div className="truncate font-fragment text-[10px] uppercase tracking-[0.16em] text-cobalt">
+              AUTOMATED BY THIS PIPELINE · STEPS 01-05
+            </div>
+          </div>
+          <div
+            className="min-w-0 basis-0 border-t border-dashed border-body/30 pt-1"
+            style={{ flexGrow: 2 }}
+          >
+            <div className="truncate font-fragment text-[10px] uppercase tracking-[0.16em] text-body/45">
+              STAYS WITH THE UNDERWRITER
+            </div>
+          </div>
+        </div>
+        <p className="mt-2.5 max-w-4xl text-[13px] leading-[1.55] text-body">
+          <GlossaryText text="The system automates the administrative half, steps 01 through 05, and stops at the handoff. Quoting and binding never move; the underwriter owns every decision." />
         </p>
       </section>
 
@@ -136,7 +151,7 @@ export function PipelinePage() {
                 </span>
                 <h2 className="font-schibsted text-[16px] font-semibold text-ink">{title}</h2>
               </div>
-              <p className="max-w-2xl text-[14.5px] leading-[1.6] text-body"><GlossaryText text={body} /></p>
+              <p className="max-w-4xl text-[14.5px] leading-[1.6] text-body"><GlossaryText text={body} /></p>
             </Card>
           </li>
         ))}
@@ -171,15 +186,15 @@ export function PipelinePage() {
               >
                 <Card className="!p-4">
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                    <div className="flex min-w-0 gap-3">
+                    <div className="flex min-w-0 flex-1 gap-3">
                       <span className="inline-flex h-7 shrink-0 items-center border border-cobalt/45 px-2 font-fragment text-[9px] font-semibold uppercase tracking-[0.16em] text-cobalt">
                         {guideline.id}
                       </span>
-                      <div className="min-w-0">
+                      <div className="min-w-0 flex-1">
                         <h2 className="font-schibsted text-[15px] font-semibold text-ink">
                           {guideline.title}
                         </h2>
-                        <p className="mt-1 max-w-3xl text-[13.5px] leading-[1.55] text-body">
+                        <p className="mt-1 max-w-4xl text-[13.5px] leading-[1.55] text-body">
                           <GlossaryText text={guideline.rule} />
                         </p>
                         <div className="mt-2.5 border border-line bg-wash px-3 py-2">
@@ -203,7 +218,7 @@ export function PipelinePage() {
                       </div>
                     </div>
                     <span
-                      className={`shrink-0 font-fragment text-[9px] uppercase tracking-[0.14em] ${
+                      className={`shrink-0 font-fragment text-[9px] uppercase tracking-[0.14em] sm:w-44 sm:text-right ${
                         guideline.severity === "route" ? "text-cobalt" : "text-body/50"
                       }`}
                     >
@@ -232,7 +247,7 @@ export function PipelinePage() {
           <div className="font-fragment text-[10px] uppercase tracking-[0.2em] text-slate">
             The model-agnostic seam
           </div>
-          <p className="mt-3 max-w-3xl font-newsreader text-[2rem] font-normal leading-snug tracking-[-0.01em]">
+          <p className="mt-3 max-w-4xl font-newsreader text-[2rem] font-normal leading-snug tracking-[-0.01em]">
             Swapping models is a one-string configuration change, not a rewrite.
           </p>
           <div className="mt-5 flex flex-wrap items-center gap-3 font-fragment text-[12px] text-slate">
@@ -248,7 +263,7 @@ export function PipelinePage() {
               bedrock / azure-foundry / vertex
             </code>
           </div>
-          <p className="mt-5 max-w-3xl text-[14px] leading-[1.6] text-[#d6e2f5]">
+          <p className="mt-5 max-w-4xl text-[14px] leading-[1.6] text-[#d6e2f5]">
             Develop and benchmark on inexpensive models; deploy on whatever endpoint your compliance team
             approves, inside your own cloud. The pipeline, schema, evals, and traces do not change.
           </p>

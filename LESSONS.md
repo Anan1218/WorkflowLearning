@@ -171,3 +171,17 @@ Audited against the Varick FDE guide; the architecture already follows it. The r
 The pipeline is ~20% of enterprise-grade; the wrapper (access, secrets, audit, lifecycle, vendor mgmt, org program) is the rest - see README's enterprise-readiness checklist. As an external consultant pitching a carrier, the forward-deployed motion fits: embedded, time-boxed paid pilot, deployed in *their* cloud, eval metrics as acceptance criteria, IP split (they own the deployment, we keep the generic architecture). Lead with the compliance story, not the demo. OpenRouter/dev tools stay backstage; Bedrock/Vertex goes on the slide.
 
 The pitch is underwriting acceleration, not replacement: automate the administrative work around underwriting (intake, extraction, completeness, appetite screening, routing) while preserving every underwriting decision. Underwriters want time back, not software that decides for them.
+
+## Pitch narrative (the RLI demo story)
+
+Too much demo is a real failure mode: five tabs, six SOPs, two map views, and an evals matrix dilute each other unless one claim holds them together. The spine: Stello accelerates contract surety intake by turning messy submissions into cited, scored, review-ready files, while the underwriter keeps every decision and quote/bind authority.
+
+Three acts, ~10 minutes of talk track:
+
+1. **Draw the boundary** (Pipeline, 2 min). Open on the workflow strip, not the engineering stages. The strip shows quote and bind out of scope; that pre-empts "are you replacing underwriters" before it is asked. Mention the SOP register as codified routing rules; do not walk all six.
+2. **Prove the handoff** (Run then Review, 5 min). Run a Standard-tier sample: classify then extract, cost and latency visible, then click into the routed review item. Evidence citations, SOP links, approve equals waive versus override equals supply, every decision an audit entry and a training pair. This answers "can we trust and audit it."
+3. **Show governed expansion** (Evals then Sources, 3 min). Nothing earns more autonomy until evals prove it. The integration map is an overlay on their systems, not a migration; write-backs arrive one capability at a time. This answers rollout risk.
+
+Cut list: collapse the five engineering stages verbally into "classify, extract, validate, route"; show only the SOPs that fire in the live run (UW-01, UW-04, UW-06); one sentence on model-agnosticism, more invites vendor anxiety; never open with Sources, plumbing before value makes it an IT meeting.
+
+The close: a 6-week paid pilot on one Standard-submission intake lane against RLI-approved sample or historical files, acceptance criteria on per-field accuracy, routing precision, cycle-time reduction, and auditability, with no quote/bind write-back.

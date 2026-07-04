@@ -165,7 +165,7 @@ export function PageHeader({ eyebrow, title, sub }: { eyebrow: string; title: st
       </h1>
       {sub && (
         <p
-          className="rise mt-4 max-w-2xl text-[15.5px] leading-[1.6] text-body"
+          className="rise mt-4 max-w-4xl text-[15.5px] leading-[1.6] text-body"
           style={{ animationDelay: "200ms" }}
         >
           <GlossaryText text={sub} />
