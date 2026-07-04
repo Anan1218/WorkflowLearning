@@ -39,8 +39,8 @@ const WORKFLOW_STEPS = [
   { label: "Submission intake", sublabel: "STEPS 01-02", kind: "covered" },
   { label: "Appetite review", sublabel: "STEP 03", kind: "covered" },
   { label: "Risk classification", sublabel: "RUNS IN STEP 01", kind: "covered" },
-  { label: "Completeness review", sublabel: "STEP 04", kind: "covered" },
-  { label: "Underwriting review", sublabel: "STEP 05", kind: "last-covered" },
+  { label: "Completeness review", sublabel: "STEPS 04-05", kind: "covered" },
+  { label: "Underwriting review", sublabel: "AFTER THE HANDOFF", kind: "next" },
   { label: "Quote", sublabel: "NOT IN SCOPE", kind: "untouched" },
   { label: "Bind and issue", sublabel: "NOT IN SCOPE", kind: "untouched" },
 ] as const;
@@ -83,11 +83,11 @@ export function PipelinePage() {
               key={step.label}
               className={`relative flex-1 min-w-0 border border-pale px-2.5 py-2.5 ${
                 i > 0 ? "-ml-px" : ""
-              } ${step.kind === "last-covered" ? "bg-cobalt/10" : "bg-white"} ${
+              } ${step.kind === "covered" ? "bg-cobalt/5" : "bg-white"} ${
                 step.kind === "untouched" ? "border-dashed opacity-60" : ""
               }`}
             >
-              {i === 5 && (
+              {i === 4 && (
                 <>
                   <div
                     className="absolute bottom-0 left-0 top-0 z-10 border-l-2 border-dashed border-cobalt"
@@ -112,14 +112,14 @@ export function PipelinePage() {
           ))}
         </div>
         <div className="mt-2 flex gap-2">
-          <div className="min-w-0 basis-0 border-t border-cobalt pt-1" style={{ flexGrow: 5 }}>
+          <div className="min-w-0 basis-0 border-t border-cobalt pt-1" style={{ flexGrow: 4 }}>
             <div className="truncate font-fragment text-[10px] uppercase tracking-[0.16em] text-cobalt">
-              AUTOMATED BY THIS PIPELINE · STEPS 01-05
+              COVERED BY THIS SYSTEM · STEPS 01-05
             </div>
           </div>
           <div
             className="min-w-0 basis-0 border-t border-dashed border-body/30 pt-1"
-            style={{ flexGrow: 2 }}
+            style={{ flexGrow: 3 }}
           >
             <div className="truncate font-fragment text-[10px] uppercase tracking-[0.16em] text-body/45">
               STAYS WITH THE UNDERWRITER
@@ -127,7 +127,7 @@ export function PipelinePage() {
           </div>
         </div>
         <p className="mt-2.5 max-w-4xl text-[13px] leading-[1.55] text-body">
-          <GlossaryText text="The system automates the administrative half, steps 01 through 05, and stops at the handoff. Quoting and binding never move; the underwriter owns every decision." />
+          <GlossaryText text="This system covers one slice of a longer chain: intake through completeness. Extraction and checks run automatically; a person resolves flagged fields in the review queue. Underwriting review starts where we stop, working from the prepared, cited file. Quoting and binding never move." />
         </p>
       </section>
 
