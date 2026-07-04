@@ -69,6 +69,12 @@ Three tiers, adopt in order and only when forced upward:
 
 Trap: reaching for Temporal/LangGraph-checkpointing on day one. The boring Postgres status machine is auditable and fully owned by a 2-person team - same filter as everything else here. (LangGraph isn't a durability tool at all - its checkpointing serves agent loops, not enterprise queue/retry/ops semantics. Keep it out of this box.)
 
+## Storage: Supabase Postgres for review state
+
+**Decision:** use Supabase Postgres as the review queue store, with the existing JSON file store kept as the local fallback.
+
+Why over SQLite/JSON: Postgres gives the demo a real system-of-record story, and `review_decisions` is append-only so human overrides form an audit trail instead of overwriting history. The JSON fallback keeps zero-setup local dev. A single Fly machine connects through the Supabase pooler because the direct database host is IPv6-only.
+
 **When the customer is building an internal SaaS/platform (the RLI case):** the calculus shifts - not because Postgres lacks durability (intake volumes are 100x below its ceiling), but because one pipeline becomes a *pattern* for many workflows, and a real engine earns its keep on platform concerns: shared ops console, workflow versioning mid-flight, uniform retry policy, one place ops looks at 2am. Then:
 - **AWS shop -> Step Functions + SQS**: serverless, zero ops, native audit history of every transition, IAM-integrated, inside their existing cloud agreement. Best and boring coincide.
 - **Azure shop -> Durable Functions + Service Bus**: same logic, Microsoft flavor. Code-first orchestration with built-in checkpointing/replay; Python supported. Models via **Azure AI Foundry** (Claude is available there since late 2025, plus DeepSeek/open weights; Instructor has native `azure_openai` support) - the "one string, their cloud" story is identical.
