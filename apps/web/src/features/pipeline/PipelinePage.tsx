@@ -108,6 +108,24 @@ export function PipelinePage() {
                         <p className="mt-1 max-w-3xl text-[13.5px] leading-[1.55] text-body">
                           <GlossaryText text={guideline.rule} />
                         </p>
+                        <div className="mt-2.5 border border-line bg-wash px-3 py-2">
+                          <div className="grid grid-cols-[64px_1fr] items-baseline gap-2">
+                            <span className="font-fragment text-[8.5px] uppercase tracking-[0.14em] text-body/50">
+                              Given
+                            </span>
+                            <span className="text-[13px] leading-[1.5] text-body">
+                              <GlossaryText text={guideline.example.given} />
+                            </span>
+                          </div>
+                          <div className="grid grid-cols-[64px_1fr] items-baseline gap-2">
+                            <span className="font-fragment text-[8.5px] uppercase tracking-[0.14em] text-body/50">
+                              Outcome
+                            </span>
+                            <span className="text-[13px] leading-[1.5] text-body">
+                              <GlossaryText text={guideline.example.outcome} />
+                            </span>
+                          </div>
+                        </div>
                       </div>
                     </div>
                     <span

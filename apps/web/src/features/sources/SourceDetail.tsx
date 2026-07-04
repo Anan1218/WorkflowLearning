@@ -35,7 +35,7 @@ export function SourceDetail({ source, extraMins }: { source: SourceConfig; extr
             ? "confirmed RLI surface"
             : source.provenance === "inferred"
               ? "inferred"
-              : "industry-standard"}
+              : "industry standard"}
         </Badge>
       </div>
 

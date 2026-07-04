@@ -75,14 +75,14 @@ export function SourceCard({
             source.provenance === "confirmed" ? "text-cobalt" : "text-body/50"
           }`}
         >
-          {source.provenance === "confirmed" ? "confirmed" : source.provenance === "inferred" ? "inferred" : "std practice"}
+          {source.provenance === "confirmed" ? "confirmed" : source.provenance === "inferred" ? "inferred" : "industry standard"}
         </span>
       </div>
       <div className="flex items-end justify-between gap-2">
         <div className="font-fragment text-[10px] leading-relaxed text-body">
           {source.cadence}
           <br />
-          <span className="text-body/60">sync {relSync(source.lastSyncMinsAgo + extraMins)}</span>
+          <span className="text-body/60">Sync {relSync(source.lastSyncMinsAgo + extraMins)}</span>
         </div>
         <div className="text-right font-fragment text-[11px] text-cobalt">{source.volumePerDay}</div>
       </div>

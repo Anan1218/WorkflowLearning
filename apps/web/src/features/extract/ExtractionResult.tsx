@@ -110,7 +110,7 @@ export function ExtractionResult({
                       {scored !== undefined && (
                         <span
                           className="ml-1.5 inline-flex align-middle"
-                          title={scored ? "matches ground truth" : "differs from ground truth"}
+                          title={scored ? "Matches ground truth" : "Differs from ground truth"}
                         >
                           {scored ? (
                             <Check size={13} className="text-ok" aria-label="matches ground truth" />

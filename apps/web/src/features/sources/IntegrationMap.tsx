@@ -126,7 +126,7 @@ export function IntegrationMap({
             className="fill-[#48566b]"
             style={{ font: "9px 'Fragment Mono', monospace", letterSpacing: "0.14em", textTransform: "uppercase" }}
           >
-            {h.label.toUpperCase()}
+            {h.label}
           </text>
         ))}
 
@@ -173,10 +173,10 @@ export function IntegrationMap({
                 x={LEFT_X + 26}
                 y={y + 27}
                 className="fill-[#48566b]"
-                style={{ font: "8px 'Fragment Mono', monospace", letterSpacing: "0.08em" }}
+                style={{ font: "8px 'Fragment Mono', monospace", letterSpacing: "0.08em", textTransform: "uppercase" }}
               >
                 {(() => {
-                  const meta = `${source.connection} · ${source.cadence}`.toUpperCase();
+                  const meta = `${source.connection} · ${source.cadence}`;
                   return meta.length > 33 ? meta.slice(0, 32) + "…" : meta;
                 })()}
               </text>
@@ -243,9 +243,9 @@ export function IntegrationMap({
               x={RIGHT_X + 14}
               y={o.y + 40}
               className="fill-[#48566b]"
-              style={{ font: "8.5px 'Fragment Mono', monospace", letterSpacing: "0.08em" }}
+              style={{ font: "8.5px 'Fragment Mono', monospace", letterSpacing: "0.08em", textTransform: "uppercase" }}
             >
-              {o.note.toUpperCase()}
+              {o.note}
             </text>
           </g>
         ))}

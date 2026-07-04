@@ -121,7 +121,7 @@ export function DocInput({
                   className="inline-flex items-center gap-1.5 font-schibsted text-[13px] text-body underline decoration-dotted underline-offset-2 transition-colors hover:text-cobalt disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   <FileUp size={13} aria-hidden />
-                  or browse a file
+                  Browse a file
                 </button>
               </div>
               <div className="min-w-0 text-right">

@@ -88,7 +88,7 @@ export function EvalsPage() {
                 <Badge tone="neutral">{run.n_cases} labeled cases</Badge>
                 {run.totals && (
                   <div className="mt-1 font-fragment text-[10px] leading-relaxed text-body">
-                    avg latency {run.totals.mean_latency_s ?? "–"}s
+                    Avg latency {run.totals.mean_latency_s ?? "–"}s
                     <br />
                     {Math.round((run.totals.input_tokens + run.totals.output_tokens) / run.n_cases).toLocaleString()}{" "}
                     tokens/case

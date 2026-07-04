@@ -9,12 +9,18 @@ from pydantic import BaseModel
 from core.schemas import SuretySubmission
 
 
+class GuidelineExample(BaseModel):
+    given: str
+    outcome: str
+
+
 class Guideline(BaseModel):
     id: str
     title: str
     rule: str
     severity: Literal["route", "info"]
     route: str
+    example: GuidelineExample
 
 
 class Rationale(BaseModel):
@@ -36,6 +42,10 @@ GUIDELINES: list[Guideline] = [
             "Any extracted field with model-reported confidence below the threshold cannot proceed "
             "unattended and routes to an underwriter."
         ),
+        example=GuidelineExample(
+            given="principal.fein extracted at confidence 0.62 against the 0.75 floor.",
+            outcome="The field routes to the human review queue; it cannot auto-proceed.",
+        ),
     ),
     Guideline(
         id="UW-02",
@@ -46,6 +56,10 @@ GUIDELINES: list[Guideline] = [
             "A populated field the model did not assign a confidence to is treated as unverified "
             "and routes to an underwriter."
         ),
+        example=GuidelineExample(
+            given="net_worth populated but the model reported no confidence for it.",
+            outcome="Treated as unverified and routed to review.",
+        ),
     ),
     Guideline(
         id="UW-03",
@@ -53,6 +67,10 @@ GUIDELINES: list[Guideline] = [
         severity="route",
         route="Underwriter judgment",
         rule="Working capital below 10% of the bond amount requires underwriter judgment before quoting.",
+        example=GuidelineExample(
+            given="Working capital $145,000 on a $1,850,000 bond (7.8%).",
+            outcome="Below the 10% floor of $185,000; underwriter judgment before quoting.",
+        ),
     ),
     Guideline(
         id="UW-04",
@@ -63,6 +81,10 @@ GUIDELINES: list[Guideline] = [
             "Bond amount maps the file to an RLI program tier: FirstStep up to $500K, "
             "Next Step $500K to $1.5M, Standard above $1.5M."
         ),
+        example=GuidelineExample(
+            given="Bond amount $1,850,000.",
+            outcome="Maps to the Standard program: CPA-prepared financials expected.",
+        ),
     ),
     Guideline(
         id="UW-05",
@@ -72,6 +94,10 @@ GUIDELINES: list[Guideline] = [
         rule=(
             "Work-in-progress rows where billings exceed the contract amount, or cost to date "
             "exceeds total estimated cost, indicate billing or estimate problems and require review."
+        ),
+        example=GuidelineExample(
+            given="Marion Trail Phase 1 billed $640,000 on a $620,000 contract.",
+            outcome="Overbilling flagged; WIP review before quoting.",
         ),
     ),
 ]

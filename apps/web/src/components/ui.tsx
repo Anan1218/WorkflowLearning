@@ -115,7 +115,7 @@ export function ConfidenceBar({ value }: { value: number | null }) {
           className={`absolute inset-y-0 left-0 ${low ? "bg-flag" : "bg-cobalt"}`}
           style={{ width: `${pct}%` }}
         />
-        <div className="absolute inset-y-[-2px] left-[75%] w-px bg-body/40" title="review threshold 0.75" />
+        <div className="absolute inset-y-[-2px] left-[75%] w-px bg-body/40" title="Review threshold 0.75" />
       </div>
       <span className={`font-fragment text-[10px] ${low ? "text-flag" : "text-body"}`}>
         {value.toFixed(2)}

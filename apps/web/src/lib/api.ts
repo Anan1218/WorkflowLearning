@@ -34,6 +34,7 @@ export type GuidelineInfo = {
   rule: string;
   severity: "route" | "info";
   route: string;
+  example: { given: string; outcome: string };
 };
 
 export type Rationale = {
