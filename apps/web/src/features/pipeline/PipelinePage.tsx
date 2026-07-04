@@ -10,7 +10,7 @@ import {
   UserCheck,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { Card, PageHeader } from "../../components/ui";
 import { GlossaryText } from "../../components/Term";
@@ -23,6 +23,7 @@ const STAGES = [
     body: "Broker emails, contractor questionnaires, bond request forms, WIP schedules, and CPA financial statements go in as messy text. PDF text-layer today; OCR + image hybrid is the production path for scans.",
     demo: "Pasted text and file uploads.",
     production: "My Contract Bond App webhooks, the agent inbox, SFTP drops; OCR for scanned packages.",
+    shapedBy: [],
   },
   {
     icon: Tags,
@@ -30,6 +31,7 @@ const STAGES = [
     body: "A first model call classifies the document type and surety line before extraction, so routing context is known before the typed submission is built.",
     demo: "One call types the single document.",
     production: "One call per document in the package, on a cheap triage model.",
+    shapedBy: ["UW-04"],
   },
   {
     icon: ScanSearch,
@@ -37,6 +39,7 @@ const STAGES = [
     body: "Instructor + Pydantic force the model's output into a typed SuretySubmission. Invalid output is automatically re-asked; the schema is the contract.",
     demo: "One SuretySubmission schema, one call.",
     production: "A schema per document type, chunked passes for long financials, and a reconciliation step when documents disagree.",
+    shapedBy: ["UW-03", "UW-05", "UW-06"],
   },
   {
     icon: ShieldCheck,
@@ -44,6 +47,7 @@ const STAGES = [
     body: "Business rules run as plain code: bond amounts positive, FEIN shapes, WIP arithmetic. Deterministic, testable, no model involved.",
     demo: "Six SOP rules, UW-01 through UW-06.",
     production: "The carrier's own register, elicited from the review team, versioned, and expanded rule by rule.",
+    shapedBy: ["UW-03", "UW-04", "UW-05"],
   },
   {
     icon: SlidersHorizontal,
@@ -51,6 +55,7 @@ const STAGES = [
     body: "The model scores its own certainty per field. Anything below 0.75, or unreported, cannot proceed unattended.",
     demo: "A fixed 0.75 threshold for every field.",
     production: "Thresholds tuned per field and program tier from eval data on the carrier's own documents.",
+    shapedBy: ["UW-01", "UW-02"],
   },
   {
     icon: UserCheck,
@@ -58,6 +63,7 @@ const STAGES = [
     body: "Flagged fields queue for an underwriter. Approve or override per field; every decision is an audit-trail entry and a new labeled training pair. Autonomy is earned in steps: today the system only reads and proposes. Write-backs arrive one capability at a time, after evals prove each one.",
     demo: "One queue; approve or override per field.",
     production: "Assignment by tier and territory; write-backs to source systems arrive per capability, after evals prove each one.",
+    shapedBy: ["UW-01", "UW-02", "UW-06"],
   },
 ];
 
@@ -73,6 +79,7 @@ const WORKFLOW_STEPS = [
 
 export function PipelinePage() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [openSop, setOpenSop] = useState<string | null>(null);
   const { data: guidelines, isLoading: guidelinesLoading } = useQuery({
     queryKey: ["guidelines"],
@@ -162,7 +169,7 @@ export function PipelinePage() {
       </section>
 
       <ol className="flex flex-col gap-3">
-        {STAGES.map(({ icon: Icon, title, body, demo, production }, i) => (
+        {STAGES.map(({ icon: Icon, title, body, demo, production, shapedBy }, i) => (
           <li
             key={title}
             className="rise flex items-stretch gap-4"
@@ -196,6 +203,25 @@ export function PipelinePage() {
                   <span className="text-[13px] leading-[1.5] text-body">
                     <GlossaryText text={production} />
                   </span>
+                  {shapedBy.length > 0 && (
+                    <>
+                      <span className="font-fragment text-[8.5px] uppercase tracking-[0.14em] text-body/50">
+                        Shaped by
+                      </span>
+                      <span className="flex flex-wrap gap-1.5">
+                        {shapedBy.map((id) => (
+                          <button
+                            key={id}
+                            type="button"
+                            className="border border-cobalt/35 px-1.5 py-0.5 font-fragment text-[9px] font-semibold uppercase tracking-[0.14em] text-cobalt hover:bg-cobalt/5"
+                            onClick={() => navigate(`#sop-${id.toLowerCase()}`)}
+                          >
+                            {id}
+                          </button>
+                        ))}
+                      </span>
+                    </>
+                  )}
                 </div>
               </div>
             </Card>
@@ -209,7 +235,7 @@ export function PipelinePage() {
             Documented SOPs
           </div>
           <p className="max-w-2xl text-[14px] leading-[1.55] text-body sm:text-right">
-            <GlossaryText text="The routing rules are written procedure, not model whim. The same register the review team follows, executed by the pipeline on every run." />
+            <GlossaryText text="Six rules from three working sessions with the review team: said aloud, written as procedure, signed off, and executed on every run since. In a pilot, the first two weeks are these sessions with your reviewers." />
           </p>
         </div>
 
@@ -300,7 +326,14 @@ export function PipelinePage() {
                         id={`sop-details-${guideline.id.toLowerCase()}`}
                         className="mt-3 border-t border-line pt-3"
                       >
-                        <div className="font-fragment text-[8.5px] uppercase tracking-[0.14em] text-body/50">
+                        <p className="font-newsreader text-[15px] italic leading-[1.5] text-ink">
+                          "{guideline.quote}"
+                        </p>
+                        <div className="mt-1 font-fragment text-[8.5px] uppercase tracking-[0.14em] text-body/50">
+                          {guideline.elicited_from}
+                        </div>
+
+                        <div className="mt-3 font-fragment text-[8.5px] uppercase tracking-[0.14em] text-body/50">
                           Why this rule
                         </div>
                         <p className="text-[13px] leading-[1.55] text-body">
@@ -328,6 +361,13 @@ export function PipelinePage() {
                         </div>
                         <p className="text-[13px] leading-[1.55] text-body">
                           <GlossaryText text={guideline.escalation} />
+                        </p>
+
+                        <div className="mt-3 font-fragment text-[8.5px] uppercase tracking-[0.14em] text-body/50">
+                          In the pipeline
+                        </div>
+                        <p className="text-[13px] leading-[1.55] text-body">
+                          <GlossaryText text={guideline.pipeline_note} />
                         </p>
 
                         <div className="mt-3 flex justify-between gap-3">

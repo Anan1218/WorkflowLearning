@@ -34,6 +34,9 @@ export type GuidelineInfo = {
   rule: string;
   severity: "route" | "info";
   route: string;
+  elicited_from: string;
+  quote: string;
+  pipeline_note: string;
   example: { given: string; outcome: string };
   purpose: string;
   procedure: string[];

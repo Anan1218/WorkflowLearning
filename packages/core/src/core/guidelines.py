@@ -20,6 +20,9 @@ class Guideline(BaseModel):
     rule: str
     severity: Literal["route", "info"]
     route: str
+    elicited_from: str
+    quote: str
+    pipeline_note: str
     example: GuidelineExample
     purpose: str
     procedure: list[str]
@@ -43,6 +46,13 @@ GUIDELINES: list[Guideline] = [
         title="Confidence floor",
         severity="route",
         route="Human review queue",
+        elicited_from="Intake review lead · session 1",
+        quote="If the system is not sure it read the number right, I want eyes on it. Full stop.",
+        pipeline_note=(
+            "Stage 05, Confidence gate. This rule is why the gate exists: every extracted "
+            "field's confidence is compared to the floor there, and anything below routes to "
+            "the queue instead of proceeding."
+        ),
         rule=(
             "Any extracted field with model-reported confidence below the threshold cannot proceed "
             "unattended and routes to an underwriter."
@@ -73,6 +83,12 @@ GUIDELINES: list[Guideline] = [
         title="Unscored field",
         severity="route",
         route="Human review queue",
+        elicited_from="Intake review lead · session 1",
+        quote="No score is worse than a low score. Silence is not a pass.",
+        pipeline_note=(
+            "Stage 05, Confidence gate. The gate fails closed because of this rule: a "
+            "populated field with no reported confidence is treated the same as a low one."
+        ),
         rule=(
             "A populated field the model did not assign a confidence to is treated as unverified "
             "and routes to an underwriter."
@@ -102,6 +118,15 @@ GUIDELINES: list[Guideline] = [
         title="Liquidity check",
         severity="route",
         route="Underwriter judgment",
+        elicited_from="Senior contract underwriter · session 2",
+        quote=(
+            "Thin working capital against the bond is the first thing I look at. Under ten "
+            "percent, we talk before anyone quotes."
+        ),
+        pipeline_note=(
+            "Stages 03 and 04. The extraction schema carries working_capital because this "
+            "rule consumes it; Validate computes the ratio as plain code on every file."
+        ),
         rule="Working capital below 10% of the bond amount requires underwriter judgment before quoting.",
         example=GuidelineExample(
             given="Working capital $145,000 on a $1,850,000 bond (7.8%).",
@@ -129,6 +154,15 @@ GUIDELINES: list[Guideline] = [
         title="Program fit",
         severity="info",
         route="Informational",
+        elicited_from="Contract surety underwriter · session 2",
+        quote=(
+            "The bond size tells you which file you are building. A Standard file worked "
+            "like a FirstStep app wastes everyone's month."
+        ),
+        pipeline_note=(
+            "Stages 02 and 04. Classification runs early so the tier is known before "
+            "completeness; Validate stamps the tier that UW-06 reads downstream."
+        ),
         rule=(
             "Bond amount maps the file to an RLI program tier: FirstStep up to $500K, "
             "Next Step $500K to $1.5M, Standard above $1.5M."
@@ -160,6 +194,13 @@ GUIDELINES: list[Guideline] = [
         title="WIP consistency",
         severity="route",
         route="Underwriter judgment",
+        elicited_from="Senior contract underwriter · session 3",
+        quote="If billings are over contract, I stop everything until I have seen the WIP.",
+        pipeline_note=(
+            "Stages 03 and 04. The schema models WIP rows (contract amount, billed, cost "
+            "to date) because this rule needs the arithmetic; Validate checks every row "
+            "deterministically."
+        ),
         rule=(
             "Work-in-progress rows where billings exceed the contract amount, or cost to date "
             "exceeds total estimated cost, indicate billing or estimate problems and require review."
@@ -189,6 +230,16 @@ GUIDELINES: list[Guideline] = [
         title="Completeness",
         severity="route",
         route="Human review queue",
+        elicited_from="Intake review lead · session 3",
+        quote=(
+            "Most delay is not underwriting, it is chasing paper. Tell the broker what is "
+            "missing on day one."
+        ),
+        pipeline_note=(
+            "Stages 04 and 06. Validate names what the tier requires; the review queue's "
+            "supply-or-waive semantics exist because this rule says a file cannot be quoted "
+            "while items are open."
+        ),
         rule=(
             "The program tier implied by the bond amount sets what the file must contain. "
             "Anything missing is named, and the submission cannot be quoted until it is "
