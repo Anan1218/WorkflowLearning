@@ -119,8 +119,8 @@ export function SourcesPage() {
       )}
 
       {view === "inventory" && (
-        <div className="fade-in thin-scroll min-h-0 flex-1 overflow-y-auto">
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_320px]">
+        <div className="fade-in flex min-h-0 flex-1 flex-col gap-5 pb-1 lg:flex-row lg:overflow-hidden">
+          <div className="thin-scroll min-h-0 overflow-y-auto pr-1 lg:min-w-0 lg:flex-1">
             <div>
               {(["submission", "carrier", "enrichment"] as const).map((cat) => (
                 <section key={cat} className="mb-6">
@@ -140,10 +140,10 @@ export function SourcesPage() {
                 </section>
               ))}
             </div>
-            <div className="lg:sticky lg:top-0 lg:self-start">
-              {selected && <SourceDetail source={selected} extraMins={extraMins} />}
-            </div>
           </div>
+          <aside className="thin-scroll min-h-0 lg:w-[340px] lg:shrink-0 lg:overflow-y-auto">
+            {selected && <SourceDetail source={selected} extraMins={extraMins} />}
+          </aside>
         </div>
       )}
 
