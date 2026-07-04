@@ -1,9 +1,14 @@
 /** Glossary hint primitives: <Term> (dotted-underline + popover) and
- *  <GlossaryText> (auto-linkifies known terms in a prose string). */
+ *  <GlossaryText> (auto-linkifies known terms in a prose string).
+ *  The popover renders in a portal at document.body with viewport coordinates,
+ *  so it floats above everything and is never clipped by scroll containers. */
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 
 import { GLOSSARY, MATCHERS } from "../lib/glossary";
+
+const POP_W = 280;
 
 export function Term({
   k,
@@ -15,41 +20,69 @@ export function Term({
   /** false when rendered inside an interactive element (e.g. a filter chip) */
   focusable?: boolean;
 }) {
-  const [open, setOpen] = useState(false);
+  const [pos, setPos] = useState<{ left: number; top: number; below: boolean } | null>(null);
+  const anchorRef = useRef<HTMLSpanElement>(null);
   const entry = GLOSSARY[k];
+
+  const open = () => {
+    const r = anchorRef.current?.getBoundingClientRect();
+    if (!r) return;
+    const below = r.top < 170;
+    setPos({
+      left: Math.min(Math.max(r.left + r.width / 2 - POP_W / 2, 8), window.innerWidth - POP_W - 8),
+      top: below ? r.bottom + 8 : r.top - 8,
+      below,
+    });
+  };
+  const close = () => setPos(null);
+
+  useEffect(() => {
+    if (!pos) return;
+    const onScroll = () => close();
+    window.addEventListener("scroll", onScroll, true);
+    return () => window.removeEventListener("scroll", onScroll, true);
+  }, [pos]);
+
   if (!entry) return <>{children}</>;
 
   return (
-    <span
-      className="relative inline-block"
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
-    >
+    <>
       <span
+        ref={anchorRef}
         tabIndex={focusable ? 0 : undefined}
         className="cursor-help underline decoration-dotted decoration-1 underline-offset-2 opacity-95 focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-cobalt"
-        aria-describedby={open ? `gloss-${k}` : undefined}
-        onFocus={() => setOpen(true)}
-        onBlur={() => setOpen(false)}
-        onKeyDown={(e) => e.key === "Escape" && setOpen(false)}
+        aria-describedby={pos ? `gloss-${k}` : undefined}
+        onMouseEnter={open}
+        onMouseLeave={close}
+        onFocus={open}
+        onBlur={close}
+        onKeyDown={(e) => e.key === "Escape" && close()}
       >
         {children}
       </span>
-      {open && (
-        <span
-          id={`gloss-${k}`}
-          role="tooltip"
-          className="absolute bottom-full left-1/2 z-50 mb-2 block w-[270px] -translate-x-1/2 border border-pale bg-white p-3.5 text-left shadow-[0_18px_40px_-24px_rgba(30,58,92,0.45)]"
-        >
-          <span className="mb-1 block font-fragment text-[9px] uppercase tracking-[0.14em] text-cobalt">
-            {entry.term}
-          </span>
-          <span className="block font-sans text-[12.5px] font-normal normal-case leading-[1.55] tracking-normal text-body">
-            {entry.def}
-          </span>
-        </span>
-      )}
-    </span>
+      {pos &&
+        createPortal(
+          <span
+            id={`gloss-${k}`}
+            role="tooltip"
+            className="pointer-events-none fixed z-[100] block border border-pale bg-white p-3.5 text-left shadow-[0_18px_40px_-24px_rgba(30,58,92,0.45)]"
+            style={{
+              width: POP_W,
+              left: pos.left,
+              top: pos.top,
+              transform: pos.below ? undefined : "translateY(-100%)",
+            }}
+          >
+            <span className="mb-1 block font-fragment text-[9px] uppercase tracking-[0.14em] text-cobalt">
+              {entry.term}
+            </span>
+            <span className="block font-sans text-[12.5px] font-normal normal-case leading-[1.55] tracking-normal text-body">
+              {entry.def}
+            </span>
+          </span>,
+          document.body,
+        )}
+    </>
   );
 }
 

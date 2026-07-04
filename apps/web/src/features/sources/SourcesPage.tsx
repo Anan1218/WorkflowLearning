@@ -76,7 +76,18 @@ export function SourcesPage() {
             {[null, ...TIERS].map((t) => (
               <button
                 key={t ?? "all"}
-                onClick={() => setTier(t as Tier | null)}
+                onClick={() => {
+                  const next = t as Tier | null;
+                  setTier(next);
+                  // keep the detail panel relevant: jump to a source in this program
+                  if (next) {
+                    const current = SOURCES.find((s) => s.id === selectedId);
+                    if (!current || !current.tiers.includes(next)) {
+                      const first = SOURCES.find((s) => s.tiers.includes(next));
+                      if (first) setSelectedId(first.id);
+                    }
+                  }
+                }}
                 aria-pressed={tier === t}
                 className={`px-3 py-1.5 font-fragment text-[10px] uppercase tracking-[0.14em] transition-colors focus-visible:outline-2 focus-visible:outline-cobalt ${
                   tier === t
