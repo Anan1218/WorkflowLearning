@@ -36,10 +36,10 @@ const STAGES = [
 ];
 
 const WORKFLOW_STEPS = [
-  { label: "Submission intake", sublabel: "STEPS 01-02", kind: "covered" },
-  { label: "Appetite review", sublabel: "STEP 03", kind: "covered" },
-  { label: "Risk classification", sublabel: "RUNS IN STEP 01", kind: "covered" },
-  { label: "Completeness review", sublabel: "STEPS 04-05", kind: "covered" },
+  { label: "Submission intake", sublabel: "PARSE + EXTRACT", kind: "covered" },
+  { label: "Appetite review", sublabel: "RULE UW-04", kind: "covered" },
+  { label: "Risk classification", sublabel: "CLASSIFY MODEL CALL", kind: "covered" },
+  { label: "Completeness review", sublabel: "UW-06 + QUEUE", kind: "covered" },
   { label: "Underwriting review", sublabel: "AFTER THE HANDOFF", kind: "next" },
   { label: "Quote", sublabel: "NOT IN SCOPE", kind: "untouched" },
   { label: "Bind and issue", sublabel: "NOT IN SCOPE", kind: "untouched" },
