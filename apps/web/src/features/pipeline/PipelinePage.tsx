@@ -46,7 +46,13 @@ export function PipelinePage() {
     if (!location.hash.startsWith("#sop-")) return;
 
     const target = document.getElementById(location.hash.slice(1));
-    target?.scrollIntoView({ block: "start" });
+    // Scroll only the app's main region: scrollIntoView would also scroll the
+    // document root and push the fixed header out of view.
+    const scroller = target?.closest("main");
+    if (target && scroller) {
+      const delta = target.getBoundingClientRect().top - scroller.getBoundingClientRect().top;
+      scroller.scrollTo({ top: scroller.scrollTop + delta - 24, behavior: "smooth" });
+    }
   }, [guidelines, location.hash]);
 
   return (

@@ -54,7 +54,16 @@ function scrollToEvidence(path: string) {
   const element = document.getElementById(`evidence-${path}`);
   if (!element) return;
 
-  element.scrollIntoView({ behavior: "smooth", block: "center" });
+  // Scroll only the source-document pane: scrollIntoView would also scroll
+  // ancestor containers, including the document root behind the fixed header.
+  const scroller = element.closest(".thin-scroll");
+  if (scroller) {
+    const delta = element.getBoundingClientRect().top - scroller.getBoundingClientRect().top;
+    scroller.scrollTo({
+      top: scroller.scrollTop + delta - scroller.clientHeight / 2,
+      behavior: "smooth",
+    });
+  }
   element.classList.remove("evidence-pulse");
   void element.offsetWidth;
   element.classList.add("evidence-pulse");
