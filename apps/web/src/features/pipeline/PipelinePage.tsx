@@ -232,10 +232,10 @@ export function PipelinePage() {
       <section className="mt-10">
         <div className="rise mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between" style={{ animationDelay: "760ms" }}>
           <div className="font-fragment text-[10px] uppercase tracking-[0.18em] text-cobalt">
-            Documented SOPs
+            The intake SOP · clauses UW-01 to UW-06
           </div>
           <p className="max-w-2xl text-[14px] leading-[1.55] text-body sm:text-right">
-            <GlossaryText text="Six rules from three working sessions with the review team: said aloud, written as procedure, signed off, and executed on every run since. In a pilot, the first two weeks are these sessions with your reviewers." />
+            <GlossaryText text="One SOP, six numbered clauses, each with its own trigger, owner, and version: the form a pipeline can execute and an auditor can diff. Elicited in three working sessions with the review team; executed on every run since. In a pilot, the first two weeks are these sessions with your reviewers." />
           </p>
         </div>
 
