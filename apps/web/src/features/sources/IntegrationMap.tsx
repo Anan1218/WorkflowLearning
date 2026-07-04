@@ -4,23 +4,28 @@
 
 import { CATEGORY_LABELS, SOURCES, type SourceConfig, type Tier } from "./data";
 
-const W = 1000;
+const W = 1240;
 const H = 620;
 const NODE_W = 218;
 const NODE_H = 34;
+const OUTPUT_NODE_H = 54;
 const LEFT_X = 8;
-const CENTER_X = 400;
+const CENTER_X = 320;
 const CENTER_W = 210;
 const CENTER_H = 120;
-const RIGHT_X = W - 226;
-
-// The data flow is a chain: every pipeline write lands in the system of record,
-// and the review queue consumes from Postgres. Traces are telemetry, not data flow.
-const OUTPUTS = [
-  { id: "langfuse", label: "Langfuse · OTel traces", note: "observability side channel", y: 80, kind: "telemetry" as const },
-  { id: "postgres", label: "System of record · Postgres", note: "submissions + audit trail", y: 240, kind: "primary" as const },
-  { id: "review", label: "Human review queue", note: "confidence-gated · reads postgres", y: 420, kind: "downstream" as const },
-];
+// Right-side columns: even rhythm, ~55px gaps for the labeled edges.
+const RIGHT_NODE_W = 190;
+const SOR_X = 580;
+const SOR_Y = H / 2 - OUTPUT_NODE_H / 2;
+const LANGFUSE_X = 580;
+const LANGFUSE_Y = 505;
+const HUB2_X = 830;
+const HUB2_Y = H / 2 - 43;
+const HUB2_W = 160;
+const HUB2_H = 86;
+const CONSUMER_X = 1042;
+const REVIEW_Y = 170;
+const DRAFT_Y = 396;
 
 type Layout = { source: SourceConfig; y: number };
 
@@ -52,11 +57,7 @@ function pathFor(y: number): string {
   return `M ${x0} ${y0} C ${mx} ${y0}, ${mx} ${y1}, ${x1} ${y1}`;
 }
 
-function outPathFor(y: number): string {
-  const x0 = CENTER_X + CENTER_W;
-  const y0 = H / 2;
-  const x1 = RIGHT_X;
-  const y1 = y + 27;
+function edge(x0: number, y0: number, x1: number, y1: number): string {
   const mx = (x0 + x1) / 2;
   return `M ${x0} ${y0} C ${mx} ${y0}, ${mx} ${y1}, ${x1} ${y1}`;
 }
@@ -105,44 +106,72 @@ export function IntegrationMap({
           );
         })}
 
-        {/* connectors: pipeline -> system of record (writes), pipeline -> traces (telemetry) */}
-        {OUTPUTS.filter((o) => o.kind !== "downstream").map((o) => (
-          <g key={`op-${o.id}`}>
-            <path
-              d={outPathFor(o.y)}
-              fill="none"
-              className="flow-line"
-              stroke="#2251ff"
-              strokeWidth={o.kind === "telemetry" ? 1 : 1.8}
-              opacity={(selectedId ? 0.25 : 0.55) * (o.kind === "telemetry" ? 0.55 : 1)}
-            />
-          </g>
-        ))}
+        {/* event-driven flow */}
+        <path
+          d={edge(CENTER_X + CENTER_W, H / 2, SOR_X, H / 2)}
+          fill="none"
+          stroke="#2251ff"
+          strokeWidth={1.8}
+          opacity={selectedId ? 0.3 : 0.7}
+        />
         <text
-          x={(CENTER_X + CENTER_W + RIGHT_X) / 2 - 14}
-          y={H / 2 + (240 + 27 - H / 2) / 2 + 2}
+          x={(CENTER_X + CENTER_W + SOR_X) / 2}
+          y={H / 2 - 6}
+          textAnchor="middle"
           className="fill-[#48566b]"
           style={{ font: "8px 'Fragment Mono', monospace", letterSpacing: "0.14em" }}
         >
           WRITES
         </text>
-
-        {/* connector: system of record -> human review queue (reads) */}
         <path
-          d={`M ${RIGHT_X + NODE_W / 2} ${240 + 54} C ${RIGHT_X + NODE_W / 2} ${240 + 54 + 45}, ${RIGHT_X + NODE_W / 2} ${420 - 45}, ${RIGHT_X + NODE_W / 2} ${420}`}
+          d={edge(CENTER_X + CENTER_W / 2, CENTER_Y + CENTER_H, LANGFUSE_X, LANGFUSE_Y + OUTPUT_NODE_H / 2)}
           fill="none"
           className="flow-line"
           stroke="#2251ff"
-          strokeWidth={1.6}
-          opacity={selectedId ? 0.25 : 0.55}
+          strokeWidth={1}
+          opacity={0.3}
+        />
+        <path
+          d={edge(SOR_X + RIGHT_NODE_W, H / 2, HUB2_X, H / 2)}
+          fill="none"
+          className="flow-line"
+          stroke="#2251ff"
+          strokeWidth={1.4}
+          opacity={selectedId ? 0.25 : 0.6}
         />
         <text
-          x={RIGHT_X + NODE_W / 2 + 8}
-          y={(240 + 54 + 420) / 2 + 3}
+          x={(SOR_X + RIGHT_NODE_W + HUB2_X) / 2}
+          y={H / 2 - 8}
+          textAnchor="middle"
           className="fill-[#48566b]"
           style={{ font: "8px 'Fragment Mono', monospace", letterSpacing: "0.14em" }}
         >
-          READS
+          ON NEW ROW
+        </text>
+        <path
+          d={edge(HUB2_X + HUB2_W, H / 2, CONSUMER_X, REVIEW_Y + OUTPUT_NODE_H / 2)}
+          fill="none"
+          className="flow-line"
+          stroke="#2251ff"
+          strokeWidth={1.4}
+          opacity={selectedId ? 0.25 : 0.6}
+        />
+        <path
+          d={edge(HUB2_X + HUB2_W, H / 2, CONSUMER_X, DRAFT_Y + OUTPUT_NODE_H / 2)}
+          fill="none"
+          className="flow-line"
+          stroke="#2251ff"
+          strokeWidth={1.4}
+          opacity={0.3}
+        />
+        <text
+          x={(HUB2_X + HUB2_W + CONSUMER_X) / 2}
+          y={H / 2 + (REVIEW_Y + OUTPUT_NODE_H / 2 - H / 2) / 2 - 6}
+          textAnchor="middle"
+          className="fill-[#48566b]"
+          style={{ font: "8px 'Fragment Mono', monospace", letterSpacing: "0.14em" }}
+        >
+          ROUTES
         </text>
 
         {/* category headers */}
@@ -254,29 +283,132 @@ export function IntegrationMap({
           </text>
         </g>
 
-        {/* output nodes */}
-        {OUTPUTS.map((o) => (
-          <g key={o.id}>
-            <rect x={RIGHT_X} y={o.y} width={NODE_W} height={54} fill="#ffffff" stroke="#cdd9f5" />
-            <rect x={RIGHT_X} y={o.y} width={NODE_W} height={3} fill="#2251ff" />
-            <text
-              x={RIGHT_X + 14}
-              y={o.y + 24}
-              className="fill-[#051c2c]"
-              style={{ font: "500 12px 'Schibsted Grotesk', sans-serif" }}
-            >
-              {o.label}
-            </text>
-            <text
-              x={RIGHT_X + 14}
-              y={o.y + 40}
-              className="fill-[#48566b]"
-              style={{ font: "8.5px 'Fragment Mono', monospace", letterSpacing: "0.08em", textTransform: "uppercase" }}
-            >
-              {o.note}
-            </text>
-          </g>
-        ))}
+        {/* system of record node */}
+        <g data-node-id="postgres">
+          <rect x={SOR_X} y={SOR_Y} width={RIGHT_NODE_W} height={OUTPUT_NODE_H} fill="#ffffff" stroke="#cdd9f5" />
+          <rect x={SOR_X} y={SOR_Y} width={RIGHT_NODE_W} height={3} fill="#2251ff" />
+          <text
+            x={SOR_X + 14}
+            y={SOR_Y + 24}
+            className="fill-[#051c2c]"
+            style={{ font: "500 12px 'Schibsted Grotesk', sans-serif" }}
+          >
+            System of record · Postgres
+          </text>
+          <text
+            x={SOR_X + 14}
+            y={SOR_Y + 40}
+            className="fill-[#48566b]"
+            style={{ font: "8.5px 'Fragment Mono', monospace", letterSpacing: "0.08em", textTransform: "uppercase" }}
+          >
+            submissions + audit trail
+          </text>
+        </g>
+
+        {/* telemetry side channel */}
+        <g data-node-id="langfuse" opacity={0.75}>
+          <rect x={LANGFUSE_X} y={LANGFUSE_Y} width={RIGHT_NODE_W} height={OUTPUT_NODE_H} fill="#ffffff" stroke="#cdd9f5" />
+          <rect x={LANGFUSE_X} y={LANGFUSE_Y} width={RIGHT_NODE_W} height={3} fill="#2251ff" />
+          <text
+            x={LANGFUSE_X + 14}
+            y={LANGFUSE_Y + 24}
+            className="fill-[#051c2c]"
+            style={{ font: "500 12px 'Schibsted Grotesk', sans-serif" }}
+          >
+            Langfuse · OTel traces
+          </text>
+          <text
+            x={LANGFUSE_X + 14}
+            y={LANGFUSE_Y + 40}
+            className="fill-[#48566b]"
+            style={{ font: "8.5px 'Fragment Mono', monospace", letterSpacing: "0.08em", textTransform: "uppercase" }}
+          >
+            observability side channel
+          </text>
+        </g>
+
+        {/* downstream workflow hub */}
+        <g data-node-id="downstream-workflows">
+          <rect
+            x={HUB2_X}
+            y={HUB2_Y}
+            width={HUB2_W}
+            height={HUB2_H}
+            fill="#1e3a5c"
+            className="node-glow"
+          />
+          <rect x={HUB2_X} y={HUB2_Y} width={HUB2_W * 0.33} height={4} fill="#a9c4e8" />
+          <rect x={HUB2_X + HUB2_W * 0.33} y={HUB2_Y} width={HUB2_W * 0.25} height={4} fill="#2251ff" />
+          <rect x={HUB2_X + HUB2_W * 0.58} y={HUB2_Y} width={HUB2_W * 0.42} height={4} fill="#041330" />
+          <text
+            x={HUB2_X + HUB2_W / 2}
+            y={HUB2_Y + 38}
+            textAnchor="middle"
+            className="fill-white"
+            style={{ font: "600 13px 'Schibsted Grotesk', sans-serif" }}
+          >
+            Downstream workflows
+          </text>
+          <text
+            x={HUB2_X + HUB2_W / 2}
+            y={HUB2_Y + 56}
+            textAnchor="middle"
+            className="fill-[#a9c4e8]"
+            style={{ font: "7.5px 'Fragment Mono', monospace", letterSpacing: "0.14em" }}
+          >
+            TRIGGERED · ON NEW ROW
+          </text>
+        </g>
+
+        {/* consumers */}
+        <g data-node-id="human-review">
+          <rect x={CONSUMER_X} y={REVIEW_Y} width={RIGHT_NODE_W} height={OUTPUT_NODE_H} fill="#ffffff" stroke="#cdd9f5" />
+          <rect x={CONSUMER_X} y={REVIEW_Y} width={RIGHT_NODE_W} height={3} fill="#2251ff" />
+          <text
+            x={CONSUMER_X + 14}
+            y={REVIEW_Y + 24}
+            className="fill-[#051c2c]"
+            style={{ font: "500 12px 'Schibsted Grotesk', sans-serif" }}
+          >
+            Human review queue
+          </text>
+          <text
+            x={CONSUMER_X + 14}
+            y={REVIEW_Y + 40}
+            className="fill-[#48566b]"
+            style={{ font: "8.5px 'Fragment Mono', monospace", letterSpacing: "0.08em", textTransform: "uppercase" }}
+          >
+            confidence-gated
+          </text>
+        </g>
+        <g data-node-id="broker-follow-up-drafts" opacity={0.55}>
+          <rect
+            x={CONSUMER_X}
+            y={DRAFT_Y}
+            width={RIGHT_NODE_W}
+            height={OUTPUT_NODE_H}
+            fill="#ffffff"
+            stroke="#cdd9f5"
+            strokeDasharray="4 3"
+          />
+          <rect x={CONSUMER_X} y={DRAFT_Y} width={RIGHT_NODE_W} height={3} fill="#cdd9f5" />
+          <text
+            x={CONSUMER_X + 14}
+            y={DRAFT_Y + 24}
+            className="fill-[#051c2c]"
+            style={{ font: "500 12px 'Schibsted Grotesk', sans-serif" }}
+          >
+            Broker follow-up drafts
+          </text>
+          <text
+            x={CONSUMER_X + 14}
+            y={DRAFT_Y + 40}
+            className="fill-[#48566b]"
+            style={{ font: "8.5px 'Fragment Mono', monospace", letterSpacing: "0.08em", textTransform: "uppercase" }}
+          >
+            roadmap
+          </text>
+        </g>
       </svg>
     </div>
   );
