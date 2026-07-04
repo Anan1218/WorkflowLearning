@@ -9,7 +9,15 @@ const STAGES = [
   { label: "Route", at: 26, kind: "code" },
 ];
 
-export function JobProgress({ elapsed, modelName }: { elapsed: number; modelName: string }) {
+export function JobProgress({
+  elapsed,
+  classifyModelName,
+  extractModelName,
+}: {
+  elapsed: number;
+  classifyModelName: string;
+  extractModelName: string;
+}) {
   return (
     <div className="pop-in dot-grid-light relative overflow-hidden border border-pale bg-wash px-8 py-10 shadow-[0_14px_34px_-28px_rgba(5,28,44,0.5)]">
       {/* scanning highlight */}
@@ -52,7 +60,9 @@ export function JobProgress({ elapsed, modelName }: { elapsed: number; modelName
                     s.kind === "model" ? "border-cobalt/40 text-cobalt" : "border-line text-body/50"
                   }`}
                 >
-                  {s.kind === "model" ? `model · ${modelName}` : "code"}
+                  {s.kind === "model"
+                    ? `model · ${s.label === "Classify" ? classifyModelName : extractModelName}`
+                    : "code"}
                 </span>
               </div>
               {i < STAGES.length - 1 && (

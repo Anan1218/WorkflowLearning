@@ -51,27 +51,52 @@ def _low_confidence_fields(sub: SuretySubmission) -> list[dict]:
     return flagged
 
 
-def submit_extraction(text: str, model_id: str, sample_id: str | None = None):
+def submit_extraction(
+    text: str,
+    model_id: str,
+    sample_id: str | None = None,
+    classify_model_id: str | None = None,
+):
     model_cfg = MODEL_ALLOWLIST[model_id]
-    provider_string = model_cfg["provider_string"]
+    classify_key = classify_model_id or model_id
+    classify_cfg = MODEL_ALLOWLIST[classify_key]
+    extract_provider_string = model_cfg["provider_string"]
+    classify_provider_string = classify_cfg["provider_string"]
 
     def _work() -> dict:
         classification = None
         classify_meta = None
         try:
-            classification, classify_meta = classify_with_meta(text, model=provider_string)
+            classification, classify_meta = classify_with_meta(text, model=classify_provider_string)
         except Exception:
             pass
 
-        sub, meta = extract_with_meta(text, model=provider_string)
+        sub, meta = extract_with_meta(text, model=extract_provider_string)
         flagged = _low_confidence_fields(sub)
         rationales = evaluate_guidelines(sub, flagged, REVIEW_THRESHOLD)
         serialized_rationales = [r.model_dump() for r in rationales]
 
+        def _with_step_usage(step: str, step_model_id: str, step_meta: dict, step_cfg: dict) -> dict:
+            input_tokens = step_meta.get("input_tokens")
+            output_tokens = step_meta.get("output_tokens")
+            est_cost_usd = None
+            if input_tokens is not None and output_tokens is not None:
+                est_cost_usd = round(
+                    input_tokens / 1e6 * step_cfg["usd_per_m_in"]
+                    + output_tokens / 1e6 * step_cfg["usd_per_m_out"],
+                    6,
+                )
+            return {
+                "step": step,
+                "model_id": step_model_id,
+                **step_meta,
+                "est_cost_usd": est_cost_usd,
+            }
+
         steps = []
         if classify_meta:
-            steps.append({"step": "classify", **classify_meta})
-        steps.append({"step": "extract", **meta})
+            steps.append(_with_step_usage("classify", classify_key, classify_meta, classify_cfg))
+        steps.append(_with_step_usage("extract", model_id, meta, model_cfg))
 
         def _sum_present(key: str):
             values = [step.get(key) for step in steps if step.get(key) is not None]
@@ -80,13 +105,8 @@ def submit_extraction(text: str, model_id: str, sample_id: str | None = None):
         agg_in = _sum_present("input_tokens")
         agg_out = _sum_present("output_tokens")
         agg_latency = _sum_present("latency_s")
-        est_cost = None
-        if agg_in is not None and agg_out is not None:
-            est_cost = round(
-                agg_in / 1e6 * model_cfg["usd_per_m_in"]
-                + agg_out / 1e6 * model_cfg["usd_per_m_out"],
-                6,
-            )
+        step_costs = [step.get("est_cost_usd") for step in steps if step.get("est_cost_usd") is not None]
+        est_cost = round(sum(step_costs), 6) if step_costs else None
         usage = {
             "steps": steps,
             "input_tokens": agg_in,
@@ -120,6 +140,7 @@ def submit_extraction(text: str, model_id: str, sample_id: str | None = None):
             "review_item_id": review_item_id,
             "score": score,
             "usage": usage,
+            "models": {"classify": classify_key, "extract": model_id},
         }
 
     return jobs.submit(_work, model_id=model_id)

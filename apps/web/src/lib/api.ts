@@ -60,12 +60,15 @@ export type JobResult = {
   rationales: Rationale[];
   review_item_id: string | null;
   score: { fields: Record<string, boolean>; accuracy: number } | null;
+  models?: { classify: string; extract: string };
   usage?: {
     steps?: {
       step: string;
+      model_id?: string;
       input_tokens?: number | null;
       output_tokens?: number | null;
       latency_s?: number | null;
+      est_cost_usd?: number | null;
     }[];
     input_tokens: number | null;
     output_tokens: number | null;
@@ -149,7 +152,7 @@ export const api = {
       body: form,
     });
   },
-  startExtraction: (body: { text?: string; sample_id?: string; model_id: string }) =>
+  startExtraction: (body: { text?: string; sample_id?: string; model_id: string; classify_model_id?: string }) =>
     req<{ job_id: string }>("/api/extract", {
       method: "POST",
       headers: { "content-type": "application/json" },

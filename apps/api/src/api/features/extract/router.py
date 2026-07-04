@@ -14,6 +14,7 @@ class ExtractRequest(BaseModel):
     text: str | None = None
     sample_id: str | None = None
     model_id: str = DEFAULT_MODEL_ID
+    classify_model_id: str | None = None
 
     @model_validator(mode="after")
     def _exactly_one_source(self):
@@ -33,7 +34,9 @@ def list_models() -> list[dict]:
 @router.post("/extract", status_code=202)
 def start_extraction(body: ExtractRequest) -> dict:
     if body.model_id not in MODEL_ALLOWLIST:
-        raise HTTPException(422, f"model_id not in allowlist: {body.model_id}")
+        raise HTTPException(400, f"model_id not in allowlist: {body.model_id}")
+    if body.classify_model_id is not None and body.classify_model_id not in MODEL_ALLOWLIST:
+        raise HTTPException(400, f"classify_model_id not in allowlist: {body.classify_model_id}")
 
     text = body.text
     if body.sample_id:
@@ -42,7 +45,12 @@ def start_extraction(body: ExtractRequest) -> dict:
             raise HTTPException(404, f"unknown sample: {body.sample_id}")
         text = sample["text"]
 
-    job = service.submit_extraction(text, body.model_id, sample_id=body.sample_id)
+    job = service.submit_extraction(
+        text,
+        body.model_id,
+        classify_model_id=body.classify_model_id,
+        sample_id=body.sample_id,
+    )
     return {"job_id": job.id}
 
 

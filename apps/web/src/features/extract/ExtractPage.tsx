@@ -12,18 +12,23 @@ export function ExtractPage() {
   const [text, setText] = useState("");
   const [sampleId, setSampleId] = useState<string | null>(null);
   const [modelId, setModelId] = useState<string | null>(null);
+  const [classifyModelId, setClassifyModelId] = useState<string | null>(null);
   const [jobId, setJobId] = useState<string | null>(null);
 
   const { data: models } = useQuery({ queryKey: ["models"], queryFn: api.models });
   const effectiveModel = modelId ?? models?.find((m) => m.default)?.id ?? null;
-  const runningModelName = models?.find((m) => m.id === effectiveModel)?.label ?? effectiveModel ?? "";
+  const freeModel = models?.find((m) => m.id === "nemotron-free")?.id;
+  const effectiveClassifyModel = classifyModelId ?? freeModel ?? effectiveModel;
+  const extractModelName = models?.find((m) => m.id === effectiveModel)?.label ?? effectiveModel ?? "";
+  const classifyModelName =
+    models?.find((m) => m.id === effectiveClassifyModel)?.label ?? effectiveClassifyModel ?? "";
 
   const start = useMutation({
     mutationFn: () =>
       api.startExtraction(
         sampleId
-          ? { sample_id: sampleId, model_id: effectiveModel! }
-          : { text, model_id: effectiveModel! },
+          ? { sample_id: sampleId, model_id: effectiveModel!, classify_model_id: effectiveClassifyModel! }
+          : { text, model_id: effectiveModel!, classify_model_id: effectiveClassifyModel! },
       ),
     onSuccess: (d) => setJobId(d.job_id),
   });
@@ -66,7 +71,14 @@ export function ExtractPage() {
           />
         </div>
         <div className="rise flex flex-col gap-4" style={{ animationDelay: "480ms" }}>
-          <ModelPicker models={models ?? []} value={effectiveModel} onChange={setModelId} disabled={running} />
+          <ModelPicker
+            models={models ?? []}
+            extractId={effectiveModel}
+            classifyId={effectiveClassifyModel}
+            onExtract={setModelId}
+            onClassify={setClassifyModelId}
+            disabled={running}
+          />
           <Button onClick={() => start.mutate()} disabled={!canRun} withArrow>
             {running ? "Extracting…" : "Run extraction"}
           </Button>
@@ -92,7 +104,11 @@ export function ExtractPage() {
               sourceText={text}
             />
           ) : (
-            <JobProgress elapsed={job.data?.elapsed_s ?? 0} modelName={runningModelName} />
+            <JobProgress
+              elapsed={job.data?.elapsed_s ?? 0}
+              classifyModelName={classifyModelName}
+              extractModelName={extractModelName}
+            />
           )}
         </div>
       )}

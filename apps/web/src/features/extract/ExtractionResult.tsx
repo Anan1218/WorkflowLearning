@@ -101,6 +101,18 @@ export function ExtractionResult({
         )}
       </div>
 
+      {result.usage?.steps && result.usage.steps.length > 0 && (
+        <div className="mb-4 flex flex-wrap gap-x-3 gap-y-1 font-fragment text-[10px] text-body/60">
+          {result.usage.steps.map((step) => (
+            <span key={`${step.step}-${step.model_id ?? "model"}`}>
+              {step.step} · {step.model_id ?? "unknown"} · {step.input_tokens?.toLocaleString() ?? "?"}/
+              {step.output_tokens?.toLocaleString() ?? "?"} tok ·{" "}
+              {step.latency_s != null ? step.latency_s.toFixed(1) : "?"}s
+            </span>
+          ))}
+        </div>
+      )}
+
       {result.classification && (
         <div className="mb-4 flex flex-wrap items-center gap-2.5">
           <Badge tone="cobalt">{humanizeDocType(result.classification.doc_type)}</Badge>
