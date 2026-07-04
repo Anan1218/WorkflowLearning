@@ -141,6 +141,15 @@ export function IntegrationMap({
         >
           WRITES
         </text>
+        {/* continuation stub: the flow continues in view 2 */}
+        <path
+          d={`M ${SOR_1_X + RIGHT_NODE_W} ${H / 2} L ${W - 2} ${H / 2}`}
+          fill="none"
+          className="flow-line"
+          stroke="#2251ff"
+          strokeWidth={1.4}
+          opacity={0.35}
+        />
         <path
           d={edge(CENTER_X + CENTER_W / 2, CENTER_Y + CENTER_H, LANGFUSE_X, LANGFUSE_Y + OUTPUT_NODE_H / 2)}
           fill="none"
@@ -314,6 +323,15 @@ export function IntegrationMap({
         </g>
 
         <g style={sceneStyle(1)}>
+        {/* continuation stub: the flow arrived from view 1 */}
+        <path
+          d={`M 2 ${H / 2} L ${SOR_2_X} ${H / 2}`}
+          fill="none"
+          className="flow-line"
+          stroke="#2251ff"
+          strokeWidth={1.4}
+          opacity={0.35}
+        />
         {/* event-driven flow */}
         <path
           d={edge(SOR_2_X + RIGHT_NODE_W, H / 2, WORKFLOW_X, H / 2)}
