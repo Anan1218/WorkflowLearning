@@ -12,31 +12,43 @@ const STAGES = [
     icon: FileText,
     title: "Intake",
     body: "Broker emails, contractor questionnaires, bond request forms, WIP schedules, and CPA financial statements go in as messy text. PDF text-layer today; OCR + image hybrid is the production path for scans.",
+    demo: "Pasted text and file uploads.",
+    production: "My Contract Bond App webhooks, the agent inbox, SFTP drops; OCR for scanned packages.",
   },
   {
     icon: Tags,
     title: "Classify",
     body: "A first model call classifies the document type and surety line before extraction, so routing context is known before the typed submission is built.",
+    demo: "One call types the single document.",
+    production: "One call per document in the package, on a cheap triage model.",
   },
   {
     icon: ScanSearch,
     title: "Extract",
     body: "Instructor + Pydantic force the model's output into a typed SuretySubmission. Invalid output is automatically re-asked; the schema is the contract.",
+    demo: "One SuretySubmission schema, one call.",
+    production: "A schema per document type, chunked passes for long financials, and a reconciliation step when documents disagree.",
   },
   {
     icon: ShieldCheck,
     title: "Validate",
     body: "Business rules run as plain code: bond amounts positive, FEIN shapes, WIP arithmetic. Deterministic, testable, no model involved.",
+    demo: "Six SOP rules, UW-01 through UW-06.",
+    production: "The carrier's own register, elicited from the review team, versioned, and expanded rule by rule.",
   },
   {
     icon: SlidersHorizontal,
     title: "Confidence gate",
     body: "The model scores its own certainty per field. Anything below 0.75, or unreported, cannot proceed unattended.",
+    demo: "A fixed 0.75 threshold for every field.",
+    production: "Thresholds tuned per field and program tier from eval data on the carrier's own documents.",
   },
   {
     icon: UserCheck,
     title: "Human review",
     body: "Flagged fields queue for an underwriter. Approve or override per field; every decision is an audit-trail entry and a new labeled training pair. Autonomy is earned in steps: today the system only reads and proposes. Write-backs arrive one capability at a time, after evals prove each one.",
+    demo: "One queue; approve or override per field.",
+    production: "Assignment by tier and territory; write-backs to source systems arrive per capability, after evals prove each one.",
   },
 ];
 
@@ -137,7 +149,7 @@ export function PipelinePage() {
       </section>
 
       <ol className="flex flex-col gap-3">
-        {STAGES.map(({ icon: Icon, title, body }, i) => (
+        {STAGES.map(({ icon: Icon, title, body, demo, production }, i) => (
           <li
             key={title}
             className="rise flex items-stretch gap-4"
@@ -157,6 +169,22 @@ export function PipelinePage() {
                 <h2 className="font-schibsted text-[16px] font-semibold text-ink">{title}</h2>
               </div>
               <p className="max-w-4xl text-[14.5px] leading-[1.6] text-body"><GlossaryText text={body} /></p>
+              <div className="mt-3 border-t border-line pt-2.5">
+                <div className="grid grid-cols-[110px_1fr] items-baseline gap-x-3 gap-y-1">
+                  <span className="font-fragment text-[8.5px] uppercase tracking-[0.14em] text-body/50">
+                    In this demo
+                  </span>
+                  <span className="text-[13px] leading-[1.5] text-body">
+                    <GlossaryText text={demo} />
+                  </span>
+                  <span className="font-fragment text-[8.5px] uppercase tracking-[0.14em] text-cobalt/80">
+                    In production
+                  </span>
+                  <span className="text-[13px] leading-[1.5] text-body">
+                    <GlossaryText text={production} />
+                  </span>
+                </div>
+              </div>
             </Card>
           </li>
         ))}
