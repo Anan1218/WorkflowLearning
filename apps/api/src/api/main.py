@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 from core.extract import MODEL as DEFAULT_PROVIDER_STRING
@@ -52,7 +52,9 @@ app.include_router(guidelines_router)
 app.include_router(review_router)
 app.include_router(evals_router)
 
-# Built frontend (docker / production). In dev this dir may not exist - fine.
+# Built frontend, present only in the local compose image (Dockerfile `full`
+# target). The Fly image is API-only (`api` target): Vercel owns the frontend,
+# so anything that isn't an API route redirects to it.
 if FRONTEND_DIST.exists():
     app.mount("/assets", StaticFiles(directory=FRONTEND_DIST / "assets"), name="assets")
 
@@ -62,3 +64,8 @@ if FRONTEND_DIST.exists():
         if path and candidate.is_file():
             return FileResponse(candidate)
         return FileResponse(FRONTEND_DIST / "index.html")
+else:
+
+    @app.get("/{path:path}", include_in_schema=False)
+    def frontend_redirect(path: str) -> RedirectResponse:
+        return RedirectResponse("https://rli-demo.stelloagents.com/", status_code=308)
