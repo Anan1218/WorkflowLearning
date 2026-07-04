@@ -38,7 +38,9 @@ export function AppShell({ children }: { children: ReactNode }) {
       {/* frosted header */}
       <header className="relative z-10 flex h-14 shrink-0 items-center gap-3 border-b border-line bg-white/80 px-5 backdrop-blur-md">
         <span className="font-newsreader text-[1.35rem] font-medium tracking-tight text-ink">
-          {"Stello\u2009\u00d7\u2009RLI"}
+          Stello{"\u2009"}
+          <span className="relative -top-[0.09em]">{"\u00d7"}</span>
+          {"\u2009"}RLI
         </span>
         <span className="bg-navy px-2.5 py-1 font-fragment text-[9px] font-semibold uppercase tracking-[0.2em] text-white">
           Submission Intelligence
