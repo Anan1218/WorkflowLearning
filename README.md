@@ -23,19 +23,19 @@ Built to be the thing you point at and say: *this is how we build.* Schema-first
 
 ```bash
 python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env          # fill in ANTHROPIC_API_KEY (+ Langfuse keys for traces)
+pip install -r requirements.txt   # installs the three editable packages (core, evals, api)
+cp .env.example .env              # fill in OPENROUTER_API_KEY (+ Langfuse keys for traces)
 
-python -m src.generate --n 12                 # stage 0: synthetic (doc, ground_truth) pairs
-python -m src.extract evals/cases/example-001.txt   # stage 1: extract one doc -> typed JSON
-python -m evals.harness                        # score per-field accuracy vs ground truth
+python -m core.generate --n 12    # stage 0: synthetic (doc, ground_truth) pairs
+python -m core.extract packages/evals/evals/cases/example-001.txt   # stage 1: one doc -> typed JSON
+python -m evals.harness --save    # score per-field accuracy vs ground truth, publish results
 ```
 
-Swap models by changing the `MODEL` string in `src/extract.py` (e.g. `"openai/gpt-5.1"`) and re-running `evals.harness` - the pipeline doesn't change.
+Swap models by changing the `MODEL` env var or the default in `packages/core/core/extract.py` and re-running `evals.harness` - the pipeline doesn't change.
 
 ## Run the demo dashboard
 
-A monorepo web app (FastAPI + React, vertical-slice architecture in `web/`) that puts a face on the pipeline: paste/upload a document (or pick a labeled sample), pick a model, watch the extraction run, see per-field confidence, and work the human-review queue. Follows the Stello DESIGN.md.
+A monorepo web app (FastAPI + React, vertical-slice architecture in `apps/`) that puts a face on the pipeline: paste/upload a document (or pick a labeled sample), pick a model, watch the extraction run, see per-field confidence + cost per query, and work the human-review queue. Follows the Stello DESIGN.md.
 
 ```bash
 docker compose up --build        # -> http://localhost:8000  (reads .env for keys)
@@ -44,34 +44,36 @@ docker compose up --build        # -> http://localhost:8000  (reads .env for key
 Dev loop (hot reload):
 
 ```bash
-.venv/bin/uvicorn web.api.main:app --reload --port 8000   # API
-cd web/frontend && npm install && npm run dev              # UI on :5173, /api proxied
+.venv/bin/uvicorn api.main:app --reload --port 8000   # API
+cd apps/web && npm install && npm run dev              # UI on :5173, /api proxied
 ```
 
-Notes: extraction jobs run in the background and the UI polls; low-confidence fields (< 0.75) auto-route to the Review queue (state in `data/app_state/`, survives restarts); the Evals page reads committed `evals/results/*.json` (produce more with `python -m evals.harness --save`); the model dropdown is allowlisted in `web/api/config.py` - the model-agnostic one-string swap, live.
+Notes: extraction jobs run in the background and the UI polls; low-confidence fields (< 0.75) auto-route to the Review queue (state in `data/app_state/`, survives restarts); the Evals page reads committed `packages/evals/evals/results/*.json` (produce more with `python -m evals.harness --save`); the model dropdown is allowlisted in `apps/api/api/config.py` - the model-agnostic one-string swap, live.
 
-### Deploy (Fly.io)
+### Deploy
 
-Deployed at https://workflowlearning-demo.fly.dev. One 512MB machine with auto-stop (idle ≈ $0, ceiling ≈ $3.50/mo) + a 1GB volume at `/app/data` (samples seeded on first boot by `docker-entrypoint.sh`; review-queue state persists). To redeploy after changes:
+API + fallback UI on Fly.io at https://rli-demo.fly.dev - one 512MB machine with auto-stop (idle ≈ $0, ceiling ≈ $3.50/mo) + a 1GB volume at `/app/data` (samples seeded on first boot by `docker-entrypoint.sh`; review-queue state persists). Frontend also deploys to Vercel (root directory `apps/web`, env `VITE_API_BASE=https://rli-demo.fly.dev`) for the rli-demo.stelloagents.com domain.
 
 ```bash
-fly deploy          # builds the Dockerfile remotely and ships it
-fly logs            # tail the machine
-fly secrets set K=V # rotate keys (stored on Fly, never in the image)
+fly deploy --local-only   # build with local Docker, ship to Fly
+fly logs                  # tail the machine
+fly secrets set K=V       # rotate keys (stored on Fly, never in the image)
 ```
 
 ## Layout
 
+Monorepo: `packages/` are the durable assets (the pattern library), `apps/` are delivery surfaces. Dependency rule: `apps → packages`, never backward.
+
 ```
-src/schemas.py     the Pydantic data contract (SuretySubmission, WIP, ...)
-src/extract.py     the Instructor + Pydantic extractor (the backbone)
-src/generate.py    synthetic data generator (doc + exact ground truth)
-src/trace.py       OTel -> Langfuse seam (self-host = env change)
-evals/scorers.py   per-field accuracy (also the DSPy metric)
-evals/harness.py   run the extractor over val + committed cases
-evals/cases/       committed hand-labeled examples
-experiments/       phase-2 DSPy offline optimizer (optional)
-docs/              RLI prep brief + submission-ingestion research
+packages/core/core/        stello-idp-core: schemas.py (the data contract),
+                           extract.py (Instructor backbone), generate.py, trace.py
+packages/evals/evals/      harness + per-field scorers + committed cases/ + results/
+apps/api/api/              FastAPI dashboard API (vertical slices: extract,
+                           documents, samples, review, evals)
+apps/web/                  React dashboard (Vite, Stello design language)
+data/                      synthetic dataset + demo app state (gitignored)
+experiments/               phase-2 DSPy offline optimizer (optional)
+docs/                      RLI prep brief, research, data-sources citations
 ```
 
 ## Enterprise readiness checklist (SOC 2 / regulated-carrier grade)

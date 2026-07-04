@@ -1,8 +1,9 @@
 .venv
 **/__pycache__
 **/*.pyc
-web/frontend/node_modules
-web/frontend/dist
+**/*.egg-info
+apps/web/node_modules
+apps/web/dist
 .env
 .git
 data/app_state

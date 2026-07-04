@@ -24,7 +24,7 @@ try:
 except ImportError:  # keep the repo runnable without the phase-2 dep
     raise SystemExit("DSPy not installed. This is optional phase-2: pip install dspy")
 
-from src.schemas import SuretySubmission
+from core.schemas import SuretySubmission
 from evals.scorers import score_metric
 
 TRAIN = Path(__file__).resolve().parent.parent / "data" / "synthetic" / "train"

@@ -1,23 +1,12 @@
-# Core extraction backbone
-instructor>=1.6
-anthropic>=0.40
-pydantic>=2.9
+# Monorepo install: three editable packages; their third-party deps live in
+# each pyproject.toml. pip's resolver satisfies the stello-idp-* inter-package
+# dependencies from these local editables.
+-e packages/core
+-e packages/evals
+-e apps/api
 
-# Observability: OpenTelemetry -> Langfuse Cloud
-langfuse>=2.50
-openinference-instrumentation-anthropic>=0.1
-
-# Config
-python-dotenv>=1.0
-
-# Dev
-pytest>=8.0
+# Dev tooling
 ruff>=0.6
 
 # Phase 2 (optional, offline optimizer experiment) - install when you get there:
 # dspy>=2.5
-
-fastapi>=0.115
-uvicorn[standard]>=0.30
-pypdf>=5.0
-python-multipart>=0.0.9

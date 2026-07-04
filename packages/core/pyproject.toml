@@ -1,0 +1,20 @@
+[project]
+name = "stello-idp-core"
+version = "0.1.0"
+description = "Schema-first, model-agnostic document extraction pipeline (Instructor + Pydantic + OTel)"
+requires-python = ">=3.12"
+dependencies = [
+    "instructor>=1.6",
+    "anthropic>=0.40",
+    "pydantic>=2.9",
+    "langfuse>=2.50",
+    "openinference-instrumentation-anthropic>=0.1",
+    "python-dotenv>=1.0",
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["core"]

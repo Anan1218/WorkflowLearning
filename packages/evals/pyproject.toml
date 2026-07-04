@@ -1,0 +1,19 @@
+[project]
+name = "stello-idp-evals"
+version = "0.1.0"
+description = "Eval harness and per-field scorers for the extraction pipeline"
+requires-python = ">=3.12"
+dependencies = [
+    "stello-idp-core",
+    "pytest>=8.0",
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["evals"]
+
+[tool.setuptools.package-data]
+evals = ["cases/*", "results/*"]

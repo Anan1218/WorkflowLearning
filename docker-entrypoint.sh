@@ -8,4 +8,4 @@ if [ -d /app/data-seed ] && [ ! -d /app/data/synthetic ]; then
   cp -r /app/data-seed/. /app/data/
 fi
 
-exec uvicorn web.api.main:app --host 0.0.0.0 --port 8000
+exec uvicorn api.main:app --host 0.0.0.0 --port 8000
