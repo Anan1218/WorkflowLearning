@@ -1,6 +1,6 @@
 /** Mock source configs for the integration-map demo.
  *  Grounded in research (docs/RLI-data-sources-research.md): provenance tags are
- *  honest — "confirmed" = public RLI source, "industry-standard" = canonical
+ *  honest: "confirmed" = public RLI source, "industry-standard" = canonical
  *  surety practice (SBA/FCRA/vendor docs), "inferred" = reasonable assumption.
  *  No real connectors exist; this view is design-partner material. */
 
@@ -36,7 +36,7 @@ export const SOURCES: SourceConfig[] = [
     id: "email-inbox",
     name: "Agent submission inbox",
     category: "submission",
-    systemNote: "CPA financial packages + Excel WIP schedules arrive as email attachments — the Standard-tier reality",
+    systemNote: "CPA financial packages + Excel WIP schedules arrive as email attachments: the Standard-tier reality",
     provenance: "industry-standard",
     connection: "webhook",
     cadence: "real-time",
@@ -48,7 +48,7 @@ export const SOURCES: SourceConfig[] = [
     volumePerDay: "~140 docs",
     feeds: ["principal", "financials (working_capital, net_worth)", "wip_schedule", "bond details"],
     tiers: ["Standard", "SBA Capacity"],
-    compliance: "Attachments contain NPI — PII classification runs before tracing or storage.",
+    compliance: "Attachments contain NPI. PII classification runs before tracing or storage.",
   },
   {
     id: "contract-bond-app",
@@ -71,7 +71,7 @@ export const SOURCES: SourceConfig[] = [
     id: "rlink",
     name: "RLink / MyBondApp",
     category: "submission",
-    systemNote: "Transactional commercial surety platform — automated underwriting, rating, straight-through issuance",
+    systemNote: "Transactional commercial surety platform: automated underwriting, rating, straight-through issuance",
     provenance: "confirmed",
     connection: "api-poll",
     cadence: "real-time",
@@ -100,7 +100,7 @@ export const SOURCES: SourceConfig[] = [
     volumePerDay: "~38 docs",
     feeds: ["full submission packages"],
     tiers: ["Standard"],
-    compliance: "Last drop 26h ago — expected every 24h. Alert raised to the broker's ops contact.",
+    compliance: "Last drop 26h ago; expected every 24h. Alert raised to the broker's ops contact.",
   },
   // ---- Carrier systems ----
   {
@@ -124,7 +124,7 @@ export const SOURCES: SourceConfig[] = [
     id: "ams-feeds",
     name: "AMS agency feeds",
     category: "carrier",
-    systemNote: "Applied Epic / AMS360 / HawkSoft downloads — confirmed on RLI's P&C side (QuickWrite), extended here to surety",
+    systemNote: "Applied Epic / AMS360 / HawkSoft downloads, confirmed on RLI's P&C side (QuickWrite) and extended here to surety",
     provenance: "inferred",
     connection: "api-poll",
     cadence: "hourly",
@@ -159,7 +159,7 @@ export const SOURCES: SourceConfig[] = [
     id: "dnb",
     name: "D&B business credit + legal events",
     category: "enrichment",
-    systemNote: "Business credit, liens, judgments, bankruptcies, UCC filings — pulled per submission + nightly portfolio monitor",
+    systemNote: "Business credit, liens, judgments, bankruptcies, and UCC filings, pulled per submission + nightly portfolio monitor",
     provenance: "industry-standard",
     connection: "on-demand",
     cadence: "per submission + nightly monitor",
@@ -171,13 +171,13 @@ export const SOURCES: SourceConfig[] = [
     volumePerDay: "~90 pulls",
     feeds: ["appetite/triage score", "legal-event flags", "credit signals"],
     tiers: ["Next Step", "Standard", "SBA Capacity"],
-    compliance: "External subprocessor — DPA + SOC 2 report on the vendor register.",
+    compliance: "External subprocessor. DPA + SOC 2 report on the vendor register.",
   },
   {
     id: "personal-credit",
     name: "Owner personal credit",
     category: "enrichment",
-    systemNote: "Bureau soft pull on owners/indemnitors for fast-track programs — FCRA consent-gated",
+    systemNote: "Bureau soft pull on owners/indemnitors for fast-track programs; FCRA consent-gated",
     provenance: "industry-standard",
     connection: "on-demand",
     cadence: "per application",
@@ -207,13 +207,13 @@ export const SOURCES: SourceConfig[] = [
     volumePerDay: "~30 queries",
     feeds: ["entity resolution", "public-record flags"],
     tiers: ["Standard", "SBA Capacity"],
-    compliance: "Non-FCRA product: cannot be the sole basis for an eligibility decision — verification required.",
+    compliance: "Non-FCRA product: cannot be the sole basis for an eligibility decision. Verification required.",
   },
   {
     id: "sos-ucc",
     name: "State SoS · UCC search",
     category: "enrichment",
-    systemNote: "Secretary of State UCC filing searches — who holds security interests in the principal's assets",
+    systemNote: "Secretary of State UCC filing searches: who holds security interests in the principal's assets",
     provenance: "industry-standard",
     connection: "on-demand",
     cadence: "per submission",
@@ -247,7 +247,7 @@ export const SOURCES: SourceConfig[] = [
     id: "sba",
     name: "SBA bond guarantee program",
     category: "enrichment",
-    systemNote: "Forms 994/994F, XBRL WIP schedules — the SBA Capacity program's guarantee workflow",
+    systemNote: "Forms 994/994F and XBRL WIP schedules supporting the SBA Capacity program's guarantee workflow",
     provenance: "industry-standard",
     connection: "on-demand",
     cadence: "per guaranteed bond",
@@ -286,12 +286,12 @@ export const CATEGORY_LABELS: Record<SourceConfig["category"], string> = {
 };
 
 export const RECENT_ACTIVITY: { minsAgo: number; source: string; sourceId: string; event: string }[] = [
-  { minsAgo: 2, source: "Agent inbox", sourceId: "email-inbox", event: "3 attachments queued — CPA package, Riverbend Grading" },
+  { minsAgo: 2, source: "Agent inbox", sourceId: "email-inbox", event: "3 attachments queued: CPA package, Riverbend Grading" },
   { minsAgo: 6, source: "RLink", sourceId: "rlink", event: "2 referrals routed to underwriting review" },
-  { minsAgo: 11, source: "My Contract Bond App", sourceId: "contract-bond-app", event: "eGIA executed — 3 indemnitors KBA-verified" },
+  { minsAgo: 11, source: "My Contract Bond App", sourceId: "contract-bond-app", event: "eGIA executed: 3 indemnitors KBA-verified" },
   { minsAgo: 18, source: "D&B monitor", sourceId: "dnb", event: "2 new liens flagged on active principals" },
-  { minsAgo: 33, source: "Personal credit", sourceId: "personal-credit", event: "soft pull complete — FirstStep applicant" },
+  { minsAgo: 33, source: "Personal credit", sourceId: "personal-credit", event: "soft pull complete: FirstStep applicant" },
   { minsAgo: 41, source: "AMS feed", sourceId: "ams-feeds", event: "1,184 agency records reconciled" },
-  { minsAgo: 75, source: "SoS UCC", sourceId: "sos-ucc", event: "4 secured filings found — Pine Ridge Sitework" },
-  { minsAgo: 26 * 60, source: "Broker SFTP", sourceId: "broker-sftp", event: "⚠ expected drop missed — broker ops notified" },
+  { minsAgo: 75, source: "SoS UCC", sourceId: "sos-ucc", event: "4 secured filings found: Pine Ridge Sitework" },
+  { minsAgo: 26 * 60, source: "Broker SFTP", sourceId: "broker-sftp", event: "⚠ expected drop missed; broker ops notified" },
 ];

@@ -169,7 +169,7 @@ export function SourcesPage() {
               ))}
             </ul>
             <p className="mt-3 text-center font-fragment text-[9.5px] uppercase tracking-[0.14em] text-body/50">
-              Illustrative feed — production version reads the audit trail
+              Illustrative feed. Production version reads the audit trail
             </p>
           </div>
         </div>

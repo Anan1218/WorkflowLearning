@@ -17,7 +17,7 @@ export function ReviewPage() {
       <PageHeader
         eyebrow="Human in the loop"
         title="Review queue"
-        sub="Extractions with any field below the 0.75 confidence threshold land here. Every approve or override is recorded — the same decisions become the audit trail and new labeled training data."
+        sub="Extractions with any field below the 0.75 confidence threshold land here. Every approve or override is recorded. The same decisions become the audit trail and new labeled training data."
       />
 
       <div className="rise mb-5 flex gap-1" style={{ animationDelay: "320ms" }} role="tablist" aria-label="Queue filter">
@@ -48,7 +48,7 @@ export function ReviewPage() {
             title={tab === "pending" ? "Queue is clear" : "No resolved items yet"}
             hint={
               tab === "pending"
-                ? "Run an extraction on the Extract page — low-confidence fields route here automatically."
+                ? "Run an extraction on the Extract page. Low-confidence fields route here automatically."
                 : "Approve or override flagged fields on a pending item and it will move here."
             }
           />

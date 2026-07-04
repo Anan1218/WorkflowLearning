@@ -7,12 +7,12 @@ const STAGES = [
   {
     icon: FileText,
     title: "Intake",
-    body: "Broker emails, ACORD forms, WIP schedules, financial statements — messy text in. PDF text-layer today; OCR + image hybrid is the production path for scans.",
+    body: "Broker emails, ACORD forms, WIP schedules, and financial statements go in as messy text. PDF text-layer today; OCR + image hybrid is the production path for scans.",
   },
   {
     icon: ScanSearch,
     title: "Extract",
-    body: "Instructor + Pydantic force the model's output into a typed SuretySubmission. Invalid output is automatically re-asked — the schema is the contract.",
+    body: "Instructor + Pydantic force the model's output into a typed SuretySubmission. Invalid output is automatically re-asked; the schema is the contract.",
   },
   {
     icon: ShieldCheck,
@@ -22,12 +22,12 @@ const STAGES = [
   {
     icon: SlidersHorizontal,
     title: "Confidence gate",
-    body: "The model scores its own certainty per field. Anything below 0.75 — or unreported — cannot proceed unattended.",
+    body: "The model scores its own certainty per field. Anything below 0.75, or unreported, cannot proceed unattended.",
   },
   {
     icon: UserCheck,
     title: "Human review",
-    body: "Flagged fields queue for an underwriter. Approve or override per field; every decision is an audit-trail entry and a new labeled training pair. Autonomy is earned in steps: today the system only reads and proposes — write-backs arrive one capability at a time, after evals prove each one.",
+    body: "Flagged fields queue for an underwriter. Approve or override per field; every decision is an audit-trail entry and a new labeled training pair. Autonomy is earned in steps: today the system only reads and proposes. Write-backs arrive one capability at a time, after evals prove each one.",
   },
 ];
 
@@ -37,7 +37,7 @@ export function PipelinePage() {
       <PageHeader
         eyebrow="Architecture"
         title="A pipeline you can read on a whiteboard."
-        sub="Deterministic steps with LLMs inside some of them — plain typed Python, no framework. The parts that matter for a carrier: every step is testable, every decision is audited, and no consequential action happens without a person."
+        sub="Deterministic steps with LLMs inside some of them: plain typed Python, no framework. The parts that matter for a carrier: every step is testable, every decision is audited, and no consequential action happens without a person."
       />
 
       <ol className="flex flex-col gap-3">
@@ -82,7 +82,7 @@ export function PipelinePage() {
             The model-agnostic seam
           </div>
           <p className="mt-3 max-w-3xl font-newsreader text-[2rem] font-normal leading-snug tracking-[-0.01em]">
-            Swapping models is a one-string configuration change — not a rewrite.
+            Swapping models is a one-string configuration change, not a rewrite.
           </p>
           <div className="mt-5 flex flex-wrap items-center gap-3 font-fragment text-[12px] text-slate">
             <code className="border border-white/15 bg-white/10 px-3 py-1.5 backdrop-blur-sm">

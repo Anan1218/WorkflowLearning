@@ -153,7 +153,7 @@ export function ExtractionResult({
                           {fmtMoney(p.contract_amount)}
                         </td>
                         <td className="px-3 py-1.5 text-right text-body">
-                          {p.percent_complete != null ? `${p.percent_complete}%` : "—"}
+                          {p.percent_complete != null ? `${p.percent_complete}%` : "–"}
                         </td>
                         <td className="px-3 py-1.5 text-right text-body">{fmtMoney(p.over_under_billing)}</td>
                       </tr>

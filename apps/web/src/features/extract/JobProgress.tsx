@@ -1,4 +1,4 @@
-/** Animated stage stepper shown while the LLM call runs — latency becomes narrative. */
+/** Animated stage stepper shown while the LLM call runs; latency becomes narrative. */
 
 const STAGES = [
   { label: "Intake", at: 0, kind: "code" },

@@ -192,12 +192,12 @@ export function DocInput({
         <p className="truncate text-[13px] text-body">
           {sampleId ? (
             <>
-              Sample <span className="font-fragment text-[11px]">{sampleId}</span> selected — result will be
+              Sample <span className="font-fragment text-[11px]">{sampleId}</span> selected. Result will be
               scored against its ground truth.
             </>
           ) : (
             <span className="text-body/60">
-              Paste, upload, or pick a labeled sample — samples score against ground truth.
+              Paste, upload, or pick a labeled sample; samples score against ground truth.
             </span>
           )}
         </p>

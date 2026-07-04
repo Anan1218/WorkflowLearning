@@ -142,7 +142,7 @@ export function IntegrationMap({
               className="cursor-pointer"
               opacity={dimmed ? 0.25 : 1}
               role="button"
-              aria-label={`${source.name} — select`}
+              aria-label={`${source.name}: select`}
             >
               <rect
                 x={LEFT_X}

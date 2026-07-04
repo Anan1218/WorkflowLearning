@@ -1,4 +1,4 @@
-/** Shared UI kit — Stello-Demos design language. Route all UI through these.
+/** Shared UI kit for the Stello-Demos design language. Route all UI through these.
  *  Idioms: square-cornered panels (rounded only on buttons/chips), border-pale
  *  hairlines, navy-tinted directional shadows, Fragment Mono for labels/numbers. */
 
@@ -55,7 +55,7 @@ export function Card({
   return <div className={`border border-pale bg-white p-6 ${shadow} ${className}`}>{children}</div>;
 }
 
-/** Square solid chip — the Stello-Demos label idiom. */
+/** Square solid chip for the Stello-Demos label idiom. */
 export function Chip({
   tone = "cobalt",
   children,
@@ -188,10 +188,10 @@ export function Spinner() {
 export const fmtMoney = (v: unknown): string =>
   typeof v === "number"
     ? v.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 })
-    : "—";
+    : "–";
 
 export const fmtValue = (v: unknown): string => {
-  if (v === null || v === undefined || v === "") return "—";
+  if (v === null || v === undefined || v === "") return "–";
   if (typeof v === "number") return v >= 1000 ? fmtMoney(v) : String(v);
   return String(v);
 };

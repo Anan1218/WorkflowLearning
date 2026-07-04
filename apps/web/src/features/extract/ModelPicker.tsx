@@ -47,7 +47,7 @@ export function ModelPicker({
         ))}
       </div>
       <p className="mt-3 text-[12px] leading-relaxed text-body">
-        Same pipeline, same schema — swapping models is a one-string config change.
+        Same pipeline, same schema. Swapping models is a one-string config change.
       </p>
     </fieldset>
   );

@@ -31,7 +31,7 @@ export function EvalsPage() {
       <PageHeader
         eyebrow="Processing integrity"
         title="Evaluation results"
-        sub="Per-field accuracy against labeled ground truth. This harness runs before every change — new model, new prompt — and is the evidence engine behind every accuracy claim."
+        sub="Per-field accuracy against labeled ground truth. This harness runs before every change: new model, new prompt. It is the evidence engine behind every accuracy claim."
       />
 
       {isLoading ? (
@@ -71,7 +71,7 @@ export function EvalsPage() {
                 </div>
                 <div className="font-fragment text-[10px] uppercase tracking-[0.12em] text-body/60">
                   {r.timestamp.slice(0, 10)} · {r.n_cases} cases ·{" "}
-                  {r.overall != null ? `${(r.overall * 100).toFixed(1)}%` : "—"}
+                  {r.overall != null ? `${(r.overall * 100).toFixed(1)}%` : "–"}
                 </div>
               </button>
             ))}
@@ -87,7 +87,7 @@ export function EvalsPage() {
                 <Badge tone="neutral">{run.n_cases} labeled cases</Badge>
                 {run.totals && (
                   <div className="mt-1 font-fragment text-[10px] leading-relaxed text-body">
-                    avg latency {run.totals.mean_latency_s ?? "—"}s
+                    avg latency {run.totals.mean_latency_s ?? "–"}s
                     <br />
                     {Math.round((run.totals.input_tokens + run.totals.output_tokens) / run.n_cases).toLocaleString()}{" "}
                     tokens/case

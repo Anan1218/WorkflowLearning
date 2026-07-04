@@ -87,7 +87,7 @@ export function SourceDetail({ source, extraMins }: { source: SourceConfig; extr
       {source.category === "enrichment" && !source.compliance && (
         <p className="border border-line bg-mist px-3 py-2 text-[12px] leading-[1.6] text-body">
           <span className="font-schibsted font-medium text-ink">Compliance: </span>
-          <GlossaryText text="External subprocessor — appears on the vendor register with DPA + SOC 2 evidence." />
+          <GlossaryText text="External subprocessor, listed on the vendor register with DPA + SOC 2 evidence." />
         </p>
       )}
     </Card>

@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* Stello-Demos design language — tokens mirrored from Stello-Demos/app/globals.css */
+/* Stello-Demos design language: tokens mirrored from Stello-Demos/app/globals.css */
 @theme {
   --color-cobalt: #2251ff;
   --color-cobalt-hover: #1a3cd0;
