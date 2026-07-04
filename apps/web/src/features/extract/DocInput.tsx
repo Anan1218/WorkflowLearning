@@ -1,9 +1,10 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { FileUp } from "lucide-react";
+import { Eye, FileUp } from "lucide-react";
 import { useRef, useState } from "react";
 
-import { api } from "../../lib/api";
+import { api, type SampleMeta } from "../../lib/api";
 import { Badge, ErrorBanner, Spinner } from "../../components/ui";
+import { SamplePreviewModal } from "./SamplePreviewModal";
 
 type Tab = "paste" | "upload" | "sample";
 
@@ -21,6 +22,7 @@ export function DocInput({
   disabled: boolean;
 }) {
   const [tab, setTab] = useState<Tab>("paste");
+  const [preview, setPreview] = useState<{ id: string; title: string; text: string } | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const { data: samples } = useQuery({ queryKey: ["samples"], queryFn: api.samples });
@@ -34,6 +36,11 @@ export function DocInput({
     mutationFn: (id: string) => api.sample(id),
     onSuccess: (d) => onSample(d.id, d.text),
   });
+
+  const openPreview = async (sample: SampleMeta) => {
+    const result = await api.sample(sample.id);
+    setPreview({ id: sample.id, title: sample.title, text: result.text });
+  };
 
   return (
     <div className="flex flex-col border border-pale bg-white shadow-[0_14px_34px_-28px_rgba(5,28,44,0.5)]">
@@ -115,6 +122,26 @@ export function DocInput({
                 >
                   <div className="mb-1 flex items-center justify-between gap-2">
                     <span className="truncate font-schibsted text-[13px] font-medium text-ink">{s.title}</span>
+                    <span
+                      role="button"
+                      tabIndex={0}
+                      aria-label={"Preview " + s.title}
+                      className="shrink-0 cursor-pointer text-body/60 hover:text-cobalt focus-visible:outline-1 focus-visible:outline-cobalt"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        void openPreview(s);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          void openPreview(s);
+                        }
+                      }}
+                    >
+                      <Eye size={13} aria-hidden />
+                    </span>
                     {s.has_ground_truth && <Badge tone="cobalt">labeled</Badge>}
                   </div>
                   <p className="line-clamp-2 font-fragment text-[10.5px] leading-relaxed text-body">
@@ -141,6 +168,16 @@ export function DocInput({
           )}
         </p>
       </div>
+      {preview && (
+        <SamplePreviewModal
+          sample={preview}
+          onClose={() => setPreview(null)}
+          onUse={() => {
+            pickSample.mutate(preview.id);
+            setPreview(null);
+          }}
+        />
+      )}
     </div>
   );
 }
