@@ -50,6 +50,16 @@ cd web/frontend && npm install && npm run dev              # UI on :5173, /api p
 
 Notes: extraction jobs run in the background and the UI polls; low-confidence fields (< 0.75) auto-route to the Review queue (state in `data/app_state/`, survives restarts); the Evals page reads committed `evals/results/*.json` (produce more with `python -m evals.harness --save`); the model dropdown is allowlisted in `web/api/config.py` - the model-agnostic one-string swap, live.
 
+### Deploy (Fly.io)
+
+Deployed at https://workflowlearning-demo.fly.dev. One 512MB machine with auto-stop (idle ≈ $0, ceiling ≈ $3.50/mo) + a 1GB volume at `/app/data` (samples seeded on first boot by `docker-entrypoint.sh`; review-queue state persists). To redeploy after changes:
+
+```bash
+fly deploy          # builds the Dockerfile remotely and ships it
+fly logs            # tail the machine
+fly secrets set K=V # rotate keys (stored on Fly, never in the image)
+```
+
 ## Layout
 
 ```

@@ -1,0 +1,23 @@
+# Fly.io config — deploy with `fly deploy`.
+# Auto-stop keeps idle cost near zero; the UI's 1.5s job polling keeps the
+# machine awake while an extraction is running.
+
+app = "workflowlearning-demo"
+primary_region = "sjc"
+
+[build]
+
+[http_service]
+  internal_port = 8000
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"
+
+[mounts]
+  source = "wl_data"
+  destination = "/app/data"

@@ -15,6 +15,9 @@ COPY src ./src
 COPY evals ./evals
 COPY web/api ./web/api
 COPY web/__init__.py ./web/__init__.py
+COPY data ./data-seed
+COPY docker-entrypoint.sh /docker-entrypoint.sh
 COPY --from=frontend /app/web/frontend/dist ./web/frontend/dist
+RUN chmod +x /docker-entrypoint.sh
 EXPOSE 8000
-CMD ["uvicorn", "web.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["/docker-entrypoint.sh"]
