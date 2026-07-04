@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { Chip } from "../../components/ui";
+import { Term } from "../../components/Term";
 import { CATEGORY_LABELS, RECENT_ACTIVITY, SOURCES, TIERS, type Tier } from "./data";
 import { IntegrationMap } from "./IntegrationMap";
 import { SourceCard, relSync } from "./SourceCard";
@@ -83,11 +84,17 @@ export function SourcesPage() {
                     : "bg-white text-body ring-1 ring-line hover:text-ink"
                 }`}
               >
-                {t ?? "All"}
+                {t ? (
+                  <Term k={t.toLowerCase()} focusable={false}>
+                    {t}
+                  </Term>
+                ) : (
+                  "All"
+                )}
               </button>
             ))}
             <span className="ml-auto hidden font-fragment text-[9px] uppercase tracking-[0.1em] text-body/50 md:block">
-              design-partner view · cited in docs/RLI-data-sources-research.md
+              hover dotted terms for definitions · design-partner view · cited in docs/RLI-data-sources-research.md
             </span>
           </div>
 

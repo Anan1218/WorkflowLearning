@@ -5,6 +5,7 @@ import { Link, useParams } from "react-router-dom";
 
 import { api } from "../../lib/api";
 import { Badge, Button, Card, ConfidenceBar, EmptyState, Spinner, fmtValue } from "../../components/ui";
+import { GlossaryText } from "../../components/Term";
 
 export function ReviewDetailPage() {
   const { itemId } = useParams<{ itemId: string }>();
@@ -119,8 +120,7 @@ export function ReviewDetailPage() {
 
           {item.status === "resolved" && (
             <p className="border border-ok/25 bg-ok/5 px-4 py-3 text-[13.5px] text-ok">
-              All flagged fields decided. In production this decision record is the audit-trail entry — and
-              the corrected values become a new labeled training pair.
+              <GlossaryText text="All flagged fields decided. In production this decision record is the audit-trail entry — and the corrected values become a new labeled training pair." />
             </p>
           )}
         </div>

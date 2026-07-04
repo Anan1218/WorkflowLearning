@@ -1,6 +1,7 @@
 import { ArrowRight, FileText, ScanSearch, ShieldCheck, SlidersHorizontal, UserCheck } from "lucide-react";
 
 import { Card, PageHeader } from "../../components/ui";
+import { GlossaryText } from "../../components/Term";
 
 const STAGES = [
   {
@@ -59,7 +60,7 @@ export function PipelinePage() {
                 </span>
                 <h2 className="font-schibsted text-[16px] font-semibold text-ink">{title}</h2>
               </div>
-              <p className="max-w-2xl text-[14.5px] leading-[1.6] text-body">{body}</p>
+              <p className="max-w-2xl text-[14.5px] leading-[1.6] text-body"><GlossaryText text={body} /></p>
             </Card>
           </li>
         ))}

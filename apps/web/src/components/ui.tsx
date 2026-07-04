@@ -5,6 +5,8 @@
 import { ArrowRight } from "lucide-react";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
+import { GlossaryText } from "./Term";
+
 export function Button({
   variant = "primary",
   withArrow = false,
@@ -151,7 +153,9 @@ export function PageHeader({ eyebrow, title, sub }: { eyebrow: string; title: st
   return (
     <header className="mb-8">
       <div className="rise" style={{ animationDelay: "40ms" }}>
-        <Chip>{eyebrow}</Chip>
+        <Chip>
+          <GlossaryText text={eyebrow} />
+        </Chip>
       </div>
       <h1
         className="rise mt-5 font-newsreader text-[2.4rem] font-normal leading-[1.04] tracking-[-0.01em] text-ink"
@@ -164,7 +168,7 @@ export function PageHeader({ eyebrow, title, sub }: { eyebrow: string; title: st
           className="rise mt-4 max-w-2xl text-[15.5px] leading-[1.6] text-body"
           style={{ animationDelay: "200ms" }}
         >
-          {sub}
+          <GlossaryText text={sub} />
         </p>
       )}
     </header>

@@ -1,6 +1,7 @@
 import { ArrowDownToLine, ArrowLeftRight } from "lucide-react";
 
 import { Badge, Card } from "../../components/ui";
+import { GlossaryText, Term } from "../../components/Term";
 import type { SourceConfig } from "./data";
 import { relSync } from "./SourceCard";
 
@@ -22,7 +23,9 @@ export function SourceDetail({ source, extraMins }: { source: SourceConfig; extr
           <ArrowDownToLine size={14} className="shrink-0 text-body/60" aria-label="read-only" />
         )}
       </div>
-      <p className="mb-3 text-[13px] leading-[1.6] text-body">{source.systemNote}.</p>
+      <p className="mb-3 text-[13px] leading-[1.6] text-body">
+        <GlossaryText text={source.systemNote} />.
+      </p>
 
       <div className="mb-3 flex flex-wrap gap-1.5">
         <Badge tone={pii.tone}>{pii.label}</Badge>
@@ -53,31 +56,38 @@ export function SourceDetail({ source, extraMins }: { source: SourceConfig; extr
 
       <p className="mb-3 text-[12px] leading-[1.6] text-body">
         <span className="font-schibsted font-medium text-ink">Why this cadence: </span>
-        {source.cadenceRationale}
+        <GlossaryText text={source.cadenceRationale} />
       </p>
 
       <div className="eyebrow mb-1.5 !text-[9px]">Feeds</div>
       <ul className="mb-3 flex flex-wrap gap-1.5">
         {source.feeds.map((f) => (
           <li key={f} className="border border-line bg-wash px-2 py-0.5 font-fragment text-[10px] text-body">
-            {f}
+            <GlossaryText text={f} />
           </li>
         ))}
       </ul>
 
       <div className="eyebrow mb-1.5 !text-[9px]">Active in programs</div>
-      <p className="mb-3 font-fragment text-[10.5px] text-body">{source.tiers.join(" · ")}</p>
+      <p className="mb-3 font-fragment text-[10.5px] text-body">
+        {source.tiers.map((tier, i) => (
+          <span key={tier}>
+            {i > 0 && " · "}
+            <Term k={tier.toLowerCase()}>{tier}</Term>
+          </span>
+        ))}
+      </p>
 
       {source.compliance && (
         <p className="border border-line bg-mist px-3 py-2 text-[12px] leading-[1.6] text-body">
           <span className="font-schibsted font-medium text-ink">Compliance: </span>
-          {source.compliance}
+          <GlossaryText text={source.compliance} />
         </p>
       )}
       {source.category === "enrichment" && !source.compliance && (
         <p className="border border-line bg-mist px-3 py-2 text-[12px] leading-[1.6] text-body">
           <span className="font-schibsted font-medium text-ink">Compliance: </span>
-          External subprocessor — appears on the vendor register with DPA + SOC 2 evidence.
+          <GlossaryText text="External subprocessor — appears on the vendor register with DPA + SOC 2 evidence." />
         </p>
       )}
     </Card>

@@ -4,6 +4,7 @@ import { NavLink } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 
 import { api } from "../lib/api";
+import { GlossaryText } from "./Term";
 
 const NAV = [
   { to: "/extract", label: "Extract", icon: FileSearch },
@@ -87,8 +88,8 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       {/* status footer */}
       <footer className="relative z-10 flex h-8 shrink-0 items-center justify-between border-t border-line bg-white/70 px-5 font-fragment text-[10px] uppercase tracking-[0.12em] text-body/50 backdrop-blur-sm">
-        <span>Instructor + Pydantic · one-string model swap</span>
-        <span>traced via OTel → Langfuse</span>
+        <span><GlossaryText text="Instructor + Pydantic · one-string model swap" /></span>
+        <span><GlossaryText text="traced via OTel → Langfuse" /></span>
       </footer>
     </div>
   );

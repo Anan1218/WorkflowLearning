@@ -3,16 +3,17 @@ import { Link } from "react-router-dom";
 
 import type { JobResult } from "../../lib/api";
 import { Badge, Card, ConfidenceBar, fmtMoney, fmtValue } from "../../components/ui";
+import { GlossaryText, Term } from "../../components/Term";
 
-const FIELD_ROWS: { path: string; label: string }[] = [
-  { path: "principal.name", label: "Principal" },
-  { path: "principal.fein", label: "FEIN" },
+const FIELD_ROWS: { path: string; label: string; gloss?: string }[] = [
+  { path: "principal.name", label: "Principal", gloss: "principal" },
+  { path: "principal.fein", label: "FEIN", gloss: "fein" },
   { path: "principal.address", label: "Address" },
-  { path: "obligee.name", label: "Obligee" },
-  { path: "bond_type", label: "Bond type" },
-  { path: "bond_amount", label: "Bond amount" },
-  { path: "working_capital", label: "Working capital" },
-  { path: "net_worth", label: "Net worth" },
+  { path: "obligee.name", label: "Obligee", gloss: "obligee" },
+  { path: "bond_type", label: "Bond type", gloss: "bond type" },
+  { path: "bond_amount", label: "Bond amount", gloss: "bond amount" },
+  { path: "working_capital", label: "Working capital", gloss: "working capital" },
+  { path: "net_worth", label: "Net worth", gloss: "net worth" },
 ];
 
 function getPath(obj: unknown, path: string): unknown {
@@ -92,14 +93,14 @@ export function ExtractionResult({
           <div className="eyebrow mb-3">Extracted SuretySubmission</div>
           <table className="w-full">
             <tbody>
-              {FIELD_ROWS.map(({ path, label }) => {
+              {FIELD_ROWS.map(({ path, label, gloss }) => {
                 const value = getPath(result.submission, path);
                 const flagged = flaggedPaths.has(path);
                 const scored = result.score?.fields[path];
                 return (
                   <tr key={path} className="border-b border-line/70 last:border-0">
                     <td className="py-2.5 pr-3 align-top">
-                      <div className="font-schibsted text-[13px] text-body">{label}</div>
+                      <div className="font-schibsted text-[13px] text-body">{gloss ? <Term k={gloss}>{label}</Term> : label}</div>
                       <div className="font-fragment text-[9.5px] text-body/50">{path}</div>
                     </td>
                     <td className="py-2.5 pr-3 align-top font-schibsted text-[14px] font-medium text-ink">
@@ -133,7 +134,7 @@ export function ExtractionResult({
 
           {wip.length > 0 && (
             <>
-              <div className="eyebrow mb-2 mt-6">WIP schedule · {wip.length} projects</div>
+              <div className="eyebrow mb-2 mt-6"><Term k="wip">WIP schedule</Term> · {wip.length} projects</div>
               <div className="overflow-x-auto border border-line">
                 <table className="w-full text-[12.5px]">
                   <thead>
@@ -141,7 +142,7 @@ export function ExtractionResult({
                       <th className="px-3 py-2 font-normal">Project</th>
                       <th className="px-3 py-2 text-right font-normal">Contract</th>
                       <th className="px-3 py-2 text-right font-normal">% Comp</th>
-                      <th className="px-3 py-2 text-right font-normal">Under/(Over)</th>
+                      <th className="px-3 py-2 text-right font-normal"><Term k="under/over-billing">Under/(Over)</Term></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -173,7 +174,7 @@ export function ExtractionResult({
           {result.submission.notes && (
             <p className="mt-5 border border-line bg-wash px-3.5 py-2.5 text-[13px] leading-relaxed text-body">
               <span className="font-schibsted font-medium text-ink">Model notes: </span>
-              {result.submission.notes}
+              <GlossaryText text={result.submission.notes} />
             </p>
           )}
         </Card>
