@@ -77,7 +77,7 @@ export function IntegrationMap({
         {ROWS.map(({ source, y }) => {
           const active = activeFor(source);
           const selected = selectedId === source.id;
-          const dimmed = (selectedId && !selected) || !active;
+          const dimmed = !active;
           const degraded = source.health === "degraded";
           return (
             <g key={`p-${source.id}`}>
@@ -87,7 +87,7 @@ export function IntegrationMap({
                 className={degraded ? "" : "flow-line"}
                 stroke={degraded ? "#f5b544" : selected ? "#2251ff" : "#2251ff"}
                 strokeWidth={selected ? 2.4 : 1.3}
-                opacity={dimmed ? 0.12 : degraded ? 0.7 : selected ? 1 : 0.45}
+                opacity={dimmed ? 0.1 : degraded ? 0.7 : selected ? 1 : 0.4}
               />
               {source.direction === "read-write" && (
                 <path
@@ -134,13 +134,13 @@ export function IntegrationMap({
         {ROWS.map(({ source, y }) => {
           const active = activeFor(source);
           const selected = selectedId === source.id;
-          const dimmed = (selectedId && !selected) || !active;
+          const dimmed = !active;
           return (
             <g
               key={source.id}
               onClick={() => onSelect(source.id)}
               className="cursor-pointer"
-              opacity={dimmed ? 0.3 : 1}
+              opacity={dimmed ? 0.25 : 1}
               role="button"
               aria-label={`${source.name} — select`}
             >
@@ -175,7 +175,10 @@ export function IntegrationMap({
                 className="fill-[#48566b]"
                 style={{ font: "8px 'Fragment Mono', monospace", letterSpacing: "0.08em" }}
               >
-                {source.connection.toUpperCase()} · {source.cadence.toUpperCase()}
+                {(() => {
+                  const meta = `${source.connection} · ${source.cadence}`.toUpperCase();
+                  return meta.length > 33 ? meta.slice(0, 32) + "…" : meta;
+                })()}
               </text>
             </g>
           );
