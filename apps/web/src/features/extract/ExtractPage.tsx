@@ -16,6 +16,7 @@ export function ExtractPage() {
 
   const { data: models } = useQuery({ queryKey: ["models"], queryFn: api.models });
   const effectiveModel = modelId ?? models?.find((m) => m.default)?.id ?? null;
+  const runningModelName = models?.find((m) => m.id === effectiveModel)?.label ?? effectiveModel ?? "";
 
   const start = useMutation({
     mutationFn: () =>
@@ -43,9 +44,9 @@ export function ExtractPage() {
   return (
     <div className="mx-auto w-full max-w-5xl">
       <PageHeader
-        eyebrow="Live demo"
+        eyebrow="Live demo · full pipeline"
         title="Read a messy submission into structured, scored data."
-        sub="Paste a broker email, upload a document, or pick a sample. The pipeline extracts a typed SuretySubmission, assigns per-field confidence, and routes anything uncertain to human review."
+        sub="One run executes every stage: a model reads the document into a typed SuretySubmission, deterministic code validates it and applies the confidence gate, and anything uncertain routes to human review."
       />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_260px]">
@@ -91,7 +92,7 @@ export function ExtractPage() {
               sourceText={text}
             />
           ) : (
-            <JobProgress elapsed={job.data?.elapsed_s ?? 0} />
+            <JobProgress elapsed={job.data?.elapsed_s ?? 0} modelName={runningModelName} />
           )}
         </div>
       )}

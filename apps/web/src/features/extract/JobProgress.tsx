@@ -1,14 +1,14 @@
 /** Animated stage stepper shown while the LLM call runs — latency becomes narrative. */
 
 const STAGES = [
-  { label: "Intake", at: 0 },
-  { label: "Extract", at: 1 },
-  { label: "Validate schema", at: 8 },
-  { label: "Score confidence", at: 16 },
-  { label: "Route", at: 24 },
+  { label: "Intake", at: 0, kind: "code" },
+  { label: "Extract", at: 1, kind: "model" },
+  { label: "Validate", at: 8, kind: "code" },
+  { label: "Confidence gate", at: 16, kind: "code" },
+  { label: "Route", at: 24, kind: "code" },
 ];
 
-export function JobProgress({ elapsed }: { elapsed: number }) {
+export function JobProgress({ elapsed, modelName }: { elapsed: number; modelName: string }) {
   return (
     <div className="pop-in dot-grid-light relative overflow-hidden border border-pale bg-wash px-8 py-10 shadow-[0_14px_34px_-28px_rgba(5,28,44,0.5)]">
       {/* scanning highlight */}
@@ -26,7 +26,7 @@ export function JobProgress({ elapsed }: { elapsed: number }) {
           const isCurrent = active && (i === STAGES.length - 1 || elapsed < STAGES[i + 1].at);
           return (
             <li key={s.label} className="flex flex-1 items-center last:flex-none">
-              <div className="flex flex-col items-center gap-2">
+              <div className="flex min-w-0 flex-col items-center gap-2">
                 <span
                   className={`flex h-6 w-6 items-center justify-center border font-fragment text-[9px] transition-all ${
                     isCurrent
@@ -46,6 +46,13 @@ export function JobProgress({ elapsed }: { elapsed: number }) {
                 >
                   {s.label}
                 </span>
+                <span
+                  className={`max-w-[110px] overflow-hidden text-ellipsis whitespace-nowrap border px-1.5 py-0.5 font-fragment text-[8px] uppercase tracking-[0.14em] ${
+                    s.kind === "model" ? "border-cobalt/40 text-cobalt" : "border-line text-body/50"
+                  }`}
+                >
+                  {s.kind === "model" ? `model · ${modelName}` : "code"}
+                </span>
               </div>
               {i < STAGES.length - 1 && (
                 <div
@@ -57,8 +64,8 @@ export function JobProgress({ elapsed }: { elapsed: number }) {
         })}
       </ol>
       <p className="mt-6 text-center text-[13px] text-body">
-        The model is reading the document and filling the typed schema — validation re-asks automatically if
-        the output doesn't conform. Free models can take up to a minute.
+        Only the Extract stage calls a model. Validation, the confidence gate, and routing are deterministic
+        code. Free models can take up to a minute.
       </p>
     </div>
   );
