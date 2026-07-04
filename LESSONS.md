@@ -85,6 +85,18 @@ Why over SQLite/JSON: Postgres gives the demo a real system-of-record story, and
 
 **RLI specifically (researched 2026-07): they are an Azure/.NET shop.** Azure adopted ~2014 for app hosting; current postings: Senior/Lead .NET engineers with Azure preferred, and a Cloud Solutions Architect role explicitly scoped to Azure-led cloud modernization. So the pitch slide says: Azure AI Foundry for models, Durable Functions + Service Bus for orchestration, Azure Database for PostgreSQL for the data plane.
 
+## Legacy integration: sync vs pull-on-demand
+
+Two standard ways to get data out of a carrier's legacy systems: query the source when you need it (pull-on-demand), or replicate on a schedule into the unified data layer (periodic sync). The choice hangs on properties of the source, not convention.
+
+**Default: periodic sync into Postgres.** Carrier legacy systems are the bottleneck almost by definition: fragile, rate-limited, batch-window-only (nightly extracts, SFTP drops), or fronted by awkward APIs where you want to pay the query cost once per record, not once per user request. Multiple internal consumers always emerge, and a synced layer means one integration instead of N. Start with the dumbest version that works: a poller writing plain Postgres tables with a `synced_at` column, freshness surfaced per record in the UI (the Sources panel's "Last sync" is this made visible). Add CDC or webhooks only if the source ever offers them.
+
+**Pull live instead when:** the value is volatile and decision-critical at the moment of action (a clearance check against the bond system of record), or - the insurance-specific rule - the data is consumer-report data. FCRA permissible purpose attaches to a specific transaction, and bureau/vendor contracts (personal credit, LexisNexis) generally prohibit caching and re-use. Those sources are pull-per-submission for compliance reasons, not architectural ones; never replicate them.
+
+**The trap to name out loud:** once you own a copy, reads come from the copy while writes go to the source, and the two disagree until the next poll. Our current answer is structural: the pipeline only reads legacy systems and writes solely to its own system of record; write-backs arrive one proven capability at a time (see the autonomy ladder below), each forced to confront this question individually.
+
+The Sources map is this rule applied fourteen times: webhook where the source pushes, 15-minute poll where freshness is decision-relevant, hourly/nightly where it is not, on-demand per submission where contracts require it, each with its rationale attached.
+
 ## Langfuse (observability)
 
 **Why it's the right pick here, maybe not "best" universally:** the deciding feature is **self-hostable + OTel-native**. For a carrier, traces capture document content (NPI), so observability must be able to run inside their walls - Langfuse self-host is an env flip in this repo, no code change. It's open-source, widely adopted, and LLM-specific (prompts, tokens, cost, latency per call).
