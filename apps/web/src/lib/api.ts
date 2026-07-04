@@ -35,6 +35,11 @@ export type GuidelineInfo = {
   severity: "route" | "info";
   route: string;
   example: { given: string; outcome: string };
+  purpose: string;
+  procedure: string[];
+  escalation: string;
+  owner: string;
+  version: string;
 };
 
 export type Rationale = {

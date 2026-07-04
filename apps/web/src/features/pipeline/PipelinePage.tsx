@@ -1,6 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, FileText, ScanSearch, ShieldCheck, SlidersHorizontal, Tags, UserCheck } from "lucide-react";
-import { useEffect } from "react";
+import {
+  ArrowRight,
+  ChevronDown,
+  FileText,
+  ScanSearch,
+  ShieldCheck,
+  SlidersHorizontal,
+  Tags,
+  UserCheck,
+} from "lucide-react";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
 import { Card, PageHeader } from "../../components/ui";
@@ -64,6 +73,7 @@ const WORKFLOW_STEPS = [
 
 export function PipelinePage() {
   const location = useLocation();
+  const [openSop, setOpenSop] = useState<string | null>(null);
   const { data: guidelines, isLoading: guidelinesLoading } = useQuery({
     queryKey: ["guidelines"],
     queryFn: api.guidelines,
@@ -71,6 +81,9 @@ export function PipelinePage() {
 
   useEffect(() => {
     if (!location.hash.startsWith("#sop-")) return;
+
+    const guidelineId = location.hash.slice("#sop-".length).toUpperCase();
+    setOpenSop(guidelineId);
 
     const target = document.getElementById(location.hash.slice(1));
     // Scroll only the app's main region: scrollIntoView would also scroll the
@@ -210,57 +223,127 @@ export function PipelinePage() {
               </Card>
             </div>
           ) : (
-            guidelines?.map((guideline, i) => (
-              <div
-                key={guideline.id}
-                id={`sop-${guideline.id.toLowerCase()}`}
-                className="rise scroll-mt-24"
-                style={{ animationDelay: `${820 + i * 70}ms` }}
-              >
-                <Card className="!p-4">
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                    <div className="flex min-w-0 flex-1 gap-3">
-                      <span className="inline-flex h-7 shrink-0 items-center border border-cobalt/45 px-2 font-fragment text-[9px] font-semibold uppercase tracking-[0.16em] text-cobalt">
-                        {guideline.id}
-                      </span>
-                      <div className="min-w-0 flex-1">
-                        <h2 className="font-schibsted text-[15px] font-semibold text-ink">
-                          {guideline.title}
-                        </h2>
-                        <p className="mt-1 max-w-4xl text-[13.5px] leading-[1.55] text-body">
-                          <GlossaryText text={guideline.rule} />
-                        </p>
-                        <div className="mt-2.5 border border-line bg-wash px-3 py-2">
-                          <div className="grid grid-cols-[64px_1fr] items-baseline gap-2">
-                            <span className="font-fragment text-[8.5px] uppercase tracking-[0.14em] text-body/50">
-                              Given
-                            </span>
-                            <span className="text-[13px] leading-[1.5] text-body">
-                              <GlossaryText text={guideline.example.given} />
-                            </span>
-                          </div>
-                          <div className="grid grid-cols-[64px_1fr] items-baseline gap-2">
-                            <span className="font-fragment text-[8.5px] uppercase tracking-[0.14em] text-body/50">
-                              Outcome
-                            </span>
-                            <span className="text-[13px] leading-[1.5] text-body">
-                              <GlossaryText text={guideline.example.outcome} />
-                            </span>
+            guidelines?.map((guideline, i) => {
+              const isOpen = openSop === guideline.id;
+
+              return (
+                <div
+                  key={guideline.id}
+                  id={`sop-${guideline.id.toLowerCase()}`}
+                  className="rise scroll-mt-24"
+                  style={{ animationDelay: `${820 + i * 70}ms` }}
+                >
+                  <Card className="!p-4">
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      className="w-full cursor-pointer text-left focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-cobalt"
+                      aria-expanded={isOpen}
+                      aria-controls={`sop-details-${guideline.id.toLowerCase()}`}
+                      onClick={() => setOpenSop(isOpen ? null : guideline.id)}
+                      onKeyDown={(event) => {
+                        if (event.currentTarget !== event.target) return;
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          setOpenSop(isOpen ? null : guideline.id);
+                        }
+                      }}
+                    >
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                        <div className="flex min-w-0 flex-1 gap-3">
+                          <span className="inline-flex h-7 shrink-0 items-center border border-cobalt/45 px-2 font-fragment text-[9px] font-semibold uppercase tracking-[0.16em] text-cobalt">
+                            {guideline.id}
+                          </span>
+                          <div className="min-w-0 flex-1">
+                            <h2 className="font-schibsted text-[15px] font-semibold text-ink">
+                              {guideline.title}
+                            </h2>
+                            <p className="mt-1 max-w-4xl text-[13.5px] leading-[1.55] text-body">
+                              <GlossaryText text={guideline.rule} />
+                            </p>
                           </div>
                         </div>
+                        <span
+                          className={`flex shrink-0 items-center gap-2 font-fragment text-[9px] uppercase tracking-[0.14em] sm:w-44 sm:justify-end sm:text-right ${
+                            guideline.severity === "route" ? "text-cobalt" : "text-body/50"
+                          }`}
+                        >
+                          {guideline.route}
+                          <ChevronDown
+                            size={14}
+                            className={`transition-transform ${isOpen ? "rotate-180" : ""}`}
+                            aria-hidden
+                          />
+                        </span>
                       </div>
                     </div>
-                    <span
-                      className={`shrink-0 font-fragment text-[9px] uppercase tracking-[0.14em] sm:w-44 sm:text-right ${
-                        guideline.severity === "route" ? "text-cobalt" : "text-body/50"
-                      }`}
-                    >
-                      {guideline.route}
-                    </span>
-                  </div>
-                </Card>
-              </div>
-            ))
+                    <div className="mt-2.5 border border-line bg-wash px-3 py-2">
+                      <div className="grid grid-cols-[64px_1fr] items-baseline gap-2">
+                        <span className="font-fragment text-[8.5px] uppercase tracking-[0.14em] text-body/50">
+                          Given
+                        </span>
+                        <span className="text-[13px] leading-[1.5] text-body">
+                          <GlossaryText text={guideline.example.given} />
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-[64px_1fr] items-baseline gap-2">
+                        <span className="font-fragment text-[8.5px] uppercase tracking-[0.14em] text-body/50">
+                          Outcome
+                        </span>
+                        <span className="text-[13px] leading-[1.5] text-body">
+                          <GlossaryText text={guideline.example.outcome} />
+                        </span>
+                      </div>
+                    </div>
+                    {isOpen && (
+                      <div
+                        id={`sop-details-${guideline.id.toLowerCase()}`}
+                        className="mt-3 border-t border-line pt-3"
+                      >
+                        <div className="font-fragment text-[8.5px] uppercase tracking-[0.14em] text-body/50">
+                          Why this rule
+                        </div>
+                        <p className="text-[13px] leading-[1.55] text-body">
+                          <GlossaryText text={guideline.purpose} />
+                        </p>
+
+                        <div className="mt-3 font-fragment text-[8.5px] uppercase tracking-[0.14em] text-body/50">
+                          Procedure
+                        </div>
+                        <ol className="mt-1 flex list-none flex-col gap-y-1.5">
+                          {guideline.procedure.map((step, stepIndex) => (
+                            <li key={step} className="grid grid-cols-[28px_1fr] gap-x-2">
+                              <span className="font-fragment text-[10px] text-cobalt">
+                                {String(stepIndex + 1).padStart(2, "0")}
+                              </span>
+                              <span className="text-[13px] text-body">
+                                <GlossaryText text={step} />
+                              </span>
+                            </li>
+                          ))}
+                        </ol>
+
+                        <div className="mt-3 font-fragment text-[8.5px] uppercase tracking-[0.14em] text-body/50">
+                          Escalation
+                        </div>
+                        <p className="text-[13px] leading-[1.55] text-body">
+                          <GlossaryText text={guideline.escalation} />
+                        </p>
+
+                        <div className="mt-3 flex justify-between gap-3">
+                          <span className="font-fragment text-[8.5px] uppercase tracking-[0.14em] text-body/50">
+                            OWNER · {guideline.owner}
+                          </span>
+                          <span className="font-fragment text-[8.5px] uppercase tracking-[0.14em] text-body/50">
+                            {guideline.version}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </Card>
+                </div>
+              );
+            })
           )}
         </div>
       </section>
@@ -297,8 +380,9 @@ export function PipelinePage() {
             </code>
           </div>
           <p className="mt-5 max-w-4xl text-[14px] leading-[1.6] text-[#d6e2f5]">
-            Develop and benchmark on inexpensive models; deploy on whatever endpoint your compliance team
-            approves, inside your own cloud. The pipeline, schema, evals, and traces do not change.
+            Model choice stays yours: run whichever endpoint your compliance team approves, inside your
+            own cloud, and adopt better models as they ship. The evals decide what is good enough; the
+            pipeline, schema, and traces never change.
           </p>
         </div>
       </div>

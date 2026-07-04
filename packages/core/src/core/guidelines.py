@@ -21,6 +21,11 @@ class Guideline(BaseModel):
     severity: Literal["route", "info"]
     route: str
     example: GuidelineExample
+    purpose: str
+    procedure: list[str]
+    escalation: str
+    owner: str
+    version: str
 
 
 class Rationale(BaseModel):
@@ -46,6 +51,22 @@ GUIDELINES: list[Guideline] = [
             given="principal.fein extracted at confidence 0.62 against the 0.75 floor.",
             outcome="The field routes to the human review queue; it cannot auto-proceed.",
         ),
+        purpose=(
+            "Extraction output is a model's reading, not a verified fact. The floor guarantees "
+            "a person verifies anything the model is not sure it read correctly."
+        ),
+        procedure=[
+            "Open the flagged field and its source citation side by side.",
+            "Confirm the value against the cited passage; scan for a conflicting later value in the document.",
+            "Approve to accept the extracted value as read, or type the corrected value and override.",
+            "The decision is recorded with reviewer and timestamp; the pair joins the training set.",
+        ],
+        escalation=(
+            "If the source document itself is ambiguous or contradictory, route the file to the "
+            "assigning underwriter rather than guessing, and note the ambiguity on the item."
+        ),
+        owner="Intake review team",
+        version="v2 · effective Mar 2026",
     ),
     Guideline(
         id="UW-02",
@@ -60,6 +81,21 @@ GUIDELINES: list[Guideline] = [
             given="net_worth populated but the model reported no confidence for it.",
             outcome="Treated as unverified and routed to review.",
         ),
+        purpose=(
+            "A value without a reported confidence has not been vouched for by anything. Silence "
+            "is treated as risk: unscored never means unchecked."
+        ),
+        procedure=[
+            "Treat the field exactly as a below-floor field: verify it against the source citation.",
+            "If the value is correct, approve; the approval, not the model, is what marks it verified.",
+            "If no supporting passage exists in the document, override with the correct value or clear it.",
+        ],
+        escalation=(
+            "Repeated unscored output from one model or document type is an eval problem, not a "
+            "review problem: flag it to the pipeline owner for a calibration pass."
+        ),
+        owner="Intake review team",
+        version="v1 · effective Jan 2026",
     ),
     Guideline(
         id="UW-03",
@@ -71,6 +107,22 @@ GUIDELINES: list[Guideline] = [
             given="Working capital $145,000 on a $1,850,000 bond (7.8%).",
             outcome="Below the 10% floor of $185,000; underwriter judgment before quoting.",
         ),
+        purpose=(
+            "Working capital is the contractor's cushion for absorbing a problem mid-job. Below "
+            "10% of the bond, one bad month can become a claim, so the ratio demands judgment, "
+            "never auto-approval."
+        ),
+        procedure=[
+            "Recompute the ratio from verified figures once extraction flags clear: working capital over bond amount.",
+            "Review what the ratio hides: bank line availability, receivables aging, seasonality of the trade.",
+            "Waive with a note when compensating strength exists (strong equity, committed bank line), or hold the file pending updated financials.",
+        ],
+        escalation=(
+            "Waivers on bonds above $1,000,000 need a second underwriter's initials on the "
+            "decision entry."
+        ),
+        owner="Contract surety underwriting",
+        version="v4 · effective Jan 2026",
     ),
     Guideline(
         id="UW-04",
@@ -85,6 +137,23 @@ GUIDELINES: list[Guideline] = [
             given="Bond amount $1,850,000.",
             outcome="Maps to the Standard program: CPA-prepared financials expected.",
         ),
+        purpose=(
+            "The bond amount decides which program the file belongs to, and the program decides "
+            "what the file must contain and who can approve it. Classifying early stops a "
+            "Standard-sized file from being worked like a FirstStep app."
+        ),
+        procedure=[
+            "Map the bond amount to a tier: FirstStep to $500K, Next Step to $1.5M, Standard above.",
+            "Confirm aggregate exposure stays inside the tier: sum the principal's open bonds, not just this one.",
+            "Stamp the tier on the file; completeness (UW-06) reads it downstream.",
+        ],
+        escalation=(
+            "Files within 10% of a tier boundary, or with a growing aggregate, go to the "
+            "underwriter for tier discretion. Graduation between programs is a relationship "
+            "decision, not an arithmetic one."
+        ),
+        owner="Contract surety underwriting",
+        version="v3 · effective Jan 2026",
     ),
     Guideline(
         id="UW-05",
@@ -99,6 +168,21 @@ GUIDELINES: list[Guideline] = [
             given="Marion Trail Phase 1 billed $640,000 on a $620,000 contract.",
             outcome="Overbilling flagged; WIP review before quoting.",
         ),
+        purpose=(
+            "The WIP schedule is where contractor trouble shows first. Overbilling and cost "
+            "overruns appear in the rows months before they reach the financial statements."
+        ),
+        procedure=[
+            "Check each row: billings against contract amount, cost to date against total estimated cost.",
+            "For flagged rows, distinguish front-loaded billing, which is common and sometimes fine, from genuine profit fade.",
+            "Request the current month's WIP when the schedule is older than 90 days; note findings on the file.",
+        ],
+        escalation=(
+            "Two or more flagged rows, or any single row failing both checks, goes to the "
+            "underwriter with the WIP attached. Multi-row anomalies are never waived at intake."
+        ),
+        owner="Contract surety underwriting",
+        version="v2 · effective Feb 2026",
     ),
     Guideline(
         id="UW-06",
@@ -117,6 +201,23 @@ GUIDELINES: list[Guideline] = [
                 "WIP schedule."
             ),
         ),
+        purpose=(
+            "Chasing missing documents is the largest source of quote delay. Naming the gap on "
+            "day one, in the program tier's terms, is how a file gets review-ready in one pass "
+            "instead of three."
+        ),
+        procedure=[
+            "Read the tier stamped by UW-04 and load its checklist: Standard requires CPA financials (working capital and net worth) and a WIP schedule; Next Step requires financials covering one of working capital or net worth; FirstStep requires the application alone.",
+            "Name each missing item as a reviewable entry on the file.",
+            "Supply the value from documents on hand (override) or waive with a reason; the file cannot be quoted while entries are open.",
+            "Draft the broker follow-up naming exactly what is missing. In production this draft is generated automatically.",
+        ],
+        escalation=(
+            "Waiving a Standard-tier requirement needs the underwriter who owns the account, not "
+            "intake review."
+        ),
+        owner="Intake review team with underwriting sign-off",
+        version="v1 · effective Jun 2026",
     ),
 ]
 
