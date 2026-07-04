@@ -1,4 +1,4 @@
-import { BarChart3, Database, FileSearch, GitBranch, Inbox, X } from "lucide-react";
+import { BarChart3, Database, FileSearch, GitBranch, Inbox } from "lucide-react";
 import type { ReactNode } from "react";
 import { NavLink } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -37,10 +37,8 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       {/* frosted header */}
       <header className="relative z-10 flex h-14 shrink-0 items-center gap-3 border-b border-line bg-white/80 px-5 backdrop-blur-md">
-        <span className="flex items-baseline gap-2 font-newsreader text-[1.35rem] font-medium tracking-tight text-ink">
-          Stello
-          <X size={13} strokeWidth={2.5} className="self-center text-body/50" aria-label="in partnership with" />
-          RLI
+        <span className="font-newsreader text-[1.35rem] font-medium tracking-tight text-ink">
+          Stello<span className="mx-1.5 text-[1.1rem] text-ink/80" aria-label="in partnership with">×</span>RLI
         </span>
         <span className="bg-navy px-2.5 py-1 font-fragment text-[9px] font-semibold uppercase tracking-[0.2em] text-white">
           Submission Intelligence
