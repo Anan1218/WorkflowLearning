@@ -11,7 +11,7 @@ const STAGES = [
   {
     icon: FileText,
     title: "Intake",
-    body: "Broker emails, ACORD forms, WIP schedules, and financial statements go in as messy text. PDF text-layer today; OCR + image hybrid is the production path for scans.",
+    body: "Broker emails, contractor questionnaires, bond request forms, WIP schedules, and CPA financial statements go in as messy text. PDF text-layer today; OCR + image hybrid is the production path for scans.",
   },
   {
     icon: Tags,
@@ -42,12 +42,12 @@ const STAGES = [
 
 const WORKFLOW_STEPS = [
   { label: "Submission intake", sublabel: "STEP 01", kind: "covered" },
-  { label: "Risk classification", sublabel: "STEP 02", kind: "covered" },
+  { label: "Triage", sublabel: "STEP 02 · CLASSIFY", kind: "covered" },
   { label: "Appetite review", sublabel: "STEP 04", kind: "covered" },
   { label: "Completeness review", sublabel: "STEPS 05-06", kind: "covered" },
   { label: "Underwriting review", sublabel: "AFTER THE HANDOFF", kind: "next" },
   { label: "Quote", sublabel: "NOT IN SCOPE", kind: "untouched" },
-  { label: "Bind and issue", sublabel: "NOT IN SCOPE", kind: "untouched" },
+  { label: "Issue and execute", sublabel: "NOT IN SCOPE", kind: "untouched" },
 ] as const;
 
 export function PipelinePage() {
@@ -132,7 +132,7 @@ export function PipelinePage() {
           </div>
         </div>
         <p className="mt-2.5 max-w-4xl text-[13px] leading-[1.55] text-body">
-          <GlossaryText text="This system covers one slice of a longer chain: intake through completeness. Extraction and checks run automatically; a person resolves flagged fields in the review queue. Underwriting review starts where we stop, working from the prepared, cited file. Quoting and binding never move." />
+          <GlossaryText text="This system covers one slice of a longer chain: intake through completeness. Extraction and checks run automatically; a person resolves flagged fields in the review queue. Underwriting review starts where we stop, working from the prepared, cited file. Quoting and issuance never move." />
         </p>
       </section>
 

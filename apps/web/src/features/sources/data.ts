@@ -65,7 +65,7 @@ export const SOURCES: SourceConfig[] = [
     lastSyncMinsAgo: 11,
     volumePerDay: "~60 apps",
     feeds: ["principal", "obligee", "bond_type", "bond_amount", "GIA execution status"],
-    tiers: ["FirstStep", "Next Step", "Standard"],
+    tiers: ["FirstStep"],
   },
   {
     id: "rlink",
@@ -82,7 +82,7 @@ export const SOURCES: SourceConfig[] = [
     lastSyncMinsAgo: 6,
     volumePerDay: "~220 bonds",
     feeds: ["bond_type (license_permit, court, fidelity, notary)", "principal", "referral reasons"],
-    tiers: ["FirstStep"],
+    tiers: [],
   },
   {
     id: "broker-sftp",

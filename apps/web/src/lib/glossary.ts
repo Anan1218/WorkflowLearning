@@ -130,7 +130,7 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
   },
   binding: {
     term: "Binding",
-    def: "The moment coverage or a bond becomes legally effective. Nothing in this pipeline binds; binding stays a human authority.",
+    def: "Insurance vocabulary; surety people say issue and execute. Bonds are executed by an attorney-in-fact under a power of attorney. Nothing in this pipeline issues a bond; that authority stays human.",
   },
   "completeness review": {
     term: "Completeness review",
@@ -273,7 +273,7 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
   },
   acord: {
     term: "ACORD",
-    def: "The insurance industry's standardized forms (applications, certificates) used to exchange information between agencies and carriers. They are a common shape for incoming submission documents.",
+    def: "The insurance industry's standardized forms. Surety uses them sparingly (ACORD 501 execution report, 502 contract bond request); carrier-proprietary questionnaires and bond request forms dominate contract surety intake.",
   },
   fein: {
     term: "FEIN",

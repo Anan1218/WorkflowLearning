@@ -34,7 +34,7 @@ function confidenceFor(result: JobResult, path: string): number | null {
 function humanizeDocType(value: string): string {
   const labels: Record<string, string> = {
     broker_email: "Broker email",
-    acord_form: "ACORD form",
+    acord_form: "Bond request form",
     wip_schedule: "WIP schedule",
     financial_statement: "Financial statement",
     other: "Other document",
