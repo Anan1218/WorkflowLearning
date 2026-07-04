@@ -230,11 +230,11 @@ export function PipelinePage() {
       </ol>
 
       <section className="mt-10">
-        <div className="rise mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between" style={{ animationDelay: "760ms" }}>
-          <div className="font-fragment text-[10px] uppercase tracking-[0.18em] text-cobalt">
+        <div className="rise mb-5" style={{ animationDelay: "760ms" }}>
+          <div className="mb-2 font-fragment text-[10px] uppercase tracking-[0.18em] text-cobalt">
             The intake SOP · clauses UW-01 to UW-06
           </div>
-          <p className="max-w-2xl text-[14px] leading-[1.55] text-body sm:text-right">
+          <p className="max-w-3xl text-[14px] leading-[1.6] text-body">
             <GlossaryText text="One SOP, six numbered clauses, each with its own trigger, owner, and version: the form a pipeline can execute and an auditor can diff. Elicited in three working sessions with the review team; executed on every run since. In a pilot, the first two weeks are these sessions with your reviewers." />
           </p>
         </div>
@@ -324,57 +324,63 @@ export function PipelinePage() {
                     {isOpen && (
                       <div
                         id={`sop-details-${guideline.id.toLowerCase()}`}
-                        className="mt-3 border-t border-line pt-3"
+                        className="mt-3 border-t border-line pt-3.5"
                       >
-                        <p className="font-newsreader text-[15px] italic leading-[1.5] text-ink">
-                          "{guideline.quote}"
-                        </p>
-                        <div className="mt-1 font-fragment text-[8.5px] uppercase tracking-[0.14em] text-body/50">
-                          {guideline.elicited_from}
+                        <div className="border-l-2 border-cobalt/40 pl-3">
+                          <p className="font-newsreader text-[15.5px] italic leading-[1.5] text-ink">
+                            "{guideline.quote}"
+                          </p>
+                          <div className="mt-1.5 font-fragment text-[8.5px] uppercase tracking-[0.14em] text-body/45">
+                            {guideline.elicited_from}
+                          </div>
                         </div>
 
-                        <div className="mt-3 font-fragment text-[8.5px] uppercase tracking-[0.14em] text-body/50">
-                          Why this rule
-                        </div>
-                        <p className="text-[13px] leading-[1.55] text-body">
-                          <GlossaryText text={guideline.purpose} />
-                        </p>
+                        <dl className="mt-3.5 grid grid-cols-[120px_1fr] items-start gap-x-4 gap-y-3.5">
+                          <dt className="font-fragment text-[8.5px] uppercase tracking-[0.14em] text-cobalt/70">
+                            Why this rule
+                          </dt>
+                          <dd className="text-[13px] leading-[1.55] text-body">
+                            <GlossaryText text={guideline.purpose} />
+                          </dd>
 
-                        <div className="mt-3 font-fragment text-[8.5px] uppercase tracking-[0.14em] text-body/50">
-                          Procedure
-                        </div>
-                        <ol className="mt-1 flex list-none flex-col gap-y-1.5">
-                          {guideline.procedure.map((step, stepIndex) => (
-                            <li key={step} className="grid grid-cols-[28px_1fr] gap-x-2">
-                              <span className="font-fragment text-[10px] text-cobalt">
-                                {String(stepIndex + 1).padStart(2, "0")}
-                              </span>
-                              <span className="text-[13px] text-body">
-                                <GlossaryText text={step} />
-                              </span>
-                            </li>
-                          ))}
-                        </ol>
+                          <dt className="font-fragment text-[8.5px] uppercase tracking-[0.14em] text-cobalt/70">
+                            Procedure
+                          </dt>
+                          <dd>
+                            <ol className="flex list-none flex-col gap-y-1.5">
+                              {guideline.procedure.map((step, stepIndex) => (
+                                <li key={step} className="grid grid-cols-[28px_1fr] gap-x-2">
+                                  <span className="font-fragment text-[10px] text-cobalt">
+                                    {String(stepIndex + 1).padStart(2, "0")}
+                                  </span>
+                                  <span className="text-[13px] leading-[1.55] text-body">
+                                    <GlossaryText text={step} />
+                                  </span>
+                                </li>
+                              ))}
+                            </ol>
+                          </dd>
 
-                        <div className="mt-3 font-fragment text-[8.5px] uppercase tracking-[0.14em] text-body/50">
-                          Escalation
-                        </div>
-                        <p className="text-[13px] leading-[1.55] text-body">
-                          <GlossaryText text={guideline.escalation} />
-                        </p>
+                          <dt className="font-fragment text-[8.5px] uppercase tracking-[0.14em] text-cobalt/70">
+                            Escalation
+                          </dt>
+                          <dd className="text-[13px] leading-[1.55] text-body">
+                            <GlossaryText text={guideline.escalation} />
+                          </dd>
 
-                        <div className="mt-3 font-fragment text-[8.5px] uppercase tracking-[0.14em] text-body/50">
-                          In the pipeline
-                        </div>
-                        <p className="text-[13px] leading-[1.55] text-body">
-                          <GlossaryText text={guideline.pipeline_note} />
-                        </p>
+                          <dt className="font-fragment text-[8.5px] uppercase tracking-[0.14em] text-cobalt/70">
+                            In the pipeline
+                          </dt>
+                          <dd className="text-[13px] leading-[1.55] text-body">
+                            <GlossaryText text={guideline.pipeline_note} />
+                          </dd>
+                        </dl>
 
-                        <div className="mt-3 flex justify-between gap-3">
-                          <span className="font-fragment text-[8.5px] uppercase tracking-[0.14em] text-body/50">
+                        <div className="mt-3.5 flex justify-between gap-3 border-t border-line pt-2.5">
+                          <span className="font-fragment text-[8.5px] uppercase tracking-[0.14em] text-body/45">
                             OWNER · {guideline.owner}
                           </span>
-                          <span className="font-fragment text-[8.5px] uppercase tracking-[0.14em] text-body/50">
+                          <span className="font-fragment text-[8.5px] uppercase tracking-[0.14em] text-body/45">
                             {guideline.version}
                           </span>
                         </div>
