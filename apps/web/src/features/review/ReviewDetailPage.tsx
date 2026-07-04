@@ -5,10 +5,13 @@ import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
 import { api } from "../../lib/api";
+import { DocumentSheet } from "../../components/DocumentSheet";
 import { Badge, Button, Card, ConfidenceBar, EmptyState, Spinner, fmtValue } from "../../components/ui";
 import { GlossaryText } from "../../components/Term";
 import { findEvidence, snippet, type Evidence } from "../../lib/evidence";
 import { fieldLabel } from "../../lib/fieldLabels";
+
+type SourceDocumentMode = "formatted" | "raw";
 
 function EvidenceDocument({
   doc,
@@ -62,6 +65,7 @@ export function ReviewDetailPage() {
   const { itemId } = useParams<{ itemId: string }>();
   const qc = useQueryClient();
   const [overrides, setOverrides] = useState<Record<string, string>>({});
+  const [sourceMode, setSourceMode] = useState<SourceDocumentMode>("formatted");
 
   const { data: item, isLoading } = useQuery({
     queryKey: ["review-item", itemId],
@@ -88,6 +92,22 @@ export function ReviewDetailPage() {
       ]),
     );
   }, [item]);
+
+  const sourceHighlights = useMemo(() => {
+    if (!item) return [];
+
+    return item.flagged_fields.flatMap((field) => {
+      const evidence = evidenceByPath[field.path];
+      if (!evidence) return [];
+
+      return [
+        {
+          id: `evidence-${field.path}`,
+          text: item.document_text.slice(evidence.start, evidence.end),
+        },
+      ];
+    });
+  }, [evidenceByPath, item]);
 
   if (isLoading)
     return (
@@ -119,24 +139,58 @@ export function ReviewDetailPage() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <div className="thin-scroll max-h-[620px] overflow-y-auto border border-pale bg-wash p-6">
-          <div className="eyebrow mb-3">Source document</div>
-          <pre className="whitespace-pre-wrap font-fragment text-[12px] leading-relaxed text-body">
-            <EvidenceDocument doc={item.document_text} evidenceByPath={evidenceByPath} />
-          </pre>
+        <div className="thin-scroll max-h-[620px] overflow-y-auto border border-pale bg-wash p-4">
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <div className="eyebrow">Source document</div>
+            <div className="flex gap-1" role="tablist" aria-label="Source document mode">
+              {(["formatted", "raw"] as const).map((mode) => (
+                <button
+                  key={mode}
+                  type="button"
+                  role="tab"
+                  aria-selected={sourceMode === mode}
+                  onClick={() => setSourceMode(mode)}
+                  className={`px-3 py-1 font-schibsted text-[12px] transition-colors focus-visible:outline-2 focus-visible:outline-cobalt ${
+                    sourceMode === mode ? "bg-white text-cobalt ring-1 ring-pale" : "text-body hover:text-ink"
+                  }`}
+                >
+                  {mode === "formatted" ? "Formatted" : "Raw"}
+                </button>
+              ))}
+            </div>
+          </div>
+          {sourceMode === "formatted" ? (
+            <DocumentSheet text={item.document_text} highlights={sourceHighlights} />
+          ) : (
+            <pre className="whitespace-pre-wrap font-fragment text-[12px] leading-relaxed text-body">
+              <EvidenceDocument doc={item.document_text} evidenceByPath={evidenceByPath} />
+            </pre>
+          )}
         </div>
 
         <div className="flex flex-col gap-3.5">
           <Card className="!p-4">
-            <div className="eyebrow mb-3">Why this is here</div>
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <div className="eyebrow">Why this is here</div>
+              <Link
+                to="/pipeline#sop-uw-01"
+                className="font-schibsted text-[12px] text-cobalt underline decoration-dotted underline-offset-2"
+              >
+                View SOP register
+              </Link>
+            </div>
             {rationales.length ? (
               <div className="flex flex-col gap-3">
                 {rationales.map((rationale) => (
                   <div key={rationale.guideline_id} className="border-t border-line pt-3 first:border-t-0 first:pt-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="inline-flex items-center border border-cobalt/45 px-2 py-0.5 font-fragment text-[9px] font-semibold uppercase tracking-[0.16em] text-cobalt">
+                      <Link
+                        to={`/pipeline#sop-${rationale.guideline_id.toLowerCase()}`}
+                        title="View SOP"
+                        className="inline-flex items-center border border-cobalt/45 px-2 py-0.5 font-fragment text-[9px] font-semibold uppercase tracking-[0.16em] text-cobalt hover:bg-cobalt/10"
+                      >
                         {rationale.guideline_id}
-                      </span>
+                      </Link>
                       <span className="font-schibsted text-[14px] font-medium text-ink">
                         {rationale.title}
                       </span>
@@ -178,12 +232,14 @@ export function ReviewDetailPage() {
                   </div>
                   <div className="flex flex-wrap items-center justify-end gap-1.5">
                     {guidelineIds.map((guidelineId) => (
-                      <span
+                      <Link
                         key={guidelineId}
-                        className="border border-cobalt/40 px-1.5 py-0.5 font-fragment text-[8.5px] uppercase tracking-[0.12em] text-cobalt"
+                        to={`/pipeline#sop-${guidelineId.toLowerCase()}`}
+                        title="View SOP"
+                        className="border border-cobalt/40 px-1.5 py-0.5 font-fragment text-[8.5px] uppercase tracking-[0.12em] text-cobalt hover:bg-cobalt/10"
                       >
                         {guidelineId}
-                      </span>
+                      </Link>
                     ))}
                     <ConfidenceBar value={f.confidence} />
                   </div>

@@ -1,98 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 
+import { DocumentSheet } from "../../components/DocumentSheet";
 import { Button } from "../../components/ui";
-import { parseSampleDoc, type SampleDocBlock, type SampleDocPair } from "./sampleDoc";
 
 type PreviewMode = "formatted" | "raw";
-
-function isRightAlignedCell(value: string) {
-  const trimmed = value.trim();
-  return /^(?:\$|-\$|\d)/.test(trimmed) || trimmed.endsWith("%");
-}
-
-function renderHeaderRow({ label, value }: SampleDocPair) {
-  const isSubject = label.toLowerCase() === "subject";
-
-  return (
-    <div key={label} className="grid grid-cols-[64px_1fr] gap-2">
-      <div className="pt-[3px] font-fragment text-[9px] uppercase tracking-[0.14em] text-body/60">
-        {label}
-      </div>
-      <div className={`font-schibsted text-ink ${isSubject ? "text-[14px] font-medium" : "text-[13px]"}`}>
-        {value}
-      </div>
-    </div>
-  );
-}
-
-function renderBlock(block: SampleDocBlock, index: number) {
-  if (block.type === "headers") {
-    return (
-      <div key={`headers-${index}`}>
-        <div className="space-y-1.5">{block.headers.map(renderHeaderRow)}</div>
-        <div className="mb-5 mt-4 border-t border-line" />
-      </div>
-    );
-  }
-
-  if (block.type === "paragraph") {
-    return (
-      <p key={`paragraph-${index}`} className="mb-3.5 font-schibsted text-[13.5px] leading-[1.65] text-body">
-        {block.text}
-      </p>
-    );
-  }
-
-  if (block.type === "fields") {
-    return (
-      <dl key={`fields-${index}`} className="mb-3.5 border-l-2 border-cobalt/30 pl-3">
-        {block.fields.map((field) => (
-          <div key={field.label} className="grid grid-cols-[minmax(120px,auto)_1fr] gap-4 py-0.5">
-            <dt className="font-schibsted text-[13px] text-body">{field.label}</dt>
-            <dd className="text-left font-fragment text-[12.5px] text-ink">{field.value}</dd>
-          </div>
-        ))}
-      </dl>
-    );
-  }
-
-  return (
-    <div key={`table-${index}`} className="mb-3.5 overflow-x-auto">
-      <table className="w-full border border-line text-left">
-        <thead>
-          <tr>
-            {block.headers.map((header) => (
-              <th
-                key={header}
-                className="border-b border-line bg-wash px-2.5 py-1.5 font-fragment text-[9px] uppercase tracking-[0.12em] text-body/60"
-              >
-                {header}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {block.rows.map((row, rowIndex) => (
-            <tr key={`${row.join("|")}-${rowIndex}`}>
-              {row.map((cell, cellIndex) => (
-                <td
-                  key={`${cell}-${cellIndex}`}
-                  className={`border-b border-line/60 px-2.5 py-1.5 font-fragment text-[11.5px] text-ink ${
-                    isRightAlignedCell(cell) ? "text-right" : "text-left"
-                  }`}
-                >
-                  {cell}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
 
 export function SamplePreviewModal({
   sample,
@@ -104,7 +17,6 @@ export function SamplePreviewModal({
   onUse: () => void;
 }) {
   const [mode, setMode] = useState<PreviewMode>("formatted");
-  const blocks = useMemo(() => parseSampleDoc(sample.text), [sample.text]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -152,9 +64,7 @@ export function SamplePreviewModal({
         </div>
         <div className="thin-scroll flex-1 overflow-y-auto bg-wash px-5 py-4">
           {mode === "formatted" ? (
-            <article className="mx-auto w-full max-w-[620px] border border-pale bg-white px-8 py-7 shadow-[0_18px_44px_-30px_rgba(30,58,92,0.45)]">
-              {blocks.map(renderBlock)}
-            </article>
+            <DocumentSheet text={sample.text} />
           ) : (
             <pre className="whitespace-pre-wrap font-fragment text-[12px] leading-relaxed text-body">
               {sample.text}

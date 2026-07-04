@@ -1,5 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { ArrowRight, FileText, ScanSearch, ShieldCheck, SlidersHorizontal, UserCheck } from "lucide-react";
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 import { Card, PageHeader } from "../../components/ui";
 import { GlossaryText } from "../../components/Term";
@@ -34,10 +36,18 @@ const STAGES = [
 ];
 
 export function PipelinePage() {
+  const location = useLocation();
   const { data: guidelines, isLoading: guidelinesLoading } = useQuery({
     queryKey: ["guidelines"],
     queryFn: api.guidelines,
   });
+
+  useEffect(() => {
+    if (!location.hash.startsWith("#sop-")) return;
+
+    const target = document.getElementById(location.hash.slice(1));
+    target?.scrollIntoView({ block: "start" });
+  }, [guidelines, location.hash]);
 
   return (
     <div className="mx-auto w-full max-w-5xl">
@@ -94,7 +104,12 @@ export function PipelinePage() {
             </div>
           ) : (
             guidelines?.map((guideline, i) => (
-              <div key={guideline.id} className="rise" style={{ animationDelay: `${820 + i * 70}ms` }}>
+              <div
+                key={guideline.id}
+                id={`sop-${guideline.id.toLowerCase()}`}
+                className="rise scroll-mt-24"
+                style={{ animationDelay: `${820 + i * 70}ms` }}
+              >
                 <Card className="!p-4">
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                     <div className="flex min-w-0 gap-3">
