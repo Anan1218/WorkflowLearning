@@ -1,7 +1,9 @@
+import { useQuery } from "@tanstack/react-query";
 import { ArrowRight, FileText, ScanSearch, ShieldCheck, SlidersHorizontal, UserCheck } from "lucide-react";
 
 import { Card, PageHeader } from "../../components/ui";
 import { GlossaryText } from "../../components/Term";
+import { api } from "../../lib/api";
 
 const STAGES = [
   {
@@ -32,6 +34,11 @@ const STAGES = [
 ];
 
 export function PipelinePage() {
+  const { data: guidelines, isLoading: guidelinesLoading } = useQuery({
+    queryKey: ["guidelines"],
+    queryFn: api.guidelines,
+  });
+
   return (
     <div className="mx-auto w-full max-w-5xl">
       <PageHeader
@@ -66,9 +73,61 @@ export function PipelinePage() {
         ))}
       </ol>
 
+      <section className="mt-10">
+        <div className="rise mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between" style={{ animationDelay: "760ms" }}>
+          <div className="font-fragment text-[10px] uppercase tracking-[0.18em] text-cobalt">
+            Documented SOPs
+          </div>
+          <p className="max-w-2xl text-[14px] leading-[1.55] text-body sm:text-right">
+            <GlossaryText text="The routing rules are written procedure, not model whim. The same register the review team follows, executed by the pipeline on every run." />
+          </p>
+        </div>
+
+        <div className="flex flex-col gap-2.5">
+          {guidelinesLoading ? (
+            <div className="rise" style={{ animationDelay: "820ms" }}>
+              <Card className="!p-4">
+                <span className="font-fragment text-[10px] uppercase tracking-[0.14em] text-body/50">
+                  Loading SOP register
+                </span>
+              </Card>
+            </div>
+          ) : (
+            guidelines?.map((guideline, i) => (
+              <div key={guideline.id} className="rise" style={{ animationDelay: `${820 + i * 70}ms` }}>
+                <Card className="!p-4">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="flex min-w-0 gap-3">
+                      <span className="inline-flex h-7 shrink-0 items-center border border-cobalt/45 px-2 font-fragment text-[9px] font-semibold uppercase tracking-[0.16em] text-cobalt">
+                        {guideline.id}
+                      </span>
+                      <div className="min-w-0">
+                        <h2 className="font-schibsted text-[15px] font-semibold text-ink">
+                          {guideline.title}
+                        </h2>
+                        <p className="mt-1 max-w-3xl text-[13.5px] leading-[1.55] text-body">
+                          <GlossaryText text={guideline.rule} />
+                        </p>
+                      </div>
+                    </div>
+                    <span
+                      className={`shrink-0 font-fragment text-[9px] uppercase tracking-[0.14em] ${
+                        guideline.severity === "route" ? "text-cobalt" : "text-body/50"
+                      }`}
+                    >
+                      {guideline.route}
+                    </span>
+                  </div>
+                </Card>
+              </div>
+            ))
+          )}
+        </div>
+      </section>
+
       <div
         className="rise mt-10 shadow-[0_34px_70px_-40px_rgba(30,58,92,0.8)]"
-        style={{ animationDelay: "800ms" }}
+        style={{ animationDelay: "1160ms" }}
       >
         {/* stepped color strip */}
         <div className="flex h-2" aria-hidden>

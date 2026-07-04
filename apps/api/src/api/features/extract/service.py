@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from evals.scorers import score_case
 from core.extract import extract_with_meta
+from core.guidelines import evaluate_guidelines
 from core.schemas import SCORED_FIELDS, SuretySubmission
 from api.config import MODEL_ALLOWLIST, REVIEW_THRESHOLD
 from api.features.review import store as review_store
@@ -56,6 +57,8 @@ def submit_extraction(text: str, model_id: str, sample_id: str | None = None):
     def _work() -> dict:
         sub, meta = extract_with_meta(text, model=provider_string)
         flagged = _low_confidence_fields(sub)
+        rationales = evaluate_guidelines(sub, flagged, REVIEW_THRESHOLD)
+        serialized_rationales = [r.model_dump() for r in rationales]
 
         est_cost = None
         if meta.get("input_tokens") is not None and meta.get("output_tokens") is not None:
@@ -72,6 +75,7 @@ def submit_extraction(text: str, model_id: str, sample_id: str | None = None):
                 document_text=text,
                 submission=sub.model_dump(),
                 flagged_fields=flagged,
+                rationales=serialized_rationales,
                 model_id=model_id,
             )
 
@@ -85,6 +89,7 @@ def submit_extraction(text: str, model_id: str, sample_id: str | None = None):
         return {
             "submission": sub.model_dump(),
             "low_confidence_fields": flagged,
+            "rationales": serialized_rationales,
             "review_item_id": review_item_id,
             "score": score,
             "usage": usage,

@@ -75,6 +75,18 @@ export function ReviewPage() {
                 <p className="line-clamp-2 font-fragment text-[11px] leading-relaxed text-body">
                   {item.doc_preview}
                 </p>
+                {!!item.guideline_ids.length && (
+                  <div className="mt-3 flex flex-wrap gap-1.5">
+                    {item.guideline_ids.map((guidelineId) => (
+                      <span
+                        key={guidelineId}
+                        className="border border-cobalt/40 px-1.5 py-0.5 font-fragment text-[8.5px] uppercase tracking-[0.12em] text-cobalt"
+                      >
+                        {guidelineId}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </Link>
             </li>
           ))}

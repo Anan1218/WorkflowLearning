@@ -28,9 +28,27 @@ export type Submission = {
 
 export type FlaggedField = { path: string; value: unknown; confidence: number | null };
 
+export type GuidelineInfo = {
+  id: string;
+  title: string;
+  rule: string;
+  severity: "route" | "info";
+  route: string;
+};
+
+export type Rationale = {
+  guideline_id: string;
+  title: string;
+  reason: string;
+  severity: "route" | "info";
+  fields: string[];
+  route: string;
+};
+
 export type JobResult = {
   submission: Submission;
   low_confidence_fields: FlaggedField[];
+  rationales: Rationale[];
   review_item_id: string | null;
   score: { fields: Record<string, boolean>; accuracy: number } | null;
   usage?: {
@@ -61,6 +79,7 @@ export type ReviewListItem = {
   n_decided: number;
   doc_preview: string;
   principal: string | null;
+  guideline_ids: string[];
 };
 
 export type ReviewItem = {
@@ -71,6 +90,7 @@ export type ReviewItem = {
   document_text: string;
   submission: Submission;
   flagged_fields: FlaggedField[];
+  rationales?: Rationale[];
   decisions: Record<string, { action: string; override_value?: unknown; decided_at: number }>;
 };
 
@@ -103,6 +123,7 @@ async function req<T>(path: string, init?: RequestInit): Promise<T> {
 
 export const api = {
   models: () => req<ModelInfo[]>("/api/models"),
+  guidelines: () => req<GuidelineInfo[]>("/api/guidelines"),
   samples: () => req<SampleMeta[]>("/api/samples"),
   sample: (id: string) => req<{ id: string; text: string }>(`/api/samples/${id}`),
   uploadDocument: (file: File) => {

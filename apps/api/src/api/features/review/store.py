@@ -17,7 +17,13 @@ if "items" not in _store.data:
     _store.data["items"] = {}
 
 
-def enqueue(document_text: str, submission: dict, flagged_fields: list[dict], model_id: str) -> str:
+def enqueue(
+    document_text: str,
+    submission: dict,
+    flagged_fields: list[dict],
+    rationales: list[dict],
+    model_id: str,
+) -> str:
     item_id = uuid.uuid4().hex[:12]
     _store.data["items"][item_id] = {
         "id": item_id,
@@ -27,6 +33,7 @@ def enqueue(document_text: str, submission: dict, flagged_fields: list[dict], mo
         "document_text": document_text,
         "submission": submission,
         "flagged_fields": flagged_fields,  # [{path, value, confidence}]
+        "rationales": rationales,
         "decisions": {},  # path -> {action, override_value?, decided_at}
     }
     _store.save()
@@ -37,6 +44,15 @@ def list_items(status: str | None = None) -> list[dict]:
     items = sorted(_store.data["items"].values(), key=lambda i: i["created_at"], reverse=True)
     if status:
         items = [i for i in items if i["status"] == status]
+
+    def _guideline_ids(item: dict) -> list[str]:
+        ids: list[str] = []
+        for rationale in item.get("rationales", []):
+            guideline_id = rationale.get("guideline_id")
+            if guideline_id and guideline_id not in ids:
+                ids.append(guideline_id)
+        return ids
+
     return [
         {
             "id": i["id"],
@@ -47,6 +63,7 @@ def list_items(status: str | None = None) -> list[dict]:
             "n_decided": len(i["decisions"]),
             "doc_preview": i["document_text"][:180],
             "principal": (i["submission"].get("principal") or {}).get("name"),
+            "guideline_ids": _guideline_ids(i),
         }
         for i in items
     ]

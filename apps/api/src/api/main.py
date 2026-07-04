@@ -19,6 +19,7 @@ from api.config import FRONTEND_DIST
 from api.features.documents.router import router as documents_router
 from api.features.evals.router import router as evals_router
 from api.features.extract.router import router as extract_router
+from api.features.guidelines.router import router as guidelines_router
 from api.features.review.router import router as review_router
 from api.features.samples.router import router as samples_router
 
@@ -47,6 +48,7 @@ def health() -> dict:
 app.include_router(extract_router)
 app.include_router(documents_router)
 app.include_router(samples_router)
+app.include_router(guidelines_router)
 app.include_router(review_router)
 app.include_router(evals_router)
 
