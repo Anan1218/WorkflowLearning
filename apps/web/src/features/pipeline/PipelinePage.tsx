@@ -43,7 +43,7 @@ const STAGES = [
 const WORKFLOW_STEPS = [
   { label: "Submission intake", sublabel: "STEP 01", kind: "covered" },
   { label: "Triage", sublabel: "STEP 02 · CLASSIFY", kind: "covered" },
-  { label: "Appetite review", sublabel: "STEP 04", kind: "covered" },
+  { label: "Appetite review", sublabel: "STEPS 03-04", kind: "covered" },
   { label: "Completeness review", sublabel: "STEPS 05-06", kind: "covered" },
   { label: "Underwriting review", sublabel: "AFTER THE HANDOFF", kind: "next" },
   { label: "Quote", sublabel: "NOT IN SCOPE", kind: "untouched" },
