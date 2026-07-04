@@ -2,30 +2,34 @@
  *  Hand-drawn SVG (viewBox layout, responsive width). Connectors use the
  *  Stello-Demos flowDash animation; selection highlights a full path. */
 
+import { useState, type CSSProperties } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+
 import { CATEGORY_LABELS, SOURCES, type SourceConfig, type Tier } from "./data";
 
-const W = 1240;
+const W = 860;
 const H = 620;
 const NODE_W = 218;
 const NODE_H = 34;
 const OUTPUT_NODE_H = 54;
 const LEFT_X = 8;
-const CENTER_X = 320;
+const CENTER_X = 330;
 const CENTER_W = 210;
 const CENTER_H = 120;
-// Right-side columns: even rhythm, ~55px gaps for the labeled edges.
 const RIGHT_NODE_W = 190;
-const SOR_X = 580;
-const SOR_Y = H / 2 - OUTPUT_NODE_H / 2;
-const LANGFUSE_X = 580;
-const LANGFUSE_Y = 505;
-const HUB2_X = 825;
-const HUB2_Y = H / 2 - 43;
-const HUB2_W = 170;
-const HUB2_H = 86;
-const CONSUMER_X = 1042;
-const REVIEW_Y = 190;
-const DRAFT_Y = 380;
+const SOR_1_X = 600;
+const SOR_1_Y = 283;
+const LANGFUSE_X = 600;
+const LANGFUSE_Y = 400;
+const SOR_2_X = 70;
+const SOR_2_Y = 283;
+const WORKFLOW_X = 340;
+const WORKFLOW_Y = 255;
+const WORKFLOW_W = 220;
+const WORKFLOW_H = 110;
+const OUTPUT_X = 630;
+const REVIEW_Y = 116;
+const DRAFT_Y = 450;
 
 type Layout = { source: SourceConfig; y: number };
 
@@ -48,11 +52,12 @@ function layoutSources(): { rows: Layout[]; headers: { label: string; y: number 
 const { rows: ROWS, headers: HEADERS } = layoutSources();
 const CENTER_Y = H / 2 - CENTER_H / 2;
 
-function pathFor(y: number): string {
+function pathFor(y: number, slot = 0, total = 1): string {
   const x0 = LEFT_X + NODE_W;
   const y0 = y + NODE_H / 2;
   const x1 = CENTER_X;
-  const y1 = H / 2;
+  // Stagger entry points down the hub's left face so the fan stays readable.
+  const y1 = total > 1 ? CENTER_Y + 18 + (slot * (CENTER_H - 36)) / (total - 1) : H / 2;
   const mx = (x0 + x1) / 2;
   return `M ${x0} ${y0} C ${mx} ${y0}, ${mx} ${y1}, ${x1} ${y1}`;
 }
@@ -61,6 +66,11 @@ function edge(x0: number, y0: number, x1: number, y1: number): string {
   const mx = (x0 + x1) / 2;
   return `M ${x0} ${y0} C ${mx} ${y0}, ${mx} ${y1}, ${x1} ${y1}`;
 }
+
+const SCENES = [
+  { caption: "View 1 of 2 · Intake and extraction" },
+  { caption: "View 2 of 2 · After the system of record" },
+];
 
 export function IntegrationMap({
   selectedId,
@@ -72,12 +82,20 @@ export function IntegrationMap({
   tier: Tier | null;
 }) {
   const activeFor = (s: SourceConfig) => (tier ? s.tiers.includes(tier) : true);
+  const [scene, setScene] = useState(0);
+  const sceneStyle = (index: number): CSSProperties => ({
+    opacity: scene === index ? 1 : 0,
+    transform: `translateX(${scene === index ? 0 : index === 0 ? -16 : 16}px)`,
+    transition: "opacity 400ms ease, transform 400ms ease",
+    pointerEvents: scene === index ? "auto" : "none",
+  });
 
   return (
-    <div className="flex h-full items-center border border-pale bg-white p-3 shadow-[0_30px_70px_-45px_rgba(30,58,92,0.5)]">
+    <div className="relative flex h-full items-center border border-pale bg-white p-3 shadow-[0_30px_70px_-45px_rgba(30,58,92,0.5)]">
       <svg viewBox={`0 0 ${W} ${H}`} className="h-full w-full" role="img" aria-label="Integration map: data sources flowing into the submission intelligence pipeline and out to the data plane">
+        <g style={sceneStyle(0)}>
         {/* connectors: sources -> pipeline */}
-        {ROWS.map(({ source, y }) => {
+        {ROWS.map(({ source, y }, rowIndex) => {
           const active = activeFor(source);
           const selected = selectedId === source.id;
           const dimmed = !active;
@@ -85,7 +103,7 @@ export function IntegrationMap({
           return (
             <g key={`p-${source.id}`}>
               <path
-                d={pathFor(y)}
+                d={pathFor(y, rowIndex, ROWS.length)}
                 fill="none"
                 className={degraded ? "" : "flow-line"}
                 stroke={degraded ? "#f5b544" : selected ? "#2251ff" : "#2251ff"}
@@ -94,7 +112,7 @@ export function IntegrationMap({
               />
               {source.direction === "read-write" && (
                 <path
-                  d={pathFor(y)}
+                  d={pathFor(y, rowIndex, ROWS.length)}
                   fill="none"
                   className="flow-line-slow"
                   stroke="#a9c4e8"
@@ -106,17 +124,17 @@ export function IntegrationMap({
           );
         })}
 
-        {/* event-driven flow */}
+        {/* intake flow */}
         <path
-          d={edge(CENTER_X + CENTER_W, H / 2, SOR_X, H / 2)}
+          d={edge(CENTER_X + CENTER_W, H / 2, SOR_1_X, H / 2)}
           fill="none"
           stroke="#2251ff"
           strokeWidth={1.8}
           opacity={selectedId ? 0.3 : 0.7}
         />
         <text
-          x={(CENTER_X + CENTER_W + SOR_X) / 2}
-          y={H / 2 - 6}
+          x={(CENTER_X + CENTER_W + SOR_1_X) / 2}
+          y={302}
           textAnchor="middle"
           className="fill-[#48566b]"
           style={{ font: "8px 'Fragment Mono', monospace", letterSpacing: "0.14em" }}
@@ -128,50 +146,17 @@ export function IntegrationMap({
           fill="none"
           className="flow-line"
           stroke="#2251ff"
-          strokeWidth={1}
-          opacity={0.3}
-        />
-        <path
-          d={edge(SOR_X + RIGHT_NODE_W, H / 2, HUB2_X, H / 2)}
-          fill="none"
-          className="flow-line"
-          stroke="#2251ff"
-          strokeWidth={1.4}
-          opacity={selectedId ? 0.25 : 0.6}
+          strokeWidth={1.1}
+          opacity={0.45}
         />
         <text
-          x={(SOR_X + RIGHT_NODE_W + HUB2_X) / 2}
-          y={H / 2 - 8}
+          x={(CENTER_X + CENTER_W / 2 + LANGFUSE_X) / 2}
+          y={(CENTER_Y + CENTER_H + LANGFUSE_Y + OUTPUT_NODE_H / 2) / 2 + 14}
           textAnchor="middle"
           className="fill-[#48566b]"
           style={{ font: "8px 'Fragment Mono', monospace", letterSpacing: "0.14em" }}
         >
-          TRIGGER
-        </text>
-        <path
-          d={edge(HUB2_X + HUB2_W, H / 2, CONSUMER_X, REVIEW_Y + OUTPUT_NODE_H / 2)}
-          fill="none"
-          className="flow-line"
-          stroke="#2251ff"
-          strokeWidth={1.4}
-          opacity={selectedId ? 0.25 : 0.6}
-        />
-        <path
-          d={edge(HUB2_X + HUB2_W, H / 2, CONSUMER_X, DRAFT_Y + OUTPUT_NODE_H / 2)}
-          fill="none"
-          className="flow-line"
-          stroke="#2251ff"
-          strokeWidth={1.4}
-          opacity={0.3}
-        />
-        <text
-          x={(HUB2_X + HUB2_W + CONSUMER_X) / 2}
-          y={H / 2 + (REVIEW_Y + OUTPUT_NODE_H / 2 - H / 2) / 2 - 6}
-          textAnchor="middle"
-          className="fill-[#48566b]"
-          style={{ font: "8px 'Fragment Mono', monospace", letterSpacing: "0.14em" }}
-        >
-          ROUTES
+          TRACES
         </text>
 
         {/* category headers */}
@@ -285,19 +270,19 @@ export function IntegrationMap({
 
         {/* system of record node */}
         <g data-node-id="postgres">
-          <rect x={SOR_X} y={SOR_Y} width={RIGHT_NODE_W} height={OUTPUT_NODE_H} fill="#ffffff" stroke="#cdd9f5" />
-          <rect x={SOR_X} y={SOR_Y} width={RIGHT_NODE_W} height={3} fill="#2251ff" />
+          <rect x={SOR_1_X} y={SOR_1_Y} width={RIGHT_NODE_W} height={OUTPUT_NODE_H} fill="#ffffff" stroke="#cdd9f5" />
+          <rect x={SOR_1_X} y={SOR_1_Y} width={RIGHT_NODE_W} height={3} fill="#2251ff" />
           <text
-            x={SOR_X + 14}
-            y={SOR_Y + 24}
+            x={SOR_1_X + 14}
+            y={SOR_1_Y + 24}
             className="fill-[#051c2c]"
             style={{ font: "500 12px 'Schibsted Grotesk', sans-serif" }}
           >
             System of record · Postgres
           </text>
           <text
-            x={SOR_X + 14}
-            y={SOR_Y + 40}
+            x={SOR_1_X + 14}
+            y={SOR_1_Y + 40}
             className="fill-[#48566b]"
             style={{ font: "8.5px 'Fragment Mono', monospace", letterSpacing: "0.08em", textTransform: "uppercase" }}
           >
@@ -326,35 +311,104 @@ export function IntegrationMap({
             observability side channel
           </text>
         </g>
+        </g>
+
+        <g style={sceneStyle(1)}>
+        {/* event-driven flow */}
+        <path
+          d={edge(SOR_2_X + RIGHT_NODE_W, H / 2, WORKFLOW_X, H / 2)}
+          fill="none"
+          className="flow-line"
+          stroke="#2251ff"
+          strokeWidth={1.4}
+          opacity={0.6}
+          strokeDasharray="4 3"
+        />
+        <text
+          x={(SOR_2_X + RIGHT_NODE_W + WORKFLOW_X) / 2}
+          y={H / 2 - 8}
+          textAnchor="middle"
+          className="fill-[#48566b]"
+          style={{ font: "8px 'Fragment Mono', monospace", letterSpacing: "0.14em" }}
+        >
+          TRIGGER
+        </text>
+        <path
+          d={edge(WORKFLOW_X + WORKFLOW_W, H / 2, OUTPUT_X, REVIEW_Y + OUTPUT_NODE_H / 2)}
+          fill="none"
+          className="flow-line"
+          stroke="#2251ff"
+          strokeWidth={1.4}
+          opacity={0.6}
+        />
+        <path
+          d={edge(WORKFLOW_X + WORKFLOW_W, H / 2, OUTPUT_X, DRAFT_Y + OUTPUT_NODE_H / 2)}
+          fill="none"
+          className="flow-line"
+          stroke="#2251ff"
+          strokeWidth={1.4}
+          opacity={0.3}
+        />
+        <text
+          x={(WORKFLOW_X + WORKFLOW_W + OUTPUT_X) / 2}
+          y={H / 2 - 4}
+          textAnchor="middle"
+          className="fill-[#48566b]"
+          style={{ font: "8px 'Fragment Mono', monospace", letterSpacing: "0.14em" }}
+        >
+          ROUTES
+        </text>
+
+        {/* system of record node */}
+        <g data-node-id="postgres">
+          <rect x={SOR_2_X} y={SOR_2_Y} width={RIGHT_NODE_W} height={OUTPUT_NODE_H} fill="#ffffff" stroke="#cdd9f5" />
+          <rect x={SOR_2_X} y={SOR_2_Y} width={RIGHT_NODE_W} height={3} fill="#2251ff" />
+          <text
+            x={SOR_2_X + 14}
+            y={SOR_2_Y + 24}
+            className="fill-[#051c2c]"
+            style={{ font: "500 12px 'Schibsted Grotesk', sans-serif" }}
+          >
+            System of record · Postgres
+          </text>
+          <text
+            x={SOR_2_X + 14}
+            y={SOR_2_Y + 40}
+            className="fill-[#48566b]"
+            style={{ font: "8.5px 'Fragment Mono', monospace", letterSpacing: "0.08em", textTransform: "uppercase" }}
+          >
+            submissions + audit trail
+          </text>
+        </g>
 
         {/* downstream workflow hub */}
         <g data-node-id="downstream-workflows">
           <rect
-            x={HUB2_X}
-            y={HUB2_Y}
-            width={HUB2_W}
-            height={HUB2_H}
+            x={WORKFLOW_X}
+            y={WORKFLOW_Y}
+            width={WORKFLOW_W}
+            height={WORKFLOW_H}
             fill="#1e3a5c"
             className="node-glow"
           />
-          <rect x={HUB2_X} y={HUB2_Y} width={HUB2_W * 0.33} height={4} fill="#a9c4e8" />
-          <rect x={HUB2_X + HUB2_W * 0.33} y={HUB2_Y} width={HUB2_W * 0.25} height={4} fill="#2251ff" />
-          <rect x={HUB2_X + HUB2_W * 0.58} y={HUB2_Y} width={HUB2_W * 0.42} height={4} fill="#041330" />
+          <rect x={WORKFLOW_X} y={WORKFLOW_Y} width={WORKFLOW_W * 0.33} height={4} fill="#a9c4e8" />
+          <rect x={WORKFLOW_X + WORKFLOW_W * 0.33} y={WORKFLOW_Y} width={WORKFLOW_W * 0.25} height={4} fill="#2251ff" />
+          <rect x={WORKFLOW_X + WORKFLOW_W * 0.58} y={WORKFLOW_Y} width={WORKFLOW_W * 0.42} height={4} fill="#041330" />
           <text
-            x={HUB2_X + HUB2_W / 2}
-            y={HUB2_Y + 38}
+            x={WORKFLOW_X + WORKFLOW_W / 2}
+            y={WORKFLOW_Y + 50}
             textAnchor="middle"
             className="fill-white"
-            style={{ font: "600 13px 'Schibsted Grotesk', sans-serif" }}
+            style={{ font: "600 14px 'Schibsted Grotesk', sans-serif" }}
           >
             Downstream workflows
           </text>
           <text
-            x={HUB2_X + HUB2_W / 2}
-            y={HUB2_Y + 56}
+            x={WORKFLOW_X + WORKFLOW_W / 2}
+            y={WORKFLOW_Y + 72}
             textAnchor="middle"
             className="fill-[#a9c4e8]"
-            style={{ font: "7.5px 'Fragment Mono', monospace", letterSpacing: "0.14em" }}
+            style={{ font: "8px 'Fragment Mono', monospace", letterSpacing: "0.14em" }}
           >
             TRIGGERED · ON NEW ROW
           </text>
@@ -362,10 +416,10 @@ export function IntegrationMap({
 
         {/* consumers */}
         <g data-node-id="human-review">
-          <rect x={CONSUMER_X} y={REVIEW_Y} width={RIGHT_NODE_W} height={OUTPUT_NODE_H} fill="#ffffff" stroke="#cdd9f5" />
-          <rect x={CONSUMER_X} y={REVIEW_Y} width={RIGHT_NODE_W} height={3} fill="#2251ff" />
+          <rect x={OUTPUT_X} y={REVIEW_Y} width={RIGHT_NODE_W} height={OUTPUT_NODE_H} fill="#ffffff" stroke="#cdd9f5" />
+          <rect x={OUTPUT_X} y={REVIEW_Y} width={RIGHT_NODE_W} height={3} fill="#2251ff" />
           <text
-            x={CONSUMER_X + 14}
+            x={OUTPUT_X + 14}
             y={REVIEW_Y + 24}
             className="fill-[#051c2c]"
             style={{ font: "500 12px 'Schibsted Grotesk', sans-serif" }}
@@ -373,7 +427,7 @@ export function IntegrationMap({
             Human review queue
           </text>
           <text
-            x={CONSUMER_X + 14}
+            x={OUTPUT_X + 14}
             y={REVIEW_Y + 40}
             className="fill-[#48566b]"
             style={{ font: "8.5px 'Fragment Mono', monospace", letterSpacing: "0.08em", textTransform: "uppercase" }}
@@ -383,7 +437,7 @@ export function IntegrationMap({
         </g>
         <g data-node-id="broker-follow-up-drafts" opacity={0.55}>
           <rect
-            x={CONSUMER_X}
+            x={OUTPUT_X}
             y={DRAFT_Y}
             width={RIGHT_NODE_W}
             height={OUTPUT_NODE_H}
@@ -391,9 +445,9 @@ export function IntegrationMap({
             stroke="#cdd9f5"
             strokeDasharray="4 3"
           />
-          <rect x={CONSUMER_X} y={DRAFT_Y} width={RIGHT_NODE_W} height={3} fill="#cdd9f5" />
+          <rect x={OUTPUT_X} y={DRAFT_Y} width={RIGHT_NODE_W} height={3} fill="#cdd9f5" />
           <text
-            x={CONSUMER_X + 14}
+            x={OUTPUT_X + 14}
             y={DRAFT_Y + 24}
             className="fill-[#051c2c]"
             style={{ font: "500 12px 'Schibsted Grotesk', sans-serif" }}
@@ -401,7 +455,7 @@ export function IntegrationMap({
             Broker follow-up drafts
           </text>
           <text
-            x={CONSUMER_X + 14}
+            x={OUTPUT_X + 14}
             y={DRAFT_Y + 40}
             className="fill-[#48566b]"
             style={{ font: "8.5px 'Fragment Mono', monospace", letterSpacing: "0.08em", textTransform: "uppercase" }}
@@ -409,7 +463,32 @@ export function IntegrationMap({
             roadmap
           </text>
         </g>
+        </g>
       </svg>
+
+      {/* scene navigation */}
+      {scene === 0 ? (
+        <button
+          type="button"
+          aria-label="Show what happens after the system of record"
+          onClick={() => setScene(1)}
+          className="absolute right-4 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center border border-pale bg-white text-body shadow-[0_14px_30px_-20px_rgba(30,58,92,0.6)] transition-colors hover:border-cobalt hover:text-cobalt focus-visible:outline-2 focus-visible:outline-cobalt"
+        >
+          <ChevronRight size={17} aria-hidden />
+        </button>
+      ) : (
+        <button
+          type="button"
+          aria-label="Back to intake and extraction"
+          onClick={() => setScene(0)}
+          className="absolute left-4 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center border border-pale bg-white text-body shadow-[0_14px_30px_-20px_rgba(30,58,92,0.6)] transition-colors hover:border-cobalt hover:text-cobalt focus-visible:outline-2 focus-visible:outline-cobalt"
+        >
+          <ChevronLeft size={17} aria-hidden />
+        </button>
+      )}
+      <div className="pointer-events-none absolute bottom-3 right-4 text-right font-fragment text-[9px] uppercase tracking-[0.16em] text-body/50">
+        {SCENES[scene].caption}
+      </div>
     </div>
   );
 }
