@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, FileText, ScanSearch, ShieldCheck, SlidersHorizontal, UserCheck } from "lucide-react";
+import { ArrowRight, FileText, ScanSearch, ShieldCheck, SlidersHorizontal, Tags, UserCheck } from "lucide-react";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
@@ -11,7 +11,12 @@ const STAGES = [
   {
     icon: FileText,
     title: "Intake",
-    body: "Broker emails, ACORD forms, WIP schedules, and financial statements go in as messy text. PDF text-layer today; OCR + image hybrid is the production path for scans. A first model call classifies the document before anything else runs.",
+    body: "Broker emails, ACORD forms, WIP schedules, and financial statements go in as messy text. PDF text-layer today; OCR + image hybrid is the production path for scans.",
+  },
+  {
+    icon: Tags,
+    title: "Classify",
+    body: "A first model call classifies the document type and surety line before extraction, so routing context is known before the typed submission is built.",
   },
   {
     icon: ScanSearch,
@@ -36,10 +41,10 @@ const STAGES = [
 ];
 
 const WORKFLOW_STEPS = [
-  { label: "Submission intake", sublabel: "PARSE + EXTRACT", kind: "covered" },
-  { label: "Appetite review", sublabel: "RULE UW-04", kind: "covered" },
-  { label: "Risk classification", sublabel: "CLASSIFY MODEL CALL", kind: "covered" },
-  { label: "Completeness review", sublabel: "UW-06 + QUEUE", kind: "covered" },
+  { label: "Submission intake", sublabel: "STEP 01", kind: "covered" },
+  { label: "Risk classification", sublabel: "STEP 02", kind: "covered" },
+  { label: "Appetite review", sublabel: "STEP 04", kind: "covered" },
+  { label: "Completeness review", sublabel: "STEPS 05-06", kind: "covered" },
   { label: "Underwriting review", sublabel: "AFTER THE HANDOFF", kind: "next" },
   { label: "Quote", sublabel: "NOT IN SCOPE", kind: "untouched" },
   { label: "Bind and issue", sublabel: "NOT IN SCOPE", kind: "untouched" },
@@ -114,7 +119,7 @@ export function PipelinePage() {
         <div className="mt-2 flex gap-2">
           <div className="min-w-0 basis-0 border-t border-cobalt pt-1" style={{ flexGrow: 4 }}>
             <div className="truncate font-fragment text-[10px] uppercase tracking-[0.16em] text-cobalt">
-              COVERED BY THIS SYSTEM · STEPS 01-05
+              COVERED BY THIS SYSTEM · STEPS 01-06
             </div>
           </div>
           <div

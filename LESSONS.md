@@ -182,6 +182,6 @@ Three acts, ~10 minutes of talk track:
 2. **Prove the handoff** (Run then Review, 5 min). Run a Standard-tier sample: classify then extract, cost and latency visible, then click into the routed review item. Evidence citations, SOP links, approve equals waive versus override equals supply, every decision an audit entry and a training pair. This answers "can we trust and audit it."
 3. **Show governed expansion** (Evals then Sources, 3 min). Nothing earns more autonomy until evals prove it. The integration map is an overlay on their systems, not a migration; write-backs arrive one capability at a time. This answers rollout risk.
 
-Cut list: collapse the five engineering stages verbally into "classify, extract, validate, route"; show only the SOPs that fire in the live run (UW-01, UW-04, UW-06); one sentence on model-agnosticism, more invites vendor anxiety; never open with Sources, plumbing before value makes it an IT meeting.
+Cut list: collapse the six engineering stages verbally into "classify, extract, validate, route"; show only the SOPs that fire in the live run (UW-01, UW-04, UW-06); one sentence on model-agnosticism, more invites vendor anxiety; never open with Sources, plumbing before value makes it an IT meeting.
 
 The close: a 6-week paid pilot on one Standard-submission intake lane against RLI-approved sample or historical files, acceptance criteria on per-field accuracy, routing precision, cycle-time reduction, and auditability, with no quote/bind write-back.
