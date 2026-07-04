@@ -74,8 +74,8 @@ export function PipelinePage() {
     <div className="mx-auto w-full max-w-5xl">
       <PageHeader
         eyebrow="Architecture"
-        title="A pipeline you can read on a whiteboard."
-        sub="Deterministic steps with LLMs inside some of them: plain typed Python, no framework. The parts that matter for a carrier: every step is testable, every decision is audited, and no consequential action happens without a person. The goal: automate the administrative work around underwriting while preserving every underwriting decision."
+        title="From messy submission to review-ready file."
+        sub="Six deterministic steps carry a broker package from raw documents to a prepared, cited file in the underwriter's queue. Every step is testable, every decision is audited, and nothing consequential happens without a person: the administrative work is automated, and every underwriting decision stays with the underwriter."
       />
 
       <section className="rise mb-8" style={{ animationDelay: "240ms" }}>
