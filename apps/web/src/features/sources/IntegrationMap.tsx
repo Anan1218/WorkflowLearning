@@ -20,7 +20,7 @@ const RIGHT_NODE_W = 190;
 const SOR_1_X = 600;
 const SOR_1_Y = 283;
 const LANGFUSE_X = 600;
-const LANGFUSE_Y = 400;
+const LANGFUSE_Y = 505;
 const SOR_2_X = 70;
 const SOR_2_Y = 283;
 const WORKFLOW_X = 340;
@@ -33,7 +33,7 @@ const DMS_Y = 283;
 const DRAFT_Y = 450;
 const CENTER_Y = H / 2 - CENTER_H / 2;
 
-type SceneIndex = 0 | 1 | 2;
+type SceneIndex = 0 | 1;
 type SourceGroup = { header: string; ids: string[] };
 type Layout = { source: SourceConfig; y: number };
 type HeaderLayout = { label: string; y: number };
@@ -88,15 +88,16 @@ function buildColumn(groups: SourceGroup[], startY = 26): ColumnLayout {
   return { rows, headers };
 }
 
-const PREPARE_COLUMN = buildColumn(
-  [{ header: "Scheduled feeds", ids: ["bond-sor", "ams-feeds", "pacer", "sam-gov", "dnb"] }],
-  202,
+const PREPARE_INTAKE_COLUMN = buildColumn(
+  [
+    { header: "Submission channels", ids: ["email-inbox", "contract-bond-app", "rlink", "broker-sftp"] },
+    { header: "Pulled per submission", ids: ["dnb", "personal-credit", "lexis", "sos-ucc", "sba"] },
+    { header: "Scheduled feeds", ids: ["bond-sor", "ams-feeds", "pacer", "sam-gov"] },
+  ],
+  14,
 );
-
-const INTAKE_COLUMN = buildColumn([
-  { header: "Submission channels", ids: ["email-inbox", "contract-bond-app", "rlink", "broker-sftp"] },
-  { header: "Pulled per submission", ids: ["dnb", "personal-credit", "lexis", "sos-ucc", "sba"] },
-]);
+const INTAKE_ROW_COUNT = 9;
+const SYNC_ENDPOINTS = [620, 640, 660, 680] as const;
 
 function pathFor(y: number, slot: number, total: number, targetX: number, targetY0: number, targetY1: number): string {
   const x0 = LEFT_X + NODE_W;
@@ -112,9 +113,8 @@ function edge(x0: number, y0: number, x1: number, y1: number): string {
 }
 
 const SCENES = [
-  { caption: "View 1 of 3 · Prepare: scheduled feeds refresh the data layer" },
-  { caption: "View 2 of 3 · Intake: a submission lands, extraction writes the record" },
-  { caption: "View 3 of 3 · After the record: the new row triggers follow-through" },
+  { caption: "View 1 of 2 · Feeds sync the layer; submissions write the record" },
+  { caption: "View 2 of 2 · After the record: the new row triggers follow-through" },
 ] as const;
 
 function MonoLabel({
@@ -158,9 +158,17 @@ function SystemOfRecordNode({
 
 function LangfuseNode() {
   return (
-    <g data-node-id="langfuse" opacity={0.75}>
-      <rect x={LANGFUSE_X} y={LANGFUSE_Y} width={RIGHT_NODE_W} height={OUTPUT_NODE_H} fill="#ffffff" stroke="#cdd9f5" />
-      <rect x={LANGFUSE_X} y={LANGFUSE_Y} width={RIGHT_NODE_W} height={3} fill="#2251ff" />
+    <g data-node-id="langfuse" opacity={0.55}>
+      <rect
+        x={LANGFUSE_X}
+        y={LANGFUSE_Y}
+        width={RIGHT_NODE_W}
+        height={OUTPUT_NODE_H}
+        fill="#ffffff"
+        stroke="#cdd9f5"
+        strokeDasharray="4 3"
+      />
+      <rect x={LANGFUSE_X} y={LANGFUSE_Y} width={RIGHT_NODE_W} height={3} fill="#cdd9f5" />
       <text
         x={LANGFUSE_X + 14}
         y={LANGFUSE_Y + 24}
@@ -295,6 +303,8 @@ export function IntegrationMap({
     transition: "opacity 400ms ease, transform 400ms ease",
     pointerEvents: scene === index ? "auto" : "none",
   });
+  const intakeRows = PREPARE_INTAKE_COLUMN.rows.slice(0, INTAKE_ROW_COUNT);
+  const syncRows = PREPARE_INTAKE_COLUMN.rows.slice(INTAKE_ROW_COUNT);
 
   const renderSourceConnectors = (
     rows: Layout[],
@@ -393,20 +403,38 @@ export function IntegrationMap({
     <div className="relative flex h-full items-center border border-pale bg-white p-3 shadow-[0_30px_70px_-45px_rgba(30,58,92,0.5)]">
       <svg viewBox="0 0 860 620" className="h-full w-full" role="img" aria-label="Integration map: data sources flowing into the submission intelligence pipeline and out to the data plane">
         <g style={sceneStyle(0)}>
-          {renderSourceConnectors(PREPARE_COLUMN.rows, SOR_1_X, 291, 329, { dashed: true, strokeWidth: 1.2 })}
-          <MonoLabel x={415} y={286}>
-            SYNC · POLLED
-          </MonoLabel>
-          {renderSourceColumn(PREPARE_COLUMN.rows, PREPARE_COLUMN.headers)}
-          <SystemOfRecordNode x={SOR_1_X} y={SOR_1_Y} note="reference data · synced_at" />
-        </g>
-
-        <g style={sceneStyle(1)}>
-          {renderSourceConnectors(INTAKE_COLUMN.rows, CENTER_X, CENTER_Y + 18, CENTER_Y + CENTER_H - 18, {
+          {renderSourceConnectors(intakeRows, CENTER_X, CENTER_Y + 18, CENTER_Y + CENTER_H - 18, {
             strokeWidth: 1.3,
             selectedStrokeWidth: 2.4,
             showReadWriteOverlay: true,
           })}
+
+          {syncRows.map(({ source, y }, rowIndex) => {
+            const active = activeFor(source);
+            const selected = selectedId === source.id;
+            const dimmed = !active;
+            const degraded = source.health === "degraded";
+            const endpointX = SYNC_ENDPOINTS[Math.min(rowIndex, SYNC_ENDPOINTS.length - 1)] ?? 680;
+            const d = `M ${LEFT_X + NODE_W} ${y + NODE_H / 2} C 430 ${
+              y + NODE_H / 2
+            }, 500 455, ${endpointX} ${SOR_1_Y + OUTPUT_NODE_H}`;
+
+            return (
+              <path
+                key={`sync-${source.id}`}
+                d={d}
+                fill="none"
+                className="flow-line"
+                stroke={degraded ? "#f5b544" : "#2251ff"}
+                strokeWidth={1.2}
+                strokeDasharray="4 3"
+                opacity={dimmed ? 0.1 : degraded ? 0.7 : selected ? 1 : 0.4}
+              />
+            );
+          })}
+          <MonoLabel x={345} y={450}>
+            SYNC · POLLED
+          </MonoLabel>
 
           <path
             d={edge(CENTER_X + CENTER_W, H / 2, SOR_1_X, H / 2)}
@@ -415,21 +443,6 @@ export function IntegrationMap({
             strokeWidth={1.8}
             opacity={selectedId ? 0.3 : 0.7}
           />
-          <MonoLabel x={(CENTER_X + CENTER_W + SOR_1_X) / 2} y={302}>
-            WRITES
-          </MonoLabel>
-
-          <path
-            d={edge(SOR_1_X, 324, CENTER_X + CENTER_W, 324)}
-            fill="none"
-            className="flow-line"
-            stroke="#2251ff"
-            strokeWidth={1}
-            opacity={0.4}
-          />
-          <MonoLabel x={570} y={338}>
-            READS
-          </MonoLabel>
 
           <path
             d={`M ${SOR_1_X + RIGHT_NODE_W} ${H / 2} L ${W - 2} ${H / 2}`}
@@ -451,13 +464,13 @@ export function IntegrationMap({
             TRACES
           </MonoLabel>
 
-          {renderSourceColumn(INTAKE_COLUMN.rows, INTAKE_COLUMN.headers)}
+          {renderSourceColumn(PREPARE_INTAKE_COLUMN.rows, PREPARE_INTAKE_COLUMN.headers)}
           <SubmissionHub />
           <SystemOfRecordNode x={SOR_1_X} y={SOR_1_Y} note="submissions + audit trail" />
           <LangfuseNode />
         </g>
 
-        <g style={sceneStyle(2)}>
+        <g style={sceneStyle(1)}>
           <path
             d={`M 2 ${H / 2} L ${SOR_2_X} ${H / 2}`}
             fill="none"
@@ -535,18 +548,18 @@ export function IntegrationMap({
         <div className="flex items-center gap-1.5">
           <button
             type="button"
-            aria-label={scene === 2 ? "Back to intake" : "Back to prepare"}
+            aria-label="Back to prepare and intake"
             disabled={scene === 0}
-            onClick={() => setScene(scene === 2 ? 1 : 0)}
+            onClick={() => setScene(0)}
             className="flex h-8 w-8 items-center justify-center border border-pale bg-white text-body shadow-[0_10px_24px_-18px_rgba(30,58,92,0.6)] transition-colors hover:border-cobalt hover:text-cobalt focus-visible:outline-2 focus-visible:outline-cobalt disabled:cursor-default disabled:opacity-30 disabled:hover:border-pale disabled:hover:text-body"
           >
             <ChevronLeft size={16} aria-hidden />
           </button>
           <button
             type="button"
-            aria-label={scene === 0 ? "Next view: intake" : "Next view: after the record"}
-            disabled={scene === 2}
-            onClick={() => setScene(scene === 0 ? 1 : 2)}
+            aria-label="Next view: after the record"
+            disabled={scene === 1}
+            onClick={() => setScene(1)}
             className="flex h-8 w-8 items-center justify-center border border-pale bg-white text-body shadow-[0_10px_24px_-18px_rgba(30,58,92,0.6)] transition-colors hover:border-cobalt hover:text-cobalt focus-visible:outline-2 focus-visible:outline-cobalt disabled:cursor-default disabled:opacity-30 disabled:hover:border-pale disabled:hover:text-body"
           >
             <ChevronRight size={16} aria-hidden />
