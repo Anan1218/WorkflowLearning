@@ -172,13 +172,13 @@ export function PipelinePage() {
               <div className="mt-3 border-t border-line pt-2.5">
                 <div className="grid grid-cols-[110px_1fr] items-baseline gap-x-3 gap-y-1">
                   <span className="font-fragment text-[8.5px] uppercase tracking-[0.14em] text-body/50">
-                    In this demo
+                    This demo
                   </span>
                   <span className="text-[13px] leading-[1.5] text-body">
                     <GlossaryText text={demo} />
                   </span>
                   <span className="font-fragment text-[8.5px] uppercase tracking-[0.14em] text-cobalt/80">
-                    In production
+                    Production
                   </span>
                   <span className="text-[13px] leading-[1.5] text-body">
                     <GlossaryText text={production} />
