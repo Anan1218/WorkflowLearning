@@ -2,10 +2,11 @@
 
 const STAGES = [
   { label: "Intake", at: 0, kind: "code" },
-  { label: "Extract", at: 1, kind: "model" },
-  { label: "Validate", at: 8, kind: "code" },
-  { label: "Confidence gate", at: 16, kind: "code" },
-  { label: "Route", at: 24, kind: "code" },
+  { label: "Classify", at: 1, kind: "model" },
+  { label: "Extract", at: 5, kind: "model" },
+  { label: "Validate", at: 14, kind: "code" },
+  { label: "Confidence gate", at: 20, kind: "code" },
+  { label: "Route", at: 26, kind: "code" },
 ];
 
 export function JobProgress({ elapsed, modelName }: { elapsed: number; modelName: string }) {
@@ -64,8 +65,8 @@ export function JobProgress({ elapsed, modelName }: { elapsed: number; modelName
         })}
       </ol>
       <p className="mt-6 text-center text-[13px] text-body">
-        Only the Extract stage calls a model. Validation, the confidence gate, and routing are deterministic
-        code. Free models can take up to a minute.
+        Classify and Extract call a model. Validation, the confidence gate, and routing are deterministic code.
+        Free models can take up to a minute.
       </p>
     </div>
   );

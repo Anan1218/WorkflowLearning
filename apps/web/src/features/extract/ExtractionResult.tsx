@@ -30,6 +30,26 @@ function confidenceFor(result: JobResult, path: string): number | null {
   return null;
 }
 
+function humanizeDocType(value: string): string {
+  const labels: Record<string, string> = {
+    broker_email: "Broker email",
+    acord_form: "ACORD form",
+    wip_schedule: "WIP schedule",
+    financial_statement: "Financial statement",
+    other: "Other document",
+  };
+  return labels[value] ?? value;
+}
+
+function humanizeSuretyLine(value: string): string {
+  const labels: Record<string, string> = {
+    contract: "Contract surety",
+    commercial: "Commercial surety",
+    unknown: "Line unknown",
+  };
+  return labels[value] ?? value;
+}
+
 export function ExtractionResult({
   result,
   elapsed,
@@ -80,6 +100,14 @@ export function ExtractionResult({
           </Link>
         )}
       </div>
+
+      {result.classification && (
+        <div className="mb-4 flex flex-wrap items-center gap-2.5">
+          <Badge tone="cobalt">{humanizeDocType(result.classification.doc_type)}</Badge>
+          <Badge tone="neutral">{humanizeSuretyLine(result.classification.surety_line)}</Badge>
+          <span className="text-[13px] leading-relaxed text-body">{result.classification.summary}</span>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div className="thin-scroll max-h-[560px] overflow-y-auto border border-pale bg-wash p-6">

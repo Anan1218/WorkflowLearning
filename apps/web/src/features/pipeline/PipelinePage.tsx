@@ -9,7 +9,7 @@ const STAGES = [
   {
     icon: FileText,
     title: "Intake",
-    body: "Broker emails, ACORD forms, WIP schedules, and financial statements go in as messy text. PDF text-layer today; OCR + image hybrid is the production path for scans.",
+    body: "Broker emails, ACORD forms, WIP schedules, and financial statements go in as messy text. PDF text-layer today; OCR + image hybrid is the production path for scans. A first model call classifies the document before anything else runs.",
   },
   {
     icon: ScanSearch,

@@ -46,16 +46,30 @@ export type Rationale = {
   route: string;
 };
 
+export type SubmissionClassification = {
+  doc_type: string;
+  surety_line: string;
+  summary: string;
+  confidence: number;
+};
+
 export type JobResult = {
+  classification?: SubmissionClassification | null;
   submission: Submission;
   low_confidence_fields: FlaggedField[];
   rationales: Rationale[];
   review_item_id: string | null;
   score: { fields: Record<string, boolean>; accuracy: number } | null;
   usage?: {
+    steps?: {
+      step: string;
+      input_tokens?: number | null;
+      output_tokens?: number | null;
+      latency_s?: number | null;
+    }[];
     input_tokens: number | null;
     output_tokens: number | null;
-    latency_s: number;
+    latency_s: number | null;
     est_cost_usd: number | null;
   };
 };

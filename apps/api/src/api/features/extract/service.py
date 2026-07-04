@@ -9,6 +9,7 @@ Wraps core.extract.extract() in a background job, then post-processes:
 from __future__ import annotations
 
 from evals.scorers import score_case
+from core.classify import classify_with_meta
 from core.extract import extract_with_meta
 from core.guidelines import evaluate_guidelines
 from core.schemas import SCORED_FIELDS, SuretySubmission
@@ -55,19 +56,44 @@ def submit_extraction(text: str, model_id: str, sample_id: str | None = None):
     provider_string = model_cfg["provider_string"]
 
     def _work() -> dict:
+        classification = None
+        classify_meta = None
+        try:
+            classification, classify_meta = classify_with_meta(text, model=provider_string)
+        except Exception:
+            pass
+
         sub, meta = extract_with_meta(text, model=provider_string)
         flagged = _low_confidence_fields(sub)
         rationales = evaluate_guidelines(sub, flagged, REVIEW_THRESHOLD)
         serialized_rationales = [r.model_dump() for r in rationales]
 
+        steps = []
+        if classify_meta:
+            steps.append({"step": "classify", **classify_meta})
+        steps.append({"step": "extract", **meta})
+
+        def _sum_present(key: str):
+            values = [step.get(key) for step in steps if step.get(key) is not None]
+            return sum(values) if values else None
+
+        agg_in = _sum_present("input_tokens")
+        agg_out = _sum_present("output_tokens")
+        agg_latency = _sum_present("latency_s")
         est_cost = None
-        if meta.get("input_tokens") is not None and meta.get("output_tokens") is not None:
+        if agg_in is not None and agg_out is not None:
             est_cost = round(
-                meta["input_tokens"] / 1e6 * model_cfg["usd_per_m_in"]
-                + meta["output_tokens"] / 1e6 * model_cfg["usd_per_m_out"],
+                agg_in / 1e6 * model_cfg["usd_per_m_in"]
+                + agg_out / 1e6 * model_cfg["usd_per_m_out"],
                 6,
             )
-        usage = {**meta, "est_cost_usd": est_cost}
+        usage = {
+            "steps": steps,
+            "input_tokens": agg_in,
+            "output_tokens": agg_out,
+            "latency_s": agg_latency,
+            "est_cost_usd": est_cost,
+        }
 
         review_item_id = None
         if flagged:
@@ -87,6 +113,7 @@ def submit_extraction(text: str, model_id: str, sample_id: str | None = None):
                 score = {"fields": fields, "accuracy": sum(fields.values()) / len(fields)}
 
         return {
+            "classification": classification.model_dump() if classification else None,
             "submission": sub.model_dump(),
             "low_confidence_fields": flagged,
             "rationales": serialized_rationales,
