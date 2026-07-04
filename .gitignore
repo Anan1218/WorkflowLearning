@@ -20,3 +20,4 @@ data/synthetic/
 web/frontend/node_modules/
 web/frontend/dist/
 data/app_state/
+apps/web/dist/
