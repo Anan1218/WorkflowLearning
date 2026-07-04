@@ -54,7 +54,7 @@ export function PipelinePage() {
       <PageHeader
         eyebrow="Architecture"
         title="A pipeline you can read on a whiteboard."
-        sub="Deterministic steps with LLMs inside some of them: plain typed Python, no framework. The parts that matter for a carrier: every step is testable, every decision is audited, and no consequential action happens without a person."
+        sub="Deterministic steps with LLMs inside some of them: plain typed Python, no framework. The parts that matter for a carrier: every step is testable, every decision is audited, and no consequential action happens without a person. The goal: automate the administrative work around underwriting while preserving every underwriting decision."
       />
 
       <ol className="flex flex-col gap-3">

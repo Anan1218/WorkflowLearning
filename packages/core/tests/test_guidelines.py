@@ -64,6 +64,84 @@ def test_wip_consistency_fires_on_billings_above_contract() -> None:
     assert "Marion Trail Phase 1" in rationales["UW-05"].reason
 
 
+def test_completeness_fires_for_standard_tier_missing_requirements() -> None:
+    rationales = _by_id(
+        _submission(
+            bond_amount=1_850_000.0,
+            working_capital=225_000.0,
+            net_worth=None,
+            wip_schedule=[],
+        )
+    )
+
+    assert "UW-06" in rationales
+    assert rationales["UW-06"].fields == ["net_worth", "wip_schedule"]
+    assert (
+        rationales["UW-06"].reason
+        == "Missing for the Standard file: net_worth and wip_schedule."
+    )
+
+
+def test_completeness_silent_for_complete_standard_tier_submission() -> None:
+    rationales = _by_id(
+        _submission(
+            bond_amount=1_850_000.0,
+            working_capital=225_000.0,
+            net_worth=950_000.0,
+            wip_schedule=[
+                WIPProject(
+                    project_name="Marion Trail Phase 1",
+                    contract_amount=620_000.0,
+                    total_estimated_cost=585_000.0,
+                )
+            ],
+        )
+    )
+
+    assert "UW-06" not in rationales
+
+
+def test_completeness_next_step_requires_one_financial_field() -> None:
+    missing_both = _by_id(
+        _submission(
+            bond_amount=900_000.0,
+            working_capital=None,
+            net_worth=None,
+        )
+    )
+    has_working_capital = _by_id(
+        _submission(
+            bond_amount=900_000.0,
+            working_capital=100_000.0,
+            net_worth=None,
+        )
+    )
+    has_net_worth = _by_id(
+        _submission(
+            bond_amount=900_000.0,
+            working_capital=None,
+            net_worth=750_000.0,
+        )
+    )
+
+    assert missing_both["UW-06"].fields == ["working_capital", "net_worth"]
+    assert "UW-06" not in has_working_capital
+    assert "UW-06" not in has_net_worth
+
+
+def test_completeness_silent_for_firststep_tier() -> None:
+    rationales = _by_id(
+        _submission(
+            bond_amount=400_000.0,
+            working_capital=None,
+            net_worth=None,
+            wip_schedule=[],
+        )
+    )
+
+    assert "UW-06" not in rationales
+
+
 def test_confidence_and_unscored_rationales_group_flagged_fields() -> None:
     sub = _submission()
     rationales = {

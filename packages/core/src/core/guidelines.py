@@ -100,6 +100,24 @@ GUIDELINES: list[Guideline] = [
             outcome="Overbilling flagged; WIP review before quoting.",
         ),
     ),
+    Guideline(
+        id="UW-06",
+        title="Completeness",
+        severity="route",
+        route="Human review queue",
+        rule=(
+            "The program tier implied by the bond amount sets what the file must contain. "
+            "Anything missing is named, and the submission cannot be quoted until it is "
+            "supplied or waived."
+        ),
+        example=GuidelineExample(
+            given="A $1,850,000 bond with no WIP schedule attached.",
+            outcome=(
+                "Routed for completeness: the Standard file requires CPA financials and a "
+                "WIP schedule."
+            ),
+        ),
+    ),
 ]
 
 
@@ -218,5 +236,28 @@ def evaluate_guidelines(
                 ["wip_schedule"],
             )
         )
+
+    if sub.bond_amount:
+        tier = _program_tier(sub.bond_amount)
+        missing: list[str] = []
+        if tier == "Standard":
+            if sub.working_capital is None:
+                missing.append("working_capital")
+            if sub.net_worth is None:
+                missing.append("net_worth")
+            if len(sub.wip_schedule) == 0:
+                missing.append("wip_schedule")
+        elif tier == "Next Step":
+            if sub.working_capital is None and sub.net_worth is None:
+                missing = ["working_capital", "net_worth"]
+
+        if missing:
+            rationales.append(
+                _rationale(
+                    "UW-06",
+                    f"Missing for the {tier} file: {_series(missing)}.",
+                    missing,
+                )
+            )
 
     return rationales

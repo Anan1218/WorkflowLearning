@@ -76,6 +76,19 @@ def submit_extraction(
         rationales = evaluate_guidelines(sub, flagged, REVIEW_THRESHOLD)
         serialized_rationales = [r.model_dump() for r in rationales]
 
+        # Route-severity guidelines must reach the queue even when every
+        # extracted field cleared the confidence gate (e.g. a complete-looking
+        # extraction that fails the UW-06 completeness check). Their fields
+        # become reviewable entries: approve = waive, override = supply.
+        flagged_paths = {f["path"] for f in flagged}
+        for rationale in rationales:
+            if rationale.severity != "route":
+                continue
+            for path in rationale.fields:
+                if path not in flagged_paths:
+                    flagged.append({"path": path, "value": _field_value(sub, path), "confidence": None})
+                    flagged_paths.add(path)
+
         def _with_step_usage(step: str, step_model_id: str, step_meta: dict, step_cfg: dict) -> dict:
             input_tokens = step_meta.get("input_tokens")
             output_tokens = step_meta.get("output_tokens")

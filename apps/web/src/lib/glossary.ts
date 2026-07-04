@@ -81,6 +81,10 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
     term: "Bond amount",
     def: "Also called the penal sum: the maximum the surety is obligated to pay under the bond. It caps exposure; it is not automatically paid out.",
   },
+  "loss runs": {
+    term: "Loss runs",
+    def: "Reports of a customer's past insurance claims over several years. In surety, the analog is prior bond claims and defaults; a clean history is a strong underwriting signal.",
+  },
   wip: {
     term: "WIP schedule",
     aliases: ["WIP", "wip_schedule", "WIP schedules", "work-in-progress"],
@@ -119,6 +123,18 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
   triage: {
     term: "Triage",
     def: "Sorting incoming submissions by fit and urgency. In-appetite deals route to underwriters quickly; out-of-appetite ones get fast, polite declines.",
+  },
+  quote: {
+    term: "Quote",
+    def: "The proposed terms and price the carrier offers for a risk. In surety: the bond terms, rate, and any conditions before authorization.",
+  },
+  binding: {
+    term: "Binding",
+    def: "The moment coverage or a bond becomes legally effective. Nothing in this pipeline binds; binding stays a human authority.",
+  },
+  "completeness review": {
+    term: "Completeness review",
+    def: "Checking a submission file for required documents and data before underwriting. Missing items are named and chased rather than discovered mid-review.",
   },
   referral: {
     term: "Referral",

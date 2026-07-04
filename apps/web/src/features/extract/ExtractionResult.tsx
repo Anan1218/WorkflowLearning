@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import type { JobResult } from "../../lib/api";
 import { Badge, Card, ConfidenceBar, fmtMoney, fmtValue } from "../../components/ui";
 import { GlossaryText, Term } from "../../components/Term";
+import { fieldLabel } from "../../lib/fieldLabels";
 
 const FIELD_ROWS: { path: string; label: string; gloss?: string }[] = [
   { path: "principal.name", label: "Principal", gloss: "principal" },
@@ -62,6 +63,7 @@ export function ExtractionResult({
   sourceText: string;
 }) {
   const flaggedPaths = new Set(result.low_confidence_fields.map((f) => f.path));
+  const missingInformationRationale = result.rationales.find((rationale) => rationale.guideline_id === "UW-06");
   const wip = result.submission.wip_schedule;
   const wipTotal = wip.reduce((s, p) => s + (p.contract_amount ?? 0), 0);
 
@@ -101,6 +103,32 @@ export function ExtractionResult({
         )}
       </div>
 
+      {result.classification && (
+        <div className="mb-4 flex flex-wrap items-center gap-2.5">
+          <Badge tone="cobalt">{humanizeDocType(result.classification.doc_type)}</Badge>
+          <Badge tone="neutral">{humanizeSuretyLine(result.classification.surety_line)}</Badge>
+          <span className="text-[13px] leading-relaxed text-body">{result.classification.summary}</span>
+        </div>
+      )}
+
+      {missingInformationRationale && (
+        <div className="mb-4 border border-flag/30 border-l-2 border-l-flag bg-flag/5 px-4 py-3">
+          <div className="font-fragment text-[9px] uppercase tracking-[0.14em] text-flag">
+            Missing information
+          </div>
+          <p className="mt-1 text-[13px] leading-relaxed text-body">{missingInformationRationale.reason}</p>
+          {missingInformationRationale.fields.length > 0 && (
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {missingInformationRationale.fields.map((path) => (
+                <span key={path} className="border border-line px-1.5 py-0.5 font-fragment text-[9.5px] text-body">
+                  {fieldLabel(path)}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       {result.usage?.steps && result.usage.steps.length > 0 && (
         <div className="mb-4 flex flex-wrap gap-x-3 gap-y-1 font-fragment text-[10px] text-body/60">
           {result.usage.steps.map((step) => (
@@ -110,14 +138,6 @@ export function ExtractionResult({
               {step.latency_s != null ? step.latency_s.toFixed(1) : "?"}s
             </span>
           ))}
-        </div>
-      )}
-
-      {result.classification && (
-        <div className="mb-4 flex flex-wrap items-center gap-2.5">
-          <Badge tone="cobalt">{humanizeDocType(result.classification.doc_type)}</Badge>
-          <Badge tone="neutral">{humanizeSuretyLine(result.classification.surety_line)}</Badge>
-          <span className="text-[13px] leading-relaxed text-body">{result.classification.summary}</span>
         </div>
       )}
 

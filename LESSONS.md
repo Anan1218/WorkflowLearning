@@ -169,3 +169,5 @@ Audited against the Varick FDE guide; the architecture already follows it. The r
 ## Go-to-market note (forward-deployed motion)
 
 The pipeline is ~20% of enterprise-grade; the wrapper (access, secrets, audit, lifecycle, vendor mgmt, org program) is the rest - see README's enterprise-readiness checklist. As an external consultant pitching a carrier, the forward-deployed motion fits: embedded, time-boxed paid pilot, deployed in *their* cloud, eval metrics as acceptance criteria, IP split (they own the deployment, we keep the generic architecture). Lead with the compliance story, not the demo. OpenRouter/dev tools stay backstage; Bedrock/Vertex goes on the slide.
+
+The pitch is underwriting acceleration, not replacement: automate the administrative work around underwriting (intake, extraction, completeness, appetite screening, routing) while preserving every underwriting decision. Underwriters want time back, not software that decides for them.
