@@ -3,10 +3,10 @@ import { Eye, FileUp } from "lucide-react";
 import { useRef, useState } from "react";
 
 import { api, type SampleMeta } from "../../lib/api";
-import { Badge, ErrorBanner, Spinner } from "../../components/ui";
+import { Badge, Spinner } from "../../components/ui";
 import { SamplePreviewModal } from "./SamplePreviewModal";
 
-type Tab = "paste" | "upload" | "sample";
+type Tab = "doc" | "sample";
 
 export function DocInput({
   text,
@@ -21,8 +21,9 @@ export function DocInput({
   onSample: (id: string, text: string) => void;
   disabled: boolean;
 }) {
-  const [tab, setTab] = useState<Tab>("paste");
+  const [tab, setTab] = useState<Tab>("doc");
   const [preview, setPreview] = useState<{ id: string; title: string; text: string } | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const { data: samples } = useQuery({ queryKey: ["samples"], queryFn: api.samples });
@@ -42,10 +43,15 @@ export function DocInput({
     setPreview({ id: sample.id, title: sample.title, text: result.text });
   };
 
+  const loadFile = (file: File | undefined) => {
+    if (!file || disabled) return;
+    upload.mutate(file);
+  };
+
   return (
     <div className="flex flex-col border border-pale bg-white shadow-[0_14px_34px_-28px_rgba(5,28,44,0.5)]">
       <div className="flex gap-1 border-b border-line bg-wash px-3 pt-2.5" role="tablist" aria-label="Document source">
-        {(["paste", "upload", "sample"] as Tab[]).map((t) => (
+        {(["doc", "sample"] as Tab[]).map((t) => (
           <button
             key={t}
             role="tab"
@@ -57,49 +63,77 @@ export function DocInput({
                 : "text-body hover:text-ink"
             }`}
           >
-            {t === "paste" ? "Paste text" : t === "upload" ? "Upload file" : "Sample documents"}
+            {t === "doc" ? "Document" : "Sample documents"}
           </button>
         ))}
       </div>
 
       <div className="h-[360px] p-4">
-        {tab === "paste" && (
-          <textarea
-            value={text}
-            onChange={(e) => onText(e.target.value)}
-            disabled={disabled}
-            placeholder="Paste a broker submission email, WIP schedule, financial summary…"
-            className="h-full w-full resize-none border border-line bg-wash p-3.5 font-fragment text-[12.5px] leading-relaxed text-ink placeholder:text-body/50 focus:border-cobalt focus:outline-none"
-            aria-label="Document text"
-          />
-        )}
-
-        {tab === "upload" && (
-          <div className="flex h-full flex-col items-center justify-center gap-3 border border-dashed border-pale bg-wash px-6">
-            <FileUp className="text-body" size={22} aria-hidden />
-            <p className="text-[14px] text-body">
-              .txt or text-layer .pdf — scanned documents are a roadmap item
-            </p>
-            <input
-              ref={fileRef}
-              type="file"
-              accept=".txt,.pdf"
-              className="hidden"
-              onChange={(e) => e.target.files?.[0] && upload.mutate(e.target.files[0])}
-            />
-            <button
-              onClick={() => fileRef.current?.click()}
-              disabled={disabled || upload.isPending}
-              className="rounded-md border border-[#cbd5e1] px-4 py-2 font-schibsted text-[14px] text-ink transition-colors hover:border-cobalt hover:text-cobalt focus-visible:outline-2 focus-visible:outline-cobalt"
+        {tab === "doc" && (
+          <div className="flex h-full flex-col gap-2">
+            <div
+              className="relative flex-1 min-h-0"
+              onDragOver={(e) => {
+                e.preventDefault();
+                setIsDragging(true);
+              }}
+              onDragEnter={(e) => {
+                e.preventDefault();
+                setIsDragging(true);
+              }}
+              onDragLeave={() => setIsDragging(false)}
+              onDrop={(e) => {
+                e.preventDefault();
+                setIsDragging(false);
+                loadFile(e.dataTransfer.files[0]);
+              }}
             >
-              {upload.isPending ? <Spinner /> : "Choose file"}
-            </button>
-            {upload.isError && <ErrorBanner message={(upload.error as Error).message} />}
-            {upload.isSuccess && (
-              <p className="text-[13px] text-ok">
-                Loaded “{upload.data.filename}” — text shown under Paste tab.
-              </p>
-            )}
+              <textarea
+                value={text}
+                onChange={(e) => onText(e.target.value)}
+                disabled={disabled}
+                placeholder="Paste a broker submission email, WIP schedule, financial summary… or drop a file here"
+                className="h-full w-full resize-none border border-line bg-wash p-3.5 font-fragment text-[12.5px] leading-relaxed text-ink placeholder:text-body/50 focus:border-cobalt focus:outline-none"
+                aria-label="Document text"
+              />
+              {isDragging && (
+                <div className="pointer-events-none absolute inset-0 flex items-center justify-center border-2 border-dashed border-cobalt bg-cobalt/5">
+                  <span className="font-schibsted text-[14px] text-cobalt">Drop .txt or .pdf</span>
+                </div>
+              )}
+            </div>
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <input
+                  ref={fileRef}
+                  type="file"
+                  accept=".txt,.pdf"
+                  className="hidden"
+                  onChange={(e) => {
+                    loadFile(e.target.files?.[0]);
+                    e.target.value = "";
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => fileRef.current?.click()}
+                  disabled={disabled || upload.isPending}
+                  className="inline-flex items-center gap-1.5 font-schibsted text-[13px] text-body underline decoration-dotted underline-offset-2 transition-colors hover:text-cobalt disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  <FileUp size={13} aria-hidden />
+                  or browse a file
+                </button>
+              </div>
+              <div className="min-w-0 text-right">
+                {upload.isPending && <Spinner />}
+                {upload.isError && (
+                  <p className="truncate text-[12.5px] text-red-600">{(upload.error as Error).message}</p>
+                )}
+                {upload.isSuccess && (
+                  <p className="truncate text-[12.5px] text-ok">Loaded "{upload.data.filename}"</p>
+                )}
+              </div>
+            </div>
           </div>
         )}
 
